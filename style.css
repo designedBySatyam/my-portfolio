@@ -78,8 +78,6 @@ body {
     position: relative;
     width: 300px;
     height: 300px;
-
-    animation: float 5s ease-in-out infinite;
 }
 
 .img-container img {
@@ -104,6 +102,15 @@ body {
     z-index: 1;
     opacity: 0.4;
     animation: pulseGlow 4s infinite ease-in-out;
+}
+
+.hero-left img {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    animation: float 5s ease-in-out infinite; /* Smooth floating effect */
 }
 
 /* --- Typography & Buttons --- */
@@ -220,46 +227,4 @@ h1 { font-size: 4rem; margin: 10px 0; font-weight: 800; }
     opacity: 0;
     animation: fadeInUp 1s ease-out forwards;
     animation-delay: 0.3s;
-}
-@media (max-width: 768px) {
-
-  .glass-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 32px;
-    padding: 32px 20px;
-  }
-
-  .hero-left {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    
-  }
-
-  .img-container {
-    width: 220px;
-    height: 220px;
-    margin: 0 auto;
-  }
-  
-    .img-container::after {
-    inset: -15px;
-    filter: blur(30px);
-  }
-
-  .button-group {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-  }
-}
-.hero-right h2 {
-    font-size: 1.5rem;
-    margin: 10px 0 20px 0;
-    font-weight: 600;
 }
