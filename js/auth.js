@@ -204,9 +204,9 @@ function showToast(message, type = 'info') {
 function updateUIForAuth() {
     const authenticated = isAuthenticated();
     
-    // Update all modification buttons
+    // Update all modification buttons - more specific selectors
     const modifyButtons = document.querySelectorAll(
-        '.add-project-btn, .icon-btn, .cert-actions .btn-primary, .icon-btn-small'
+        '.add-project-btn, .icon-btn, .icon-btn-small, button[onclick*="openCertModal"], button[onclick*="openProjectModal"], button[onclick*="edit"], button[onclick*="delete"]'
     );
     
     modifyButtons.forEach(btn => {
@@ -214,10 +214,12 @@ function updateUIForAuth() {
             btn.classList.remove('auth-protected');
             btn.style.opacity = '1';
             btn.style.pointerEvents = 'auto';
+            btn.disabled = false;
         } else {
             btn.classList.add('auth-protected');
             btn.style.opacity = '0.5';
             btn.style.pointerEvents = 'none';
+            btn.disabled = true;
         }
     });
     
@@ -282,6 +284,11 @@ function requireAuth(callback) {
 function initAuth() {
     // Update UI on page load
     updateUIForAuth();
+    
+    // Update UI again after a short delay to catch dynamically loaded buttons
+    setTimeout(() => {
+        updateUIForAuth();
+    }, 500);
     
     // Add CSS if not already added
     if (!document.getElementById('auth-styles')) {

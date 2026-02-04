@@ -135,7 +135,17 @@ function showCert(certId) {
 // ============================================
 function openCertModal() {
     // Require authentication
-    if (!requireAuth()) {
+    if (typeof requireAuth === 'function' && !requireAuth()) {
+        return;
+    }
+    
+    // If requireAuth doesn't exist, check isAuthenticated directly
+    if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
+        if (typeof showLoginModal === 'function') {
+            showLoginModal();
+        } else {
+            alert('Please login to add certificates');
+        }
         return;
     }
     
@@ -203,7 +213,17 @@ document.getElementById('certForm').addEventListener('submit', async (e) => {
 // ============================================
 function deleteCert(certId) {
     // Require authentication
-    if (!requireAuth()) {
+    if (typeof requireAuth === 'function' && !requireAuth()) {
+        return;
+    }
+    
+    // If requireAuth doesn't exist, check isAuthenticated directly
+    if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
+        if (typeof showLoginModal === 'function') {
+            showLoginModal();
+        } else {
+            alert('Please login to delete certificates');
+        }
         return;
     }
     
