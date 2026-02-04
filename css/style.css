@@ -1,0 +1,384 @@
+/* ===================================
+   GLOBAL VARIABLES & THEME SYSTEM
+   =================================== */
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary: #a855f7;
+    --bg-light: #f8fafc;
+    --text-light: #1e293b;
+    --text-secondary: #64748b;
+    --glass: rgba(255, 255, 255, 0.7);
+    --border: rgba(255, 255, 255, 0.3);
+    --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark-mode {
+    --bg-light: #0f172a;
+    --text-light: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --glass: rgba(30, 41, 59, 0.7);
+    --border: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* ===================================
+   BASE STYLES
+   =================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    transition: background 0.4s ease, color 0.4s ease;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.6;
+}
+
+/* ===================================
+   ANIMATED BACKGROUND BLOB
+   =================================== */
+.blob {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: -1;
+    top: -10%;
+    right: -10%;
+    opacity: 0.4;
+    animation: flow 20s infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes flow {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-50px, 50px) scale(1.1); }
+    100% { transform: translate(-100px, 100px) scale(1); }
+}
+
+/* ===================================
+   MAIN LAYOUT
+   =================================== */
+.hero {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 60px;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    box-shadow: var(--card-shadow);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+/* ===================================
+   PROFILE IMAGE SECTION
+   =================================== */
+.img-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    animation: float 5s ease-in-out infinite;
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border);
+    position: relative;
+    z-index: 2;
+    transition: transform 0.5s ease;
+}
+
+.img-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: 1;
+    opacity: 0.4;
+    animation: pulseGlow 4s infinite ease-in-out;
+}
+
+/* ===================================
+   TYPOGRAPHY
+   =================================== */
+.badge {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 4rem;
+    margin: 10px 0;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin: 10px 0 20px 0;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+}
+
+.typewriter-text {
+    min-height: 60px;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 20px 0;
+}
+
+/* ===================================
+   BUTTONS
+   =================================== */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+}
+
+.btn-secondary:hover {
+    background: #9333ea;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(168, 85, 247, 0.4);
+}
+
+.btn-outline {
+    border: 2px solid var(--text-light);
+    color: var(--text-light);
+    background: transparent;
+}
+
+.btn-outline:hover {
+    background: var(--text-light);
+    color: var(--bg-light);
+    transform: translateY(-3px);
+}
+
+/* ===================================
+   THEME TOGGLE
+   =================================== */
+.dark-toggle {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 12px;
+    border-radius: 12px;
+    z-index: 100;
+    transition: transform 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dark-toggle:hover {
+    transform: scale(1.1);
+}
+
+.dark-toggle:active {
+    transform: scale(0.95);
+}
+
+/* ===================================
+   ANIMATIONS
+   =================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.6;
+    }
+}
+
+/* Entry animations for hero content */
+.hero-right h1 {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero-right h2,
+.hero-right .badge,
+.hero-right p,
+.button-group {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 0.3s;
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+@media (max-width: 768px) {
+    .glass-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 32px;
+        padding: 32px 20px;
+    }
+
+    .hero-left {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .img-container {
+        width: 220px;
+        height: 220px;
+        margin: 0 auto;
+    }
+
+    .img-container::after {
+        filter: blur(30px);
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    .button-group {
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .dark-toggle {
+        top: 20px;
+        right: 20px;
+        padding: 10px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .glass-card {
+        padding: 24px 16px;
+    }
+
+    .img-container {
+        width: 180px;
+        height: 180px;
+    }
+}
