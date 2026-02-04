@@ -1,0 +1,296 @@
+/* --- Root Variables --- */
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --glass: rgba(255, 255, 255, 0.2); 
+    --border: rgba(255, 255, 255, 0.3);
+    --text: #1e293b;
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.dark-mode {
+    --glass: rgba(15, 23, 42, 0.7);
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #f8fafc;
+    --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+}
+/* --- Entrance Animations --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* --- Base Styles --- */
+body {
+    margin: 0;
+    background: var(--bg-gradient);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.4s ease;
+    overflow-x: hidden;
+}
+
+.blob {
+    position: fixed;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+    filter: blur(50px);
+}
+
+/* --- Layout Structure --- */
+.contact-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.contact-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 60px;
+    max-width: 1100px;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* Apply animation to the whole card */
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.contact-main-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 60px;
+    align-items: start;
+}
+
+/* --- Left Side: Content & Form --- */
+.contact-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, var(--primary), #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.contact-header p {
+    opacity: 0.8;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px 5px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+    margin-bottom: 30px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+input:focus, textarea:focus {
+    border-bottom-color: var(--primary);
+}
+
+.submit-btn {
+    padding: 15px 30px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+/* --- Back to Home Button (Matching Send Message Style) --- */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 25px;
+    padding: 15px 30px; /* Matching the submit button padding */
+    background: var(--primary); /* Same purple background */
+    color: white !important; /* Force white text as seen in your image */
+    text-decoration: none;
+    border-radius: 12px; /* Matching the rounded corners of Send Message */
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    border: none;
+    width: max-content;
+}
+
+.back-link:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    opacity: 1; /* Remove the low opacity from the previous version */
+}
+
+/* Ensure the icon color matches the text */
+.back-link i {
+    stroke: white;
+}
+
+/* --- Right Side: Social Cards --- */
+.contact-right {
+    display: flex;
+    flex-direction: column;
+    padding-left: 40px;
+    border-left: 1px solid var(--border);
+}
+
+.contact-right h3 {
+    margin-bottom: 25px;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.social-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* --- Staggered Social Cards Animation --- */
+.social-card {
+    display: flex;
+    align-items: center;
+    padding: 18px 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* Animation settings */
+    opacity: 0;
+    animation: slideInRight 0.5s ease-out forwards;
+}
+
+/* Stagger the social cards so they appear one by one */
+.social-card:nth-child(1) { animation-delay: 0.4s; }
+.social-card:nth-child(2) { animation-delay: 0.6s; }
+.social-card:nth-child(3) { animation-delay: 0.8s; }
+
+.icon-box {
+    width: 45px;
+    height: 45px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: var(--primary);
+    transition: 0.3s;
+}
+
+.social-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.platform { font-weight: 600; font-size: 1rem; }
+.username { font-size: 0.8rem; opacity: 0.6; }
+
+/* --- Hover Effects --- */
+.social-card:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+    transform: translateX(10px);
+}
+
+.social-card:hover .icon-box {
+    background: var(--primary);
+    color: white;
+}
+
+/* --- UI Elements --- */
+.dark-toggle {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.submit-btn, .back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 25px;
+    padding: 15px 30px;
+    background: var(--primary);
+    color: white !important;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    border: none;
+    width: max-content;
+}
+
+.submit-btn:hover, .back-link:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 850px) {
+    .contact-main-grid {
+        grid-template-columns: 1fr;
+    }
+    .contact-right {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border);
+        padding-top: 40px;
+    }
+    .contact-card {
+        padding: 40px 20px;
+    }
+}
