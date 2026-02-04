@@ -19,7 +19,7 @@ const AUTH_CONFIG = {
  * Check if user is authenticated
  */
 function isAuthenticated() {
-    const session = localStorage.getItem(AUTH_CONFIG.sessionKey);
+    const session = sessionStorage.getItem(AUTH_CONFIG.sessionKey);
     if (!session) return false;
     
     try {
@@ -52,7 +52,7 @@ function login(password) {
             timestamp: Date.now()
         };
         
-        localStorage.setItem(AUTH_CONFIG.sessionKey, JSON.stringify(sessionData));
+        sessionStorage.setItem(AUTH_CONFIG.sessionKey, JSON.stringify(sessionData));
         return true;
     }
     
@@ -63,7 +63,7 @@ function login(password) {
  * Clear authentication session
  */
 function logout() {
-    localStorage.removeItem(AUTH_CONFIG.sessionKey);
+    sessionStorage.removeItem(AUTH_CONFIG.sessionKey);
     updateUIForAuth();
 }
 
