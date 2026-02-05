@@ -2,6 +2,37 @@
    CONTACT PAGE STYLES
    =================================== */
 
+/* CSS Variables for Theme Support */
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary: #a855f7;
+    --background: #ffffff;
+    --bg-light: #f8fafc;
+    --text-light: #1e293b;
+    --text-secondary: #64748b;
+    --border: rgba(99, 102, 241, 0.2);
+    --glass: rgba(255, 255, 255, 0.8);
+    --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark-mode {
+    --background: #0f172a;
+    --bg-light: #0f172a;
+    --text-light: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border: rgba(148, 163, 184, 0.2);
+    --glass: rgba(15, 23, 42, 0.8);
+    --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+body {
+    background: var(--bg-light);
+    color: var(--text-light);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
 .contact-container {
     width: 100%;
     display: flex;
@@ -267,6 +298,17 @@ textarea {
 /* ===================================
    ANIMATIONS
    =================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes slideInRight {
     from {
         opacity: 0;

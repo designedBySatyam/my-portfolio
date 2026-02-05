@@ -35,6 +35,7 @@
             </section>
 
             <div class="main-content">
+                <!-- LEFT COLUMN: Education + Skills -->
                 <div class="left-column">
                     <section class="resume-section">
                         <h2>
@@ -60,32 +61,6 @@
                         <h2>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="8" r="7"></circle>
-                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                            </svg>
-                            Certificates
-                        </h2>
-                        <div class="cert-actions">
-                            <button class="btn btn-primary" onclick="openCertModal()">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                                Add Certificate
-                            </button>
-                        </div>
-                        <ul class="cert-list" id="cert-list">
-                            <!-- Certificates will be loaded here -->
-                        </ul>
-                    </section>
-                </div>
-
-                <div class="right-column">
-                    <section class="resume-section">
-                        <h2>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="16 18 22 12 16 6"></polyline>
                                 <polyline points="8 6 2 12 8 18"></polyline>
                             </svg>
@@ -104,6 +79,33 @@
                             <span>WordPress</span>
                             <span>MS Office</span>
                         </div>
+                    </section>
+                </div>
+
+                <!-- RIGHT COLUMN: Certificates + Preview -->
+                <div class="right-column">
+                    <section class="resume-section">
+                        <h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="7"></circle>
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                            </svg>
+                            Certificates
+                        </h2>
+                        <div class="cert-actions">
+                            <button class="btn btn-primary" onclick="openCertModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add Certificate
+                            </button>
+                        </div>
+                        <ul class="cert-list" id="cert-list">
+                            <!-- Certificates will be loaded here -->
+                        </ul>
                     </section>
 
                     <section class="resume-section">
@@ -207,20 +209,8 @@
         </div>
     </div>
 
+    <script src="../js/script.js"></script>
     <script src="../js/resume.js"></script>
-    <script>
-        // Simple dark mode toggle (add this to your main script.js if you have one)
-        function toggleDark() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        }
-
-        function applySavedTheme() {
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-            }
-        }
-    </script>
 </body>
 
 </html>
