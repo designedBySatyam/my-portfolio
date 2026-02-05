@@ -1,67 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Satyam Pandey | Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="blob"></div>
-
-    <button class="dark-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">🌙</button>
+    
+    <button class="dark-toggle" onclick="toggleDark()">🌙</button>
 
     <div class="hero">
         <div class="glass-card">
             <div class="hero-left">
                 <div class="img-container">
-                    <img src="assets/profile.jpg" alt="Satyam Pandey - Computer Science Student"
-                        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect fill=%22%236366f1%22 width=%22300%22 height=%22300%22/%3E%3Ctext fill=%22white%22 font-family=%22Inter%22 font-size=%2280%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ESP%3C/text%3E%3C/svg%3E'">
+                    <img src="assets/profile.jpg" alt="Satyam Pandey">
                 </div>
             </div>
 
             <div class="hero-right">
                 <span class="badge">Available for Projects</span>
                 <h1>Hello, I'm <span class="gradient-text">Satyam</span></h1>
-                <h2>Computer Science & Engineering Student</h2>
-                <p id="typewriter" class="typewriter-text"></p>
+                <h2>A bit about myself</h2>
+                <p id="typewriter"></p>
 
                 <div class="button-group">
-                    <a href="pages/resume.html" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                        Resume
-                    </a>
-                    <a href="pages/projects.html" class="btn btn-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
-                        Projects
-                    </a>
-                    <a href="pages/contact.html" class="btn btn-outline">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        Contact
-                    </a>
+                    <a href="Others/resume.html" class="btn btn-primary" target="_blank">Resume</a>
+                    <a href="Others/project.html" class="btn btn-secondary" target="_blank">Projects</a>
+                    <a href="Others/contact.html" class="btn btn-outline" target="_blank">Contact</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="js/script.js"></script>
+    <script src="script.js"></script>
 </body>
-
 </html>
