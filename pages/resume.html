@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Satyam Pandey's Resume - Computer Science & Engineering Student">
+    <title>Resume | Satyam Pandey</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/resume.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Animated Background Blob -->
+    <div class="blob" aria-hidden="true"></div>
+    
+    <!-- Dark Mode Toggle -->
+    <button class="dark-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
+        🌙
+    </button>
+
+    <!-- Main Resume Section -->
+    <main class="resume-container">
+        <article class="resume-card">
+            <!-- Header Section -->
+            <header class="resume-header">
+                <h1>Satyam Pandey</h1>
+                <p>Computer Science & Engineering Student</p>
+                <a 
+                    href="../assets/pdfs/Satyam_Pandey_Resume.pdf" 
+                    class="download-btn" 
+                    download
+                    aria-label="Download resume as PDF"
+                >
+                    <i data-lucide="download" aria-hidden="true"></i> 
+                    Download CV
+                </a>
+            </header>
+
+            <!-- Objective Section -->
+            <section class="objective-section">
+                <p>
+                    Computer Science fresher eager to enhance programming and problem-solving skills. 
+                    Seeking an entry-level software development role to apply technical knowledge and 
+                    contribute to innovative projects.
+                </p>
+            </section>
+
+            <!-- Main Content Grid -->
+            <div class="main-content">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Education Section -->
+                    <section class="resume-section">
+                        <h2>
+                            <i data-lucide="book-open" aria-hidden="true"></i> 
+                            Education
+                        </h2>
+                        
+                        <div class="resume-item">
+                            <h3>Bachelor of Technology (CSE)</h3>
+                            <p>Aditya Silver Oak Institute</p>
+                            <p>2024 – 2028</p>
+                            <p><strong>Currently in 4th Semester</strong></p>
+                        </div>
+                        
+                        <div class="resume-item">
+                            <h3>Higher Secondary Education</h3>
+                            <p>Scottish Central School</p>
+                            <p><strong>67%</strong></p>
+                        </div>
+                    </section>
+
+                    <!-- Certificates Section -->
+                    <section class="resume-section">
+                        <h2>
+                            <i data-lucide="award" aria-hidden="true"></i> 
+                            Certificates
+                        </h2>
+                        <ul class="cert-list">
+                            <li 
+                                data-image="../assets/certificates/aws-certificate.jpg"
+                                onclick="showCert('../assets/certificates/aws-certificate.jpg')"
+                                tabindex="0"
+                            >
+                                Cloud Foundations – AWS Academy
+                            </li>
+                            <li 
+                                data-image="../assets/certificates/ibm-certificate.jpg"
+                                onclick="showCert('../assets/certificates/ibm-certificate.jpg')"
+                                tabindex="0"
+                            >
+                                Cloud Computing Fundamentals – IBM
+                            </li>
+                            <li 
+                                data-image="../assets/certificates/club-cert.jpg"
+                                onclick="showCert('../assets/certificates/club-cert.jpg')"
+                                tabindex="0"
+                            >
+                                AWS Cloud Club Member
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- Right Column -->
+                <aside class="right-column">
+                    <!-- Skills Section -->
+                    <section class="resume-section">
+                        <h2>
+                            <i data-lucide="code" aria-hidden="true"></i> 
+                            Skills
+                        </h2>
+                        <div class="skills-tags">
+                            <span>C++</span>
+                            <span>Java</span>
+                            <span>Python</span>
+                            <span>DSA</span>
+                            <span>MySQL</span>
+                            <span>Git</span>
+                        </div>
+                    </section>
+
+                    <!-- Certificate Preview -->
+                    <div id="cert-preview-container" aria-live="polite">
+                        <p id="preview-placeholder">Click a certificate to view</p>
+                        <img 
+                            id="cert-viewer" 
+                            src="" 
+                            alt="Certificate preview" 
+                            style="display:none;"
+                        >
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Footer Navigation -->
+            <nav class="resume-footer" aria-label="Page navigation">
+                <a href="../index.html" class="nav-btn back-btn">
+                    <i data-lucide="arrow-left" aria-hidden="true"></i> 
+                    Back to Home
+                </a>
+                <a href="projects.html" class="nav-btn project-btn">
+                    View Projects 
+                    <i data-lucide="external-link" aria-hidden="true"></i>
+                </a>
+            </nav>
+        </article>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/script.js"></script>
+    <script src="../js/resume.js"></script>
+</body>
+</html>

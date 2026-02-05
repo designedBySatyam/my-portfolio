@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Satyam Pandey - Computer Science & Engineering Student Portfolio">
+    <meta name="author" content="Satyam Pandey">
     <title>Satyam Pandey | Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
 </head>
 <body>
-    <div class="blob"></div>
+    <!-- Animated Background Blob -->
+    <div class="blob" aria-hidden="true"></div>
     
-    <button class="dark-toggle" onclick="toggleDark()">🌙</button>
+    <!-- Dark Mode Toggle -->
+    <button class="dark-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
+        🌙
+    </button>
 
-    <div class="hero">
+    <!-- Main Hero Section -->
+    <main class="hero">
         <div class="glass-card">
             <div class="hero-left">
                 <div class="img-container">
-                    <img src="assets/profile.jpg" alt="Satyam Pandey">
+                    <img src="assets/images/profile.jpg" alt="Satyam Pandey - Profile Picture">
                 </div>
             </div>
 
@@ -24,17 +38,18 @@
                 <span class="badge">Available for Projects</span>
                 <h1>Hello, I'm <span class="gradient-text">Satyam</span></h1>
                 <h2>A bit about myself</h2>
-                <p id="typewriter"></p>
+                <p id="typewriter" aria-live="polite"></p>
 
-                <div class="button-group">
-                    <a href="Others/resume.html" class="btn btn-primary" target="_blank">Resume</a>
-                    <a href="Others/project.html" class="btn btn-secondary" target="_blank">Projects</a>
-                    <a href="Others/contact.html" class="btn btn-outline" target="_blank">Contact</a>
-                </div>
+                <nav class="button-group" aria-label="Main navigation">
+                    <a href="pages/resume.html" class="btn btn-primary">Resume</a>
+                    <a href="pages/projects.html" class="btn btn-secondary">Projects</a>
+                    <a href="pages/contact.html" class="btn btn-outline">Contact</a>
+                </nav>
             </div>
         </div>
-    </div>
+    </main>
 
-    <script src="script.js"></script>
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
 </body>
 </html>

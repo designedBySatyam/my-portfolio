@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Satyam Pandey's Projects - View my technical work and academic projects">
+    <title>Projects | Satyam Pandey</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/projects.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Animated Background Blob -->
+    <div class="blob" aria-hidden="true"></div>
+    
+    <!-- Dark Mode Toggle -->
+    <button class="dark-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
+        🌙
+    </button>
+
+    <!-- Main Projects Section -->
+    <main class="projects-container">
+        <header class="project-header">
+            <h1>My Projects</h1>
+            <p>A showcase of my technical work and academic explorations</p>
+        </header>
+
+        <!-- Projects Grid -->
+        <section class="projects-grid">
+            <article class="project-card">
+                <div class="icon-box">
+                    <i data-lucide="database" aria-hidden="true"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Hospital Management System</h3>
+                    <p>Designed a comprehensive database schema and ER diagram to manage healthcare records and staff scheduling efficiently.</p>
+                    <div class="project-tags">
+                        <span>MySQL</span>
+                        <span>ER Diagram</span>
+                        <span>Database Design</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <div class="icon-box">
+                    <i data-lucide="cpu" aria-hidden="true"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Full Adder Logic Circuit</h3>
+                    <p>Engineered and simulated a full adder circuit by integrating two half adders and an OR gate for binary addition operations.</p>
+                    <div class="project-tags">
+                        <span>Digital Logic</span>
+                        <span>Circuit Design</span>
+                        <span>Simulation</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <div class="icon-box">
+                    <i data-lucide="smartphone" aria-hidden="true"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Mobile Game Optimization</h3>
+                    <p>Researched and implemented sensitivity optimizations for enhanced performance in high-paced mobile gaming environments.</p>
+                    <div class="project-tags">
+                        <span>Gaming</span>
+                        <span>Optimization</span>
+                        <span>Performance</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card">
+                <div class="icon-box">
+                    <i data-lucide="layout" aria-hidden="true"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Portfolio Website</h3>
+                    <p>A professional glassmorphism-based portfolio built with clean HTML, CSS, and interactive JavaScript effects.</p>
+                    <div class="project-tags">
+                        <span>Frontend</span>
+                        <span>Glassmorphism</span>
+                        <span>Responsive</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Navigation Footer -->
+        <nav class="projects-footer" aria-label="Page navigation">
+            <a href="resume.html" class="nav-btn">
+                <i data-lucide="arrow-left" aria-hidden="true"></i> 
+                View Resume
+            </a>
+            <a href="contact.html" class="nav-btn secondary">
+                Let's Connect 
+                <i data-lucide="message-square" aria-hidden="true"></i>
+            </a>
+        </nav>
+    </main>
+
+    <!-- Image Modal (for future use) -->
+    <div id="imageModal" class="modal" role="dialog" aria-modal="true" aria-label="Project image viewer">
+        <button class="close-modal" onclick="closeModal()" aria-label="Close modal">&times;</button>
+        <img id="modalImg" class="modal-content" alt="Project preview">
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/script.js"></script>
+    <script src="../js/projects.js"></script>
+</body>
+</html>

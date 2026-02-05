@@ -1,19 +1,28 @@
-/* --- Root Variables --- */
+/* ============================================
+   CONTACT PAGE STYLES
+   ============================================ */
+
+/* Import base variables from main stylesheet */
+@import url('../css/style.css');
+
+/* --- Page-Specific Variables --- */
 :root {
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --glass: rgba(255, 255, 255, 0.2); 
-    --border: rgba(255, 255, 255, 0.3);
-    --text: #1e293b;
     --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .dark-mode {
-    --glass: rgba(15, 23, 42, 0.7);
-    --border: rgba(255, 255, 255, 0.1);
-    --text: #f8fafc;
     --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 100%);
 }
+
+/* --- Base Styles --- */
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* --- Entrance Animations --- */
 @keyframes fadeInUp {
     from {
@@ -37,37 +46,12 @@
     }
 }
 
-/* --- Base Styles --- */
-body {
-    margin: 0;
-    background: var(--bg-gradient);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background 0.4s ease;
-    overflow-x: hidden;
-}
-
-.blob {
-    position: fixed;
-    width: 700px;
-    height: 700px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-    pointer-events: none;
-    filter: blur(50px);
-}
-
 /* --- Layout Structure --- */
 .contact-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: var(--spacing-md);
 }
 
 .contact-card {
@@ -76,106 +60,118 @@ body {
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: 30px;
-    padding: 60px;
+    padding: var(--spacing-xl);
     max-width: 1100px;
     width: 100%;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    /* Apply animation to the whole card */
+    box-shadow: var(--card-shadow);
     animation: fadeInUp 0.8s ease-out forwards;
 }
 
 .contact-main-grid {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
-    gap: 60px;
+    gap: var(--spacing-xl);
     align-items: start;
 }
 
-/* --- Left Side: Content & Form --- */
+/* --- Header Section --- */
 .contact-header h1 {
-    font-size: 2.8rem;
+    font-size: clamp(2rem, 4vw, 2.8rem);
     margin-bottom: 10px;
-    background: linear-gradient(to right, var(--primary), #a855f7);
+    background: linear-gradient(to right, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .contact-header p {
     opacity: 0.8;
     margin-bottom: 30px;
     line-height: 1.6;
+    color: var(--text-secondary);
 }
 
-input, textarea {
+/* --- Form Styles --- */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+input,
+textarea {
     width: 100%;
     padding: 12px 5px;
     background: transparent;
     border: none;
     border-bottom: 2px solid var(--border);
-    color: var(--text);
-    margin-bottom: 30px;
+    color: var(--text-light);
     outline: none;
-    transition: all 0.3s ease;
+    transition: border-color var(--transition-normal);
     font-family: inherit;
+    font-size: 1rem;
 }
 
-input:focus, textarea:focus {
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+input:focus,
+textarea:focus {
     border-bottom-color: var(--primary);
 }
 
-.submit-btn {
-    padding: 15px 30px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+textarea {
+    resize: vertical;
+    min-height: 120px;
 }
 
-.submit-btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-}
-/* --- Back to Home Button (Matching Send Message Style) --- */
+/* --- Buttons --- */
+.submit-btn,
 .back-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     margin-top: 25px;
-    padding: 15px 30px; /* Matching the submit button padding */
-    background: var(--primary); /* Same purple background */
-    color: white !important; /* Force white text as seen in your image */
+    padding: 15px 30px;
+    background: var(--primary);
+    color: white;
     text-decoration: none;
-    border-radius: 12px; /* Matching the rounded corners of Send Message */
+    border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 0.95rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-smooth);
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
     border: none;
+    cursor: pointer;
     width: max-content;
 }
 
+.submit-btn:hover,
 .back-link:hover {
     transform: translateY(-2px);
     filter: brightness(1.1);
     box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-    opacity: 1; /* Remove the low opacity from the previous version */
 }
 
-/* Ensure the icon color matches the text */
-.back-link i {
-    stroke: white;
+.submit-btn:active,
+.back-link:active {
+    transform: translateY(0);
 }
 
-/* --- Right Side: Social Cards --- */
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- Social Section --- */
 .contact-right {
     display: flex;
     flex-direction: column;
-    padding-left: 40px;
+    padding-left: var(--spacing-lg);
     border-left: 1px solid var(--border);
 }
 
@@ -191,7 +187,7 @@ input:focus, textarea:focus {
     gap: 15px;
 }
 
-/* --- Staggered Social Cards Animation --- */
+/* --- Social Cards --- */
 .social-card {
     display: flex;
     align-items: center;
@@ -200,15 +196,13 @@ input:focus, textarea:focus {
     border: 1px solid var(--border);
     border-radius: 16px;
     text-decoration: none;
-    color: var(--text);
+    color: var(--text-light);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    /* Animation settings */
     opacity: 0;
     animation: slideInRight 0.5s ease-out forwards;
 }
 
-/* Stagger the social cards so they appear one by one */
+/* Stagger animation */
 .social-card:nth-child(1) { animation-delay: 0.4s; }
 .social-card:nth-child(2) { animation-delay: 0.6s; }
 .social-card:nth-child(3) { animation-delay: 0.8s; }
@@ -217,13 +211,14 @@ input:focus, textarea:focus {
     width: 45px;
     height: 45px;
     background: rgba(99, 102, 241, 0.15);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 15px;
     color: var(--primary);
-    transition: 0.3s;
+    transition: all var(--transition-normal);
+    flex-shrink: 0;
 }
 
 .social-text {
@@ -231,8 +226,16 @@ input:focus, textarea:focus {
     flex-direction: column;
 }
 
-.platform { font-weight: 600; font-size: 1rem; }
-.username { font-size: 0.8rem; opacity: 0.6; }
+.platform {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.username {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    color: var(--text-secondary);
+}
 
 /* --- Hover Effects --- */
 .social-card:hover {
@@ -246,51 +249,67 @@ input:focus, textarea:focus {
     color: white;
 }
 
-/* --- UI Elements --- */
-.dark-toggle {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    z-index: 1000;
-    cursor: pointer;
+/* --- Form Status Messages --- */
+.form-message {
+    margin-top: var(--spacing-sm);
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    display: none;
 }
 
-.submit-btn, .back-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 25px;
-    padding: 15px 30px;
-    background: var(--primary);
-    color: white !important;
-    text-decoration: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
-    border: none;
-    width: max-content;
+.form-message.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #22c55e;
 }
 
-.submit-btn:hover, .back-link:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+.form-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
 }
 
-/* --- Responsiveness --- */
+/* --- Responsive Design --- */
 @media (max-width: 850px) {
     .contact-main-grid {
         grid-template-columns: 1fr;
     }
+
     .contact-right {
         border-left: none;
         padding-left: 0;
         border-top: 1px solid var(--border);
-        padding-top: 40px;
+        padding-top: var(--spacing-lg);
+        margin-top: var(--spacing-lg);
     }
+
     .contact-card {
         padding: 40px 20px;
     }
+}
+
+@media (max-width: 480px) {
+    .contact-card {
+        padding: 24px 16px;
+    }
+
+    .social-card {
+        padding: 14px 18px;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* --- Accessibility --- */
+input:focus-visible,
+textarea:focus-visible,
+.submit-btn:focus-visible,
+.back-link:focus-visible,
+.social-card:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
