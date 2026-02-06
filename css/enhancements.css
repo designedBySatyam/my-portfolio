@@ -1,0 +1,53 @@
+/* Additional visual enhancements - append to style.css or include separately */
+
+/* Enhanced SVG Background */
+.bg-decoration { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; opacity: 0.6; pointer-events: none; }
+.bg-svg { width: 100%; height: 100%; }
+.blob-1, .blob-2, .blob-3 { filter: blur(60px); }
+.blob-1 { animation: float 20s ease-in-out infinite; }
+.blob-2 { animation: float 25s ease-in-out infinite reverse; }
+.blob-3 { animation: float 30s ease-in-out infinite; }
+
+/* Particles */
+.particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.particle { position: absolute; width: 4px; height: 4px; background: var(--primary); border-radius: 50%; opacity: 0.3; animation: particleFloat 15s ease-in-out infinite; }
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 30%; animation-delay: 2s; }
+.particle:nth-child(3) { left: 50%; animation-delay: 4s; }
+.particle:nth-child(4) { left: 70%; animation-delay: 6s; }
+.particle:nth-child(5) { left: 90%; animation-delay: 8s; }
+
+@keyframes particleFloat {
+    0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* Profile Ring */
+.profile-ring { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; z-index: 1; animation: rotate 20s linear infinite; }
+
+/* Pulse Dot */
+.pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; position: relative; animation: pulse 2s ease-in-out infinite; }
+.pulse-dot::before { content: ''; position: absolute; width: 100%; height: 100%; background: var(--success); border-radius: 50%; animation: pulseRing 2s ease-in-out infinite; }
+
+/* Wave Emoji */
+.wave-emoji { display: inline-block; animation: wave 2s ease-in-out infinite; transform-origin: 70% 70%; }
+
+/* Scroll Indicator */
+.scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fadeInUp 1s ease 1.5s forwards; }
+.mouse { width: 26px; height: 40px; border: 2px solid var(--text-light); border-radius: 14px; position: relative; }
+.wheel { width: 4px; height: 8px; background: var(--text-light); border-radius: 2px; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); animation: scroll 2s ease-in-out infinite; }
+
+/* Social Links Row */
+.social-links-row { display: flex; gap: 12px; margin-top: 30px; padding-top: 30px; border-top: 1px solid var(--glass-border); }
+.social-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); background: rgba(99, 102, 241, 0.1); color: var(--primary); transition: all var(--transition-normal); border: 1px solid transparent; }
+.social-icon:hover { background: var(--primary); color: white; transform: translateY(-3px); box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3); }
+
+/* Additional Animations */
+@keyframes float { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(50px, -50px); } 66% { transform: translate(-50px, 50px); } }
+@keyframes wave { 0%, 100% { transform: rotate(0deg); } 10%, 30% { transform: rotate(14deg); } 20% { transform: rotate(-8deg); } 40%, 100% { transform: rotate(0deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes pulseRing { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+@keyframes scroll { 0%, 20% { transform: translateX(-50%) translateY(0); opacity: 1; } 100% { transform: translateX(-50%) translateY(16px); opacity: 0; } }
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
