@@ -11,11 +11,11 @@ class ContactForm {
         this.submitBtn = this.form?.querySelector('.submit-btn');
         this.statusDiv = document.getElementById('formStatus');
         
-        // EmailJS Configuration
+        // EmailJS Configuration - YOUR CREDENTIALS
         this.emailConfig = {
-            serviceId: 'service_hvoqys3',
-            templateId: 'template_guin48a',
-            publicKey: 'ERcS2hOvR_hVjIE4G'
+            serviceId: 'service_hvoqys3',  // Get from Email Services page
+            templateId: 'template_guin48a',          // Your "Contact Us" template ID
+            publicKey: 'ERcS2hOvR_hVjIE4G'    // Get from Account > General page
         };
         
         this.init();
@@ -45,27 +45,30 @@ class ContactForm {
         this.setLoadingState(true);
 
         try {
-            // Get form data
-            const formData = {
-                user_name: this.form.user_name.value,
-                user_email: this.form.user_email.value,
-                message: this.form.message.value
+            // Prepare template parameters matching your EmailJS template
+            const templateParams = {
+                user_name: this.form.user_name.value.trim(),
+                user_email: this.form.user_email.value.trim(),
+                message: this.form.message.value.trim(),
+                title: 'New Contact Form Submission' // Optional: for subject line
             };
 
             // Send via EmailJS
-            await emailjs.send(
+            const response = await emailjs.send(
                 this.emailConfig.serviceId,
                 this.emailConfig.templateId,
-                formData
+                templateParams
             );
+
+            console.log('SUCCESS!', response.status, response.text);
 
             // Success
             this.showSuccess();
             this.form.reset();
 
         } catch (error) {
-            console.error('Email send failed:', error);
-            this.showError('Failed to send message. Please try again.');
+            console.error('FAILED...', error);
+            this.showError('Failed to send message. Please try again or email me directly at hello.satyam27@gmail.com');
         } finally {
             this.setLoadingState(false);
         }
@@ -88,6 +91,11 @@ class ContactForm {
             return false;
         }
 
+        if (message.length < 10) {
+            this.showError('Message must be at least 10 characters long');
+            return false;
+        }
+
         return true;
     }
 
@@ -99,13 +107,21 @@ class ContactForm {
 
         if (loading) {
             btnText.textContent = 'SENDING...';
-            btnIcon.style.animation = 'spin 1s linear infinite';
+            if (btnIcon) {
+                btnIcon.style.animation = 'spin 1s linear infinite';
+            }
             this.submitBtn.disabled = true;
+            this.submitBtn.style.opacity = '0.7';
+            this.submitBtn.style.cursor = 'not-allowed';
         } else {
             setTimeout(() => {
                 btnText.textContent = 'SEND MESSAGE';
-                btnIcon.style.animation = '';
+                if (btnIcon) {
+                    btnIcon.style.animation = '';
+                }
                 this.submitBtn.disabled = false;
+                this.submitBtn.style.opacity = '1';
+                this.submitBtn.style.cursor = 'pointer';
             }, 2000);
         }
     }
@@ -114,24 +130,24 @@ class ContactForm {
         if (!this.statusDiv) return;
 
         this.statusDiv.className = 'form-status success';
-        this.statusDiv.textContent = 'Message sent successfully! I\'ll get back to you soon.';
+        this.statusDiv.textContent = '✨ Message sent successfully! You\'ll receive an auto-reply confirmation. I\'ll get back to you within 24 hours.';
 
         setTimeout(() => {
             this.statusDiv.className = 'form-status';
             this.statusDiv.textContent = '';
-        }, 5000);
+        }, 8000);
     }
 
     showError(message) {
         if (!this.statusDiv) return;
 
         this.statusDiv.className = 'form-status error';
-        this.statusDiv.textContent = message;
+        this.statusDiv.textContent = '❌ ' + message;
 
         setTimeout(() => {
             this.statusDiv.className = 'form-status';
             this.statusDiv.textContent = '';
-        }, 5000);
+        }, 6000);
     }
 
     initInputAnimations() {
@@ -213,7 +229,7 @@ class InputEffects {
             // Character count for textarea (optional)
             if (input.tagName === 'TEXTAREA') {
                 input.addEventListener('input', () => {
-                    const maxLength = 500;
+                    const maxLength = 1000;
                     const currentLength = input.value.length;
                     
                     if (currentLength > maxLength) {
