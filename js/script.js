@@ -91,6 +91,42 @@ class RoleTyper {
     }
 }
 
+// Profile Status Badge Manager
+class StatusBadgeManager {
+    constructor() {
+        this.badge = document.querySelector('.status-badge');
+        this.statusText = this.badge ? this.badge.querySelector('.status-text') : null;
+        this.statusConfig = {
+            available: { label: 'AVAILABLE', className: 'status-available' },
+            working: { label: 'WORKING', className: 'status-working' },
+            busy: { label: 'BUSY', className: 'status-busy' },
+            away: { label: 'AWAY', className: 'status-away' }
+        };
+        this.init();
+    }
+
+    init() {
+        if (!this.badge || !this.statusText) return;
+
+        // Owner-only setting: change <body data-profile-status="..."> in index.html.
+        const statusFromHtml = (document.body.dataset.profileStatus || 'available').toLowerCase();
+        this.applyStatus(statusFromHtml);
+    }
+
+    applyStatus(statusKey) {
+        const fallbackStatus = 'available';
+        const normalizedStatus = this.statusConfig[statusKey] ? statusKey : fallbackStatus;
+        const classesToRemove = Object.values(this.statusConfig).map((status) => status.className);
+
+        this.badge.classList.remove(...classesToRemove);
+
+        const selectedStatus = this.statusConfig[normalizedStatus];
+        this.badge.classList.add(selectedStatus.className);
+        this.badge.setAttribute('data-status', normalizedStatus);
+        this.statusText.textContent = selectedStatus.label;
+    }
+}
+
 // Smooth Scroll for Navigation
 class SmoothScroll {
     constructor() {
@@ -262,6 +298,7 @@ class PageLoader {
 document.addEventListener('DOMContentLoaded', () => {
     // Core functionality
     new ThemeManager();
+    new StatusBadgeManager();
     new SmoothScroll();
     new PageLoader();
     
@@ -280,5 +317,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ThemeManager, RoleTyper, SmoothScroll };
+    module.exports = { ThemeManager, RoleTyper, StatusBadgeManager, SmoothScroll };
 }
