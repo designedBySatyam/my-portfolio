@@ -384,20 +384,19 @@ body.dark-theme .theme-icon.moon {
 
 .profile-img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 85%;
-    height: 85%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     object-position: center;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 5%, 87.5% 27.5%, 87.5% 72.5%, 50% 95%, 12.5% 72.5%, 12.5% 27.5%);
     transition: transform var(--transition-smooth);
     z-index: 1;
 }
 
 .profile-card:hover .profile-img {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: scale(1.05);
 }
 
 /* Scan Line Effect */
