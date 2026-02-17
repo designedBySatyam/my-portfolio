@@ -492,7 +492,7 @@ class CertificatesAdmin {
                 <div class="admin-item-info">
                     <h4 class="admin-item-title">${this.escapeHtml(cert.title)}</h4>
                     <p class="admin-item-meta">${this.escapeHtml(cert.issuer)}</p>
-                    ${cert.date ? `<p class="admin-item-meta">${this.escapeHtml(cert.date)}</p>` : ''}
+                    ${(cert.date || cert.issueDate) ? `<p class="admin-item-meta">${this.escapeHtml(cert.date || cert.issueDate)}</p>` : ''}
                 </div>
                 <div class="admin-item-actions">
                     <button class="edit-item-btn" data-action="edit" data-id="${cert.id}">
@@ -566,7 +566,7 @@ class CertificatesAdmin {
             
             setVal('certificateTitle', cert.title);
             setVal('certificateIssuer', cert.issuer);
-            setVal('certificateDate', cert.date);
+            setVal('certificateDate', cert.date || cert.issueDate);
             setVal('certificateImageUrl', cert.imageUrl);
 
             this.modal.style.display = 'flex';
@@ -619,10 +619,13 @@ class CertificatesAdmin {
             return;
         }
 
+        const issuedDate = getVal('certificateDate') || null;
+
         const certData = {
             title: getVal('certificateTitle'),
             issuer: getVal('certificateIssuer'),
-            date: getVal('certificateDate') || null,
+            date: issuedDate,
+            issueDate: issuedDate,
             imageUrl: normalizedImagePath,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
