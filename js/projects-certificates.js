@@ -384,7 +384,10 @@ class FirebaseCertificates {
     }
 
     viewCertificate(cert) {
-        if (!cert || !cert.imageUrl) return;
+        if (!cert) return;
+
+        const imageUrl = this.normalizeCertificateImagePath(cert.imageUrl);
+        if (!imageUrl) return;
 
         // Update active state
         document.querySelectorAll('.cert-item').forEach(item => {
@@ -401,7 +404,7 @@ class FirebaseCertificates {
         }
 
         if (this.certViewer) {
-            this.certViewer.src = cert.imageUrl;
+            this.certViewer.src = imageUrl;
             this.certViewer.style.display = 'block';
             this.certViewer.classList.add('active');
         }
@@ -426,10 +429,31 @@ class FirebaseCertificates {
         }
 
         if (this.certDate) {
-            this.certDate.textContent = cert.issueDate || '-';
+            this.certDate.textContent = cert.date || cert.issueDate || '-';
         }
 
         this.currentCertId = cert.id;
+    }
+
+    normalizeCertificateImagePath(imagePath) {
+        const trimmed = (imagePath || '').trim();
+        if (!trimmed) return '';
+
+        const normalizedPath = trimmed.replace(/\\/g, '/');
+
+        if (/^(?:https?:)?\/\//i.test(normalizedPath) || normalizedPath.startsWith('data:') || normalizedPath.startsWith('blob:')) {
+            return normalizedPath;
+        }
+
+        if (normalizedPath.startsWith('../') || normalizedPath.startsWith('./') || normalizedPath.startsWith('/')) {
+            return normalizedPath;
+        }
+
+        if (normalizedPath.startsWith('assets/')) {
+            return `../${normalizedPath}`;
+        }
+
+        return `../assets/certificates/${normalizedPath}`;
     }
 
     closeCurrentCertificate() {

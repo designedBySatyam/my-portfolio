@@ -4,6 +4,27 @@
  * ============================================
  */
 
+function normalizeCertificateImagePath(imagePath) {
+    const trimmed = (imagePath || '').trim();
+    if (!trimmed) return '';
+
+    const normalizedPath = trimmed.replace(/\\/g, '/');
+
+    if (/^(?:https?:)?\/\//i.test(normalizedPath) || normalizedPath.startsWith('data:') || normalizedPath.startsWith('blob:')) {
+        return normalizedPath;
+    }
+
+    if (normalizedPath.startsWith('../') || normalizedPath.startsWith('./') || normalizedPath.startsWith('/')) {
+        return normalizedPath;
+    }
+
+    if (normalizedPath.startsWith('assets/')) {
+        return `../${normalizedPath}`;
+    }
+
+    return `../assets/certificates/${normalizedPath}`;
+}
+
 // Firebase Real-time Certificates Loader
 class FirebaseCertificates {
     constructor() {
@@ -100,7 +121,7 @@ class FirebaseCertificates {
                     <h4>${this.escapeHtml(cert.title)}</h4>
                     <p>${this.escapeHtml(cert.issuer)}</p>
                 </div>
-                <button class="cert-view-btn" onclick="viewCertificate('${cert.id}', '${this.escapeHtml(cert.imageUrl || '')}')">
+                <button class="cert-view-btn" onclick="viewCertificate('${cert.id}', '${this.escapeHtml(normalizeCertificateImagePath(cert.imageUrl || ''))}')">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                         <circle cx="12" cy="12" r="3"/>
@@ -143,10 +164,11 @@ class FirebaseCertificates {
 function viewCertificate(certId, imageUrl) {
     const viewer = document.getElementById('certViewer');
     const placeholder = document.getElementById('certPlaceholder');
+    const normalizedImageUrl = normalizeCertificateImagePath(imageUrl);
     
-    if (viewer && placeholder && imageUrl) {
+    if (viewer && placeholder && normalizedImageUrl) {
         placeholder.style.display = 'none';
-        viewer.src = imageUrl;
+        viewer.src = normalizedImageUrl;
         viewer.style.display = 'block';
         viewer.classList.add('active');
         

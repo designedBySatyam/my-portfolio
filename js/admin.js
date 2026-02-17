@@ -584,6 +584,27 @@ class CertificatesAdmin {
         this.currentCertId = null;
     }
 
+    normalizeCertificateImagePath(imagePath) {
+        const trimmed = (imagePath || '').trim();
+        if (!trimmed) return '';
+
+        const normalizedPath = trimmed.replace(/\\/g, '/');
+
+        if (/^(?:https?:)?\/\//i.test(normalizedPath) || normalizedPath.startsWith('data:') || normalizedPath.startsWith('blob:')) {
+            return normalizedPath;
+        }
+
+        if (normalizedPath.startsWith('../') || normalizedPath.startsWith('./') || normalizedPath.startsWith('/')) {
+            return normalizedPath;
+        }
+
+        if (normalizedPath.startsWith('assets/')) {
+            return `../${normalizedPath}`;
+        }
+
+        return `../assets/certificates/${normalizedPath}`;
+    }
+
     async handleSubmit(e) {
         e.preventDefault();
 
@@ -592,11 +613,17 @@ class CertificatesAdmin {
             return el ? el.value.trim() : '';
         };
 
+        const normalizedImagePath = this.normalizeCertificateImagePath(getVal('certificateImageUrl'));
+        if (!normalizedImagePath) {
+            alert('Please provide a certificate image path.');
+            return;
+        }
+
         const certData = {
             title: getVal('certificateTitle'),
             issuer: getVal('certificateIssuer'),
             date: getVal('certificateDate') || null,
-            imageUrl: getVal('certificateImageUrl'),
+            imageUrl: normalizedImagePath,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
