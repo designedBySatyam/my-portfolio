@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /pages/admin.html
+Disallow: /js/firebase-config.js
+
+Sitemap: https://satyampandey.dev/sitemap.xml

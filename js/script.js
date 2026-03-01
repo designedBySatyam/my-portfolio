@@ -1,321 +1,277 @@
-/**
- * ============================================
- * MAIN JAVASCRIPT - CYBERPUNK PORTFOLIO
- * ============================================
- */
+'use strict';
 
-// Theme Management
-class ThemeManager {
-    constructor() {
-        this.themeToggle = document.getElementById('themeToggle');
-        this.init();
-    }
+(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    init() {
-        // Load saved theme
-        this.loadTheme();
-        
-        // Add event listener
-        if (this.themeToggle) {
-            this.themeToggle.addEventListener('click', () => this.toggleTheme());
-        }
-    }
+  function initThemeToggle() {
+    const root = document.documentElement;
+    const toggles = Array.from(document.querySelectorAll('#themeToggle, .theme-toggle'));
 
-    loadTheme() {
-        const savedTheme = localStorage.getItem('portfolio-theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-theme');
-        }
-    }
+    const getStoredTheme = () => {
+      try {
+        const value = localStorage.getItem('portfolio-theme');
+        return value === 'light' || value === 'dark' ? value : null;
+      } catch (error) {
+        return null;
+      }
+    };
 
-    toggleTheme() {
-        document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-        localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
-        
-        // Add animation to toggle button
-        if (this.themeToggle) {
-            this.themeToggle.style.transform = 'rotate(360deg)';
-            setTimeout(() => {
-                this.themeToggle.style.transform = 'rotate(0deg)';
-            }, 400);
-        }
-    }
-}
+    const storeTheme = (theme) => {
+      try {
+        localStorage.setItem('portfolio-theme', theme);
+      } catch (error) {
+        // Ignore storage failures (private mode / restricted storage)
+      }
+    };
 
-// Role Typer Animation
-class RoleTyper {
-    constructor() {
-        this.element = document.getElementById('roleTyper');
-        this.roles = [
-            'DIGITAL ARCHITECT',
-            'CODE CRAFTSMAN',
-            'SYSTEM ENGINEER',
-            'PROBLEM SOLVER'
-        ];
-        this.currentIndex = 0;
-        this.currentText = '';
-        this.isDeleting = false;
-        this.typeSpeed = 100;
-        this.deleteSpeed = 50;
-        this.pauseDelay = 2000;
-        
-        if (this.element) {
-            this.type();
-        }
-    }
+    const applyTheme = (theme) => {
+      root.setAttribute('data-theme', theme);
+      toggles.forEach((toggle) => {
+        toggle.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+      });
+      window.dispatchEvent(new CustomEvent('portfolio-theme-change', {
+        detail: { theme }
+      }));
+    };
 
-    type() {
-        const currentRole = this.roles[this.currentIndex];
-        
-        if (this.isDeleting) {
-            this.currentText = currentRole.substring(0, this.currentText.length - 1);
-        } else {
-            this.currentText = currentRole.substring(0, this.currentText.length + 1);
-        }
-        
-        this.element.textContent = this.currentText;
-        
-        let timeout = this.isDeleting ? this.deleteSpeed : this.typeSpeed;
-        
-        if (!this.isDeleting && this.currentText === currentRole) {
-            timeout = this.pauseDelay;
-            this.isDeleting = true;
-        } else if (this.isDeleting && this.currentText === '') {
-            this.isDeleting = false;
-            this.currentIndex = (this.currentIndex + 1) % this.roles.length;
-            timeout = 500;
-        }
-        
-        setTimeout(() => this.type(), timeout);
-    }
-}
+    const systemDefault = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    const initialTheme = getStoredTheme() || systemDefault;
+    applyTheme(initialTheme);
 
-// Profile Status Badge Manager
-class StatusBadgeManager {
-    constructor() {
-        this.badge = document.querySelector('.status-badge');
-        this.statusText = this.badge ? this.badge.querySelector('.status-text') : null;
-        this.statusConfig = {
-            available: { label: 'AVAILABLE', className: 'status-available' },
-            working: { label: 'WORKING', className: 'status-working' },
-            busy: { label: 'BUSY', className: 'status-busy' },
-            away: { label: 'AWAY', className: 'status-away' }
-        };
-        this.init();
-    }
+    if (!toggles.length) return;
 
-    init() {
-        if (!this.badge || !this.statusText) return;
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+        const next = current === 'light' ? 'dark' : 'light';
+        applyTheme(next);
+        storeTheme(next);
+      });
+    });
+  }
 
-        // Owner-only setting: change <body data-profile-status="..."> in index.html.
-        const statusFromHtml = (document.body.dataset.profileStatus || 'available').toLowerCase();
-        this.applyStatus(statusFromHtml);
-    }
+  function initSmoothAnchors() {
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', (event) => {
+        const href = anchor.getAttribute('href');
+        if (!href || href === '#') return;
 
-    applyStatus(statusKey) {
-        const fallbackStatus = 'available';
-        const normalizedStatus = this.statusConfig[statusKey] ? statusKey : fallbackStatus;
-        const classesToRemove = Object.values(this.statusConfig).map((status) => status.className);
+        const target = document.querySelector(href);
+        if (!target) return;
 
-        this.badge.classList.remove(...classesToRemove);
-
-        const selectedStatus = this.statusConfig[normalizedStatus];
-        this.badge.classList.add(selectedStatus.className);
-        this.badge.setAttribute('data-status', normalizedStatus);
-        this.statusText.textContent = selectedStatus.label;
-    }
-}
-
-// Smooth Scroll for Navigation
-class SmoothScroll {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                const href = anchor.getAttribute('href');
-                if (href !== '#' && href !== '') {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-            });
+        event.preventDefault();
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
         });
-    }
-}
+      });
+    });
+  }
 
-// Parallax Effect for Orbs
-class ParallaxOrbs {
-    constructor() {
-        this.orbs = document.querySelectorAll('.orb');
-        this.init();
-    }
+  function initRoleTyper() {
+    const roleElement = document.getElementById('roleTyper');
+    if (!roleElement || prefersReducedMotion) return;
 
-    init() {
-        if (this.orbs.length === 0) return;
-        
-        window.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX / window.innerWidth;
-            const mouseY = e.clientY / window.innerHeight;
-            
-            this.orbs.forEach((orb, index) => {
-                const speed = (index + 1) * 20;
-                const x = (mouseX - 0.5) * speed;
-                const y = (mouseY - 0.5) * speed;
-                
-                orb.style.transform = `translate(${x}px, ${y}px)`;
-            });
-        });
-    }
-}
+    const roles = [
+      'CREATIVE DEVELOPER',
+      'IMMERSIVE EXPERIENCE BUILDER',
+      'THREE.JS SPECIALIST',
+      'INTERACTIVE WEB DESIGNER'
+    ];
 
-// Intersection Observer for Fade-in Animations
-class ScrollAnimations {
-    constructor() {
-        this.init();
-    }
+    let roleIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
 
-    init() {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+    function tick() {
+      const currentRole = roles[roleIndex];
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
+      if (deleting) {
+        charIndex -= 1;
+      } else {
+        charIndex += 1;
+      }
 
-        // Observe elements with data-animate attribute
-        document.querySelectorAll('[data-animate]').forEach(el => {
-            observer.observe(el);
-        });
-    }
-}
+      roleElement.textContent = currentRole.slice(0, charIndex);
 
-// Cursor Trail Effect (Optional Enhancement)
-class CursorTrail {
-    constructor() {
-        this.coords = { x: 0, y: 0 };
-        this.circles = [];
-        this.init();
+      let delay = deleting ? 45 : 85;
+
+      if (!deleting && charIndex === currentRole.length) {
+        deleting = true;
+        delay = 1500;
+      } else if (deleting && charIndex === 0) {
+        deleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        delay = 320;
+      }
+
+      window.setTimeout(tick, delay);
     }
 
-    init() {
-        // Create cursor circles
-        const colors = ['#00ffff', '#ff00ff', '#0066ff'];
-        
-        for (let i = 0; i < 3; i++) {
-            const circle = document.createElement('div');
-            circle.className = 'cursor-circle';
-            circle.style.cssText = `
-                position: fixed;
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                background: ${colors[i]};
-                pointer-events: none;
-                z-index: 9999;
-                opacity: 0;
-                filter: blur(${i * 3}px);
-                transition: opacity 0.3s;
-            `;
-            document.body.appendChild(circle);
-            this.circles.push(circle);
-        }
+    window.setTimeout(tick, 650);
+  }
 
-        // Track mouse movement
-        window.addEventListener('mousemove', (e) => {
-            this.coords.x = e.clientX;
-            this.coords.y = e.clientY;
-        });
+  function initRevealAnimations() {
+    const revealItems = document.querySelectorAll('[data-animate]');
+    if (!revealItems.length || prefersReducedMotion) return;
 
-        // Animate circles
-        this.animateCircles();
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        obs.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.18,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealItems.forEach((item) => observer.observe(item));
+  }
+
+  function initThreeBackground() {
+    const canvas = document.getElementById('starfield') || document.getElementById('canvas3d');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    let renderer;
+
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance'
+      });
+    } catch (error) {
+      console.warn('Three.js renderer initialization failed:', error);
+      return;
     }
 
-    animateCircles() {
-        let x = this.coords.x;
-        let y = this.coords.y;
-        
-        this.circles.forEach((circle, index) => {
-            circle.style.left = x - 10 + 'px';
-            circle.style.top = y - 10 + 'px';
-            circle.style.opacity = '0.3';
-            
-            circle.style.transform = `scale(${(this.circles.length - index) / this.circles.length})`;
-            
-            const nextCircle = this.circles[index + 1] || this.circles[0];
-            x += (nextCircle.offsetLeft - x) * 0.3;
-            y += (nextCircle.offsetTop - y) * 0.3;
-        });
-        
-        requestAnimationFrame(() => this.animateCircles());
-    }
-}
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    const scene = new THREE.Scene();
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
 
-// Page Loading Animation
-class PageLoader {
-    constructor() {
-        this.init();
+    const particleCount = prefersReducedMotion ? 1200 : isMobile ? 800 : 2600;
+    const particleGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount; i += 1) {
+      positions[i * 3] = (Math.random() - 0.5) * 110;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 110;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 110;
+
+      const blend = Math.random();
+      colors[i * 3] = blend < 0.5 ? 0.31 : 0.97;
+      colors[i * 3 + 1] = blend < 0.5 ? 0.56 : 0.31;
+      colors[i * 3 + 2] = blend < 0.5 ? 0.97 : 0.56;
     }
 
-    init() {
-        window.addEventListener('load', () => {
-            // Remove loading class if exists
-            document.body.classList.remove('loading');
-            
-            // Trigger entrance animations
-            this.triggerAnimations();
-        });
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.14,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.68
+    });
+
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+
+    const torusMaterial = new THREE.MeshBasicMaterial({
+      color: 0x4f8ef7,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.08
+    });
+    const torus = new THREE.Mesh(new THREE.TorusGeometry(8, 2.5, 16, 60), torusMaterial);
+    torus.position.set(15, -5, -10);
+    scene.add(torus);
+
+    const sphereMaterial = new THREE.MeshBasicMaterial({
+      color: 0xf74f8e,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.08
+    });
+    const sphere = new THREE.Mesh(new THREE.IcosahedronGeometry(5, 1), sphereMaterial);
+    sphere.position.set(-15, 5, -15);
+    scene.add(sphere);
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener('mousemove', (event) => {
+      mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = -(event.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    const clock = new THREE.Clock();
+
+    function applySceneTheme(theme) {
+      const isLight = theme === 'light';
+      particleMaterial.opacity = isLight ? 0.76 : 0.68;
+      particleMaterial.size = isLight ? 0.15 : 0.14;
+      torusMaterial.opacity = isLight ? 0.1 : 0.08;
+      sphereMaterial.opacity = isLight ? 0.1 : 0.08;
+      torusMaterial.color.setHex(isLight ? 0x417be0 : 0x4f8ef7);
+      sphereMaterial.color.setHex(isLight ? 0xe14b8f : 0xf74f8e);
     }
 
-    triggerAnimations() {
-        // Add stagger effect to elements
-        const elements = document.querySelectorAll('.hero-content > *');
-        elements.forEach((el, index) => {
-            setTimeout(() => {
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    }
-}
+    applySceneTheme(document.documentElement.getAttribute('data-theme') || 'dark');
+    window.addEventListener('portfolio-theme-change', (event) => {
+      const nextTheme = event?.detail?.theme || 'dark';
+      applySceneTheme(nextTheme);
+    });
 
-// Initialize Everything
-document.addEventListener('DOMContentLoaded', () => {
-    // Core functionality
-    new ThemeManager();
-    new StatusBadgeManager();
-    new SmoothScroll();
-    new PageLoader();
-    
-    // Visual enhancements
-    new ParallaxOrbs();
-    new ScrollAnimations();
-    
-    // Only on home page
-    if (document.getElementById('roleTyper')) {
-        new RoleTyper();
-    }
-    
-    // Cursor trail (comment out if too distracting)
-    // new CursorTrail();
-});
+    function renderFrame() {
+      const t = clock.getElapsedTime();
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ThemeManager, RoleTyper, StatusBadgeManager, SmoothScroll };
-}
+      particles.rotation.y = t * 0.02;
+      particles.rotation.x = t * 0.01;
+
+      torus.rotation.x = t * 0.3;
+      torus.rotation.y = t * 0.2;
+
+      sphere.rotation.x = t * 0.15;
+      sphere.rotation.z = t * 0.2;
+
+      camera.position.x += (mouseX * 3 - camera.position.x) * 0.03;
+      camera.position.y += (mouseY * 2 - camera.position.y) * 0.03;
+      camera.lookAt(scene.position);
+
+      renderer.render(scene, camera);
+    }
+
+    function animate() {
+      renderFrame();
+      window.requestAnimationFrame(animate);
+    }
+
+    if (prefersReducedMotion) {
+      renderFrame();
+    } else {
+      animate();
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initThemeToggle();
+    initSmoothAnchors();
+    initRoleTyper();
+    initRevealAnimations();
+    initThreeBackground();
+  });
+})();

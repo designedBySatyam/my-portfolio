@@ -1,213 +1,389 @@
-/**
+﻿/**
  * ============================================
- * ADMIN PANEL FOR PROJECTS-CERTIFICATES PAGE
- * Matches projects-certificates.html structure
+ * ADMIN MANAGER
+ * Supports:
+ * 1) Embedded admin modal (projects-certificates page)
+ * 2) Standalone admin page (pages/admin.html)
  * ============================================
  */
 
-// Admin Authentication Manager
+'use strict';
+
+const AdminUI = {
+    notify(type, message) {
+        if (!message) return;
+        this.ensureToastStyles();
+        let container = document.getElementById('adminToastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'adminToastContainer';
+            container.className = 'admin-toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `admin-toast ${type === 'error' ? 'error' : 'success'}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+
+        window.setTimeout(() => {
+            toast.classList.add('hide');
+            window.setTimeout(() => toast.remove(), 250);
+        }, 2600);
+    },
+
+    ensureToastStyles() {
+        if (document.getElementById('adminToastStyles')) return;
+        const style = document.createElement('style');
+        style.id = 'adminToastStyles';
+        style.textContent = `
+            .admin-toast-container {
+                position: fixed;
+                top: 18px;
+                right: 18px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                z-index: 9999;
+                pointer-events: none;
+            }
+            .admin-toast {
+                padding: 10px 12px;
+                border-radius: 8px;
+                font-family: var(--font-mono, monospace);
+                font-size: 0.72rem;
+                letter-spacing: 0.06em;
+                border: 1px solid transparent;
+                backdrop-filter: blur(8px);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .admin-toast.success {
+                color: #98ffe0;
+                background: rgba(17, 74, 66, 0.84);
+                border-color: rgba(85, 219, 197, 0.4);
+            }
+            .admin-toast.error {
+                color: #ffd2df;
+                background: rgba(110, 27, 50, 0.84);
+                border-color: rgba(255, 102, 153, 0.45);
+            }
+            .admin-toast.hide {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+        `;
+        document.head.appendChild(style);
+    },
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = String(text ?? '');
+        return div.innerHTML;
+    },
+
+    isValidHttpUrl(url) {
+        if (!url) return true;
+        try {
+            const parsed = new URL(url);
+            return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch (error) {
+            return false;
+        }
+    },
+
+    normalizeProjectStatus(raw) {
+        const value = String(raw || 'Completed').trim().toLowerCase();
+        const map = {
+            completed: 'Completed',
+            active: 'Active',
+            research: 'Research',
+            planning: 'Planning'
+        };
+        return map[value] || 'Completed';
+    },
+
+    toTechArray(raw) {
+        return String(raw || '')
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean);
+    }
+};
+
 class AdminAuth {
     constructor() {
-        // Elements from projects-certificates.html
         this.adminModal = document.getElementById('adminModal');
-        this.adminLoginBtn = document.getElementById('adminLoginBtn');
-        this.closeAdminModal = document.getElementById('closeAdminModal');
-        this.adminLoginForm = document.getElementById('adminLoginForm');
-        this.adminPanel = document.getElementById('adminPanel');
+        this.loginScreen = document.getElementById('loginScreen');
+        this.adminDashboard = document.getElementById('adminDashboard');
+        this.embeddedMode = Boolean(this.adminModal);
+        this.standaloneMode = Boolean(this.loginScreen && this.adminDashboard);
+
+        this.openBtn = document.getElementById('adminLoginBtn');
+        this.closeBtn = document.getElementById('closeAdminModal');
+        this.loginBlock = document.getElementById('adminLoginForm') || this.loginScreen;
+        this.panelBlock = document.getElementById('adminPanel') || this.adminDashboard;
         this.loginForm = document.getElementById('loginForm');
-        this.adminEmail = document.getElementById('adminEmail');
-        this.adminPassword = document.getElementById('adminPassword');
-        this.adminError = document.getElementById('adminError');
-        this.adminUserEmail = document.getElementById('adminUserEmail');
-        this.adminLogoutBtn = document.getElementById('adminLogoutBtn');
-        
-        if (!this.adminLoginBtn || !this.adminModal || !this.loginForm) {
-            console.error('❌ Admin: Required elements not found');
-            return;
-        }
-        
-        this.init();
+        this.emailInput = document.getElementById('adminEmail') || document.getElementById('email');
+        this.passwordInput = document.getElementById('adminPassword') || document.getElementById('password');
+        this.errorBox = document.getElementById('adminError') || document.getElementById('authError');
+        this.userEmail = document.getElementById('adminUserEmail');
+        this.logoutBtn = document.getElementById('adminLogoutBtn') || document.getElementById('logoutBtn');
+        this.submitBtn = this.loginForm?.querySelector('button[type="submit"]');
+        this.submitLabel = this.submitBtn?.querySelector('span');
+        this.defaultSubmitLabel = this.submitLabel?.textContent || 'LOGIN';
     }
 
     init() {
-        // Auth state listener
+        if (!this.loginForm || !this.emailInput || !this.passwordInput) return;
+
+        // Fallback: if Firebase doesn't fire within 6s, show login
+        const authTimeout = window.setTimeout(() => {
+            this.resolveLoader();
+            this.showLogin();
+        }, 6000);
+
         auth.onAuthStateChanged((user) => {
+            window.clearTimeout(authTimeout);
+            this.resolveLoader();
             if (user) {
-                this.showAdminPanel(user);
+                this.showPanel(user);
             } else {
-                this.showLoginForm();
+                this.showLogin();
             }
         });
 
-        // Open admin modal
-        this.adminLoginBtn.addEventListener('click', () => {
-            this.adminModal.style.display = 'flex';
-        });
-
-        // Close admin modal
-        if (this.closeAdminModal) {
-            this.closeAdminModal.addEventListener('click', () => {
-                this.adminModal.style.display = 'none';
+        if (this.openBtn && this.embeddedMode) {
+            this.openBtn.addEventListener('click', () => {
+                this.adminModal.style.display = 'flex';
             });
         }
 
-        // Close modal when clicking outside
-        this.adminModal.addEventListener('click', (e) => {
-            if (e.target === this.adminModal) {
-                this.adminModal.style.display = 'none';
-            }
-        });
+        if (this.closeBtn && this.embeddedMode) {
+            this.closeBtn.addEventListener('click', () => this.hideModal());
+        }
 
-        // Login form submission
-        this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        if (this.adminModal) {
+            this.adminModal.addEventListener('click', (event) => {
+                if (event.target === this.adminModal) this.hideModal();
+            });
+        }
 
-        // Logout button
-        if (this.adminLogoutBtn) {
-            this.adminLogoutBtn.addEventListener('click', () => this.handleLogout());
+        this.loginForm.addEventListener('submit', (event) => this.handleLogin(event));
+        this.logoutBtn?.addEventListener('click', () => this.handleLogout());
+    }
+
+    resolveLoader() {
+        // Reveal body and hide the auth loader overlay
+        document.body.style.visibility = 'visible';
+        const loader = document.getElementById('authLoader');
+        if (loader) loader.classList.add('resolved');
+    }
+
+    setSubmitting(isSubmitting) {
+        if (!this.submitBtn) return;
+        this.submitBtn.disabled = isSubmitting;
+        if (this.submitLabel) {
+            this.submitLabel.textContent = isSubmitting ? 'AUTHENTICATING...' : this.defaultSubmitLabel;
         }
     }
 
-    async handleLogin(e) {
-        e.preventDefault();
-        
-        if (!this.adminEmail || !this.adminPassword) return;
-        
-        const email = this.adminEmail.value.trim();
-        const password = this.adminPassword.value.trim();
+    showError(message) {
+        if (!this.errorBox) return;
+        this.errorBox.textContent = message || '';
+        this.errorBox.style.display = message ? 'block' : 'none';
+    }
+
+    getAuthError(code) {
+        const map = {
+            'auth/invalid-email': 'Invalid email address.',
+            'auth/user-disabled': 'This account is disabled.',
+            'auth/user-not-found': 'No account found for this email.',
+            'auth/wrong-password': 'Incorrect password.',
+            'auth/invalid-credential': 'Invalid email or password.',
+            'auth/too-many-requests': 'Too many attempts. Try again later.'
+        };
+        return map[code] || 'Authentication failed. Please try again.';
+    }
+
+    async handleLogin(event) {
+        event.preventDefault();
+        const email = this.emailInput.value.trim();
+        const password = this.passwordInput.value.trim();
+
+        if (!email || !password) {
+            this.showError('Email and password are required.');
+            return;
+        }
+
+        this.setSubmitting(true);
+        this.showError('');
 
         try {
-            this.showError('');
             await auth.signInWithEmailAndPassword(email, password);
+            AdminUI.notify('success', 'Signed in successfully.');
         } catch (error) {
-            console.error('Login error:', error);
-            this.showError(this.getErrorMessage(error.code));
+            console.error('Admin login failed:', error);
+            this.showError(this.getAuthError(error.code));
+        } finally {
+            this.setSubmitting(false);
         }
     }
 
     async handleLogout() {
         try {
             await auth.signOut();
-            this.adminModal.style.display = 'none';
+            AdminUI.notify('success', 'Logged out.');
+            this.hideModal();
         } catch (error) {
-            console.error('Logout error:', error);
-            alert('Failed to logout. Please try again.');
+            console.error('Admin logout failed:', error);
+            AdminUI.notify('error', 'Logout failed. Try again.');
         }
     }
 
-    showLoginForm() {
-        if (this.adminLoginForm) this.adminLoginForm.style.display = 'block';
-        if (this.adminPanel) this.adminPanel.style.display = 'none';
+    showLogin() {
+        if (this.loginBlock) this.loginBlock.style.display = this.standaloneMode ? 'flex' : 'block';
+        if (this.panelBlock) this.panelBlock.style.display = 'none';
+        if (this.standaloneMode && this.loginScreen) this.loginScreen.style.display = 'flex';
+        if (this.standaloneMode && this.adminDashboard) this.adminDashboard.style.display = 'none';
+        // Focus email input for keyboard users
+        window.setTimeout(() => this.emailInput?.focus(), 50);
     }
 
-    showAdminPanel(user) {
-        if (this.adminLoginForm) this.adminLoginForm.style.display = 'none';
-        if (this.adminPanel) this.adminPanel.style.display = 'block';
-        if (this.adminUserEmail) this.adminUserEmail.textContent = user.email;
-        
-        // Clear login form
-        if (this.adminEmail) this.adminEmail.value = '';
-        if (this.adminPassword) this.adminPassword.value = '';
+    showPanel(user) {
+        if (this.loginBlock) this.loginBlock.style.display = 'none';
+        if (this.panelBlock) this.panelBlock.style.display = 'block';
+        if (this.userEmail) this.userEmail.textContent = user.email || '';
+        if (this.standaloneMode && this.loginScreen) this.loginScreen.style.display = 'none';
+        if (this.standaloneMode && this.adminDashboard) this.adminDashboard.style.display = 'block';
+
+        this.emailInput.value = '';
+        this.passwordInput.value = '';
         this.showError('');
     }
 
-    showError(message) {
-        if (this.adminError) {
-            this.adminError.textContent = message;
-            this.adminError.style.display = message ? 'block' : 'none';
-            if (message) {
-                this.adminError.classList.add('active');
-            } else {
-                this.adminError.classList.remove('active');
-            }
+    hideModal() {
+        if (this.embeddedMode && this.adminModal) {
+            this.adminModal.style.display = 'none';
         }
-    }
-
-    getErrorMessage(code) {
-        const messages = {
-            'auth/invalid-email': 'Invalid email address',
-            'auth/user-disabled': 'This account has been disabled',
-            'auth/user-not-found': 'No account found with this email',
-            'auth/wrong-password': 'Incorrect password',
-            'auth/invalid-credential': 'Invalid email or password',
-            'auth/too-many-requests': 'Too many failed attempts. Please try again later.'
-        };
-        return messages[code] || 'Authentication failed. Please try again.';
     }
 }
 
-// Admin Tab Manager
 class AdminTabs {
     constructor() {
-        this.tabs = document.querySelectorAll('.admin-tab');
-        this.tabContents = document.querySelectorAll('.admin-tab-content');
-        this.init();
+        this.tabs = document.querySelectorAll('.admin-tab, .tab-btn');
+        this.contents = document.querySelectorAll('.admin-tab-content, .tab-content');
     }
 
     init() {
-        this.tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetTab = tab.dataset.tab;
-                this.switchTab(targetTab);
-            });
+        if (!this.tabs.length || !this.contents.length) return;
+        this.tabs.forEach((tab) => {
+            tab.addEventListener('click', () => this.switchTab(tab.dataset.tab || 'projects'));
         });
     }
 
-    switchTab(tabName) {
-        // Update tab buttons
-        this.tabs.forEach(tab => {
-            tab.classList.toggle('active', tab.dataset.tab === tabName);
-        });
-
-        // Update tab content
-        this.tabContents.forEach(content => {
-            content.classList.toggle('active', content.id === `${tabName}Tab`);
-        });
+    switchTab(name) {
+        this.tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === name));
+        this.contents.forEach((content) => content.classList.toggle('active', content.id === `${name}Tab`));
     }
 }
 
-// Projects Admin Manager
 class ProjectsAdmin {
     constructor() {
-        // Using the admin-list inside projectsTab
-        this.projectsList = document.querySelector('#projectsTab .admin-list');
+        this.projectsList = document.querySelector('#projectsTab .admin-list') || document.getElementById('projectsList');
+        this.projectsCount = document.getElementById('projectsCount');
         this.addBtn = document.getElementById('addProjectBtn');
-        this.modal = document.getElementById('editProjectModal');
+        this.modal = document.getElementById('editProjectModal') || document.getElementById('projectModal');
         this.form = document.getElementById('projectForm');
+        this.modalTitle = document.getElementById('projectModalTitle');
         this.closeBtn = document.getElementById('closeProjectModal');
         this.cancelBtn = document.getElementById('cancelProjectBtn');
-        this.modalTitle = document.getElementById('projectModalTitle');
+        this.formMessage = document.getElementById('projectFormMessage');
+        this.saveBtn = this.form?.querySelector('button[type="submit"]');
+        this.saveLabel = this.saveBtn?.querySelector('span');
+        this.defaultSaveLabel = this.saveLabel?.textContent || this.saveBtn?.textContent || 'Save Project';
         this.currentProjectId = null;
-        
-        if (!this.projectsList || !this.addBtn || !this.modal || !this.form) {
-            console.error('❌ Projects Admin: Required elements not found');
-            console.log('projectsList:', this.projectsList);
-            console.log('addBtn:', this.addBtn);
-            console.log('modal:', this.modal);
-            console.log('form:', this.form);
-            return;
-        }
-        
-        this.init();
     }
 
     init() {
+        if (!this.projectsList || !this.addBtn || !this.modal || !this.form) return;
+
         this.loadProjects();
-        
         this.addBtn.addEventListener('click', () => this.openAddModal());
-        
-        if (this.closeBtn) {
-            this.closeBtn.addEventListener('click', () => this.closeModal());
-        }
-        
-        if (this.cancelBtn) {
-            this.cancelBtn.addEventListener('click', () => this.closeModal());
-        }
-        
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-        
-        this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) this.closeModal();
+        this.closeBtn?.addEventListener('click', () => this.closeModal());
+        this.cancelBtn?.addEventListener('click', () => this.closeModal());
+        this.form.addEventListener('submit', (event) => this.handleSubmit(event));
+        this.modal.addEventListener('click', (event) => {
+            if (event.target === this.modal) this.closeModal();
         });
+
+        this.projectsList.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-action]');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const projectId = button.dataset.id;
+            if (!projectId) return;
+
+            if (action === 'edit') {
+                this.openEditModal(projectId);
+            } else if (action === 'delete') {
+                const title = button.dataset.title || 'this project';
+                this.deleteProject(projectId, title);
+            }
+        });
+    }
+
+    getField(...ids) {
+        for (const id of ids) {
+            const element = document.getElementById(id);
+            if (element) return element;
+        }
+        return null;
+    }
+
+    setField(value, ...ids) {
+        const field = this.getField(...ids);
+        if (field) field.value = value ?? '';
+    }
+
+    setSaving(isSaving) {
+        if (!this.saveBtn) return;
+        this.saveBtn.disabled = isSaving;
+        if (this.saveLabel) {
+            this.saveLabel.textContent = isSaving ? 'SAVING...' : this.defaultSaveLabel;
+        }
+    }
+
+    showFormMessage(type, message) {
+        if (this.formMessage) {
+            this.formMessage.className = `form-message ${type}`;
+            this.formMessage.textContent = message;
+            this.formMessage.style.display = 'block';
+            return;
+        }
+        AdminUI.notify(type, message);
+    }
+
+    clearFormMessage() {
+        if (!this.formMessage) return;
+        this.formMessage.className = 'form-message';
+        this.formMessage.textContent = '';
+        this.formMessage.style.display = 'none';
+    }
+
+    openModal() {
+        this.modal.style.display = 'flex';
+        this.modal.classList.add('open', 'active');
+    }
+
+    closeModal() {
+        this.modal.style.display = 'none';
+        this.modal.classList.remove('open', 'active');
+        this.form.reset();
+        this.currentProjectId = null;
+        this.clearFormMessage();
     }
 
     loadProjects() {
@@ -215,95 +391,69 @@ class ProjectsAdmin {
             .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const projects = [];
-                snapshot.forEach((doc) => {
-                    projects.push({ id: doc.id, ...doc.data() });
-                });
+                snapshot.forEach((doc) => projects.push({ id: doc.id, ...doc.data() }));
                 this.renderProjects(projects);
             }, (error) => {
-                console.error('Error loading projects:', error);
-                this.showError();
+                console.error('Failed loading projects:', error);
+                if (this.projectsCount) this.projectsCount.textContent = '-';
+                this.projectsList.innerHTML = `
+                    <div class="admin-error-state">
+                        <p>Failed to load projects.</p>
+                    </div>
+                `;
             });
     }
 
     renderProjects(projects) {
-        if (!this.projectsList) return;
-        
-        if (projects.length === 0) {
+        if (this.projectsCount) this.projectsCount.textContent = String(projects.length);
+
+        if (!projects.length) {
             this.projectsList.innerHTML = `
                 <div class="admin-empty-state">
-                    <p>No projects yet. Click "Add Project" to create one.</p>
+                    <p>No projects yet. Add your first project.</p>
                 </div>
             `;
             return;
         }
 
-        this.projectsList.innerHTML = projects.map(project => `
-            <div class="admin-item" data-project-id="${project.id}">
-                <div class="admin-item-info">
-                    <h4>${this.escapeHtml(project.title)}</h4>
-                    <p>${this.escapeHtml(project.description)}</p>
-                    <div class="admin-item-meta">
-                        <span class="meta-tag">${project.status}</span>
-                        <span class="meta-tag">${project.technologies.slice(0, 2).join(', ')}</span>
+        this.projectsList.innerHTML = projects.map((project) => {
+            const title = AdminUI.escapeHtml(project.title || 'Untitled Project');
+            const description = AdminUI.escapeHtml(project.description || '');
+            const status = AdminUI.escapeHtml(AdminUI.normalizeProjectStatus(project.status));
+            const technologies = Array.isArray(project.technologies) ? project.technologies.slice(0, 3) : [];
+
+            return `
+                <div class="admin-list-item admin-item" data-project-id="${project.id}">
+                    <div class="admin-item-info">
+                        <div class="admin-item-name">${title}</div>
+                        <p>${description}</p>
+                        <div class="admin-item-meta">
+                            <span class="meta-tag">${status}</span>
+                            ${technologies.map((tech) => `<span class="meta-tag">${AdminUI.escapeHtml(tech)}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="admin-item-actions">
+                        <button class="admin-edit-btn" data-action="edit" data-id="${project.id}" type="button">Edit</button>
+                        <button class="admin-del-btn admin-delete-btn" data-action="delete" data-id="${project.id}" data-title="${title}" type="button">Delete</button>
                     </div>
                 </div>
-                <div class="admin-item-actions">
-                    <button class="edit-item-btn" data-action="edit" data-id="${project.id}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                    </button>
-                    <button class="delete-item-btn" data-action="delete" data-id="${project.id}" data-title="${this.escapeHtml(project.title)}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `).join('');
-        
-        // Add event listeners
-        this.attachButtonListeners();
-    }
-
-    attachButtonListeners() {
-        // Edit buttons
-        document.querySelectorAll('#projectsTab .edit-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const projectId = btn.dataset.id;
-                this.openEditModal(projectId);
-            });
-        });
-
-        // Delete buttons
-        document.querySelectorAll('#projectsTab .delete-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const projectId = btn.dataset.id;
-                const projectTitle = btn.dataset.title;
-                this.deleteProject(projectId, projectTitle);
-            });
-        });
+            `;
+        }).join('');
     }
 
     openAddModal() {
         this.currentProjectId = null;
         if (this.modalTitle) this.modalTitle.textContent = 'Add New Project';
         this.form.reset();
-        this.modal.style.display = 'flex';
-        this.modal.classList.add('active');
+        this.clearFormMessage();
+        this.openModal();
     }
 
     async openEditModal(projectId) {
         try {
             const doc = await db.collection(COLLECTIONS.PROJECTS).doc(projectId).get();
             if (!doc.exists) {
-                alert('Project not found');
+                AdminUI.notify('error', 'Project not found.');
                 return;
             }
 
@@ -311,153 +461,261 @@ class ProjectsAdmin {
             this.currentProjectId = projectId;
 
             if (this.modalTitle) this.modalTitle.textContent = 'Edit Project';
-            
-            // Set form values - using IDs from projects-certificates.html
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val || '';
-            };
-            
-            setVal('projectTitle', project.title);
-            setVal('projectDescription', project.description);
-            setVal('projectStatus', project.status);
-            setVal('projectTechnologies', project.technologies.join(', '));
-            setVal('projectLink', project.link);
-            setVal('projectIcon', project.icon);
+            this.setField(project.title, 'projectTitle');
+            this.setField(project.description, 'projectDescription');
+            const statusField = this.getField('projectStatus');
+            if (statusField) {
+                const normalizedStatus = AdminUI.normalizeProjectStatus(project.status);
+                const statusOption = [...statusField.options].find((opt) => {
+                    return (
+                        opt.value.toLowerCase() === normalizedStatus.toLowerCase() ||
+                        opt.text.toLowerCase() === normalizedStatus.toLowerCase()
+                    );
+                });
+                statusField.value = statusOption ? statusOption.value : normalizedStatus;
+            }
+            this.setField(
+                Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
+                'projectTechnologies',
+                'projectTech'
+            );
+            this.setField(project.link || '', 'projectLink');
+            this.setField(project.icon || 'default', 'projectIcon');
+            this.setField(project.category || 'general', 'projectCategory');
+            if (typeof project.order === 'number') this.setField(project.order, 'projectOrder');
 
-            this.modal.style.display = 'flex';
-            this.modal.classList.add('active');
+            this.clearFormMessage();
+            this.openModal();
         } catch (error) {
-            console.error('Error loading project:', error);
-            alert('Failed to load project');
+            console.error('Failed loading project:', error);
+            AdminUI.notify('error', 'Failed to load project.');
         }
     }
 
-    closeModal() {
-        this.modal.style.display = 'none';
-        this.modal.classList.remove('active');
-        this.form.reset();
-        this.currentProjectId = null;
-    }
+    async handleSubmit(event) {
+        event.preventDefault();
+        this.clearFormMessage();
 
-    async handleSubmit(e) {
-        e.preventDefault();
+        const title = (this.getField('projectTitle')?.value || '').trim();
+        const description = (this.getField('projectDescription')?.value || '').trim();
+        const statusRaw = (this.getField('projectStatus')?.value || '').trim();
+        const technologiesRaw = (this.getField('projectTechnologies', 'projectTech')?.value || '').trim();
+        const link = (this.getField('projectLink')?.value || '').trim();
+        const icon = (this.getField('projectIcon')?.value || 'default').trim();
+        const category = (this.getField('projectCategory')?.value || 'general').trim();
+        const explicitOrder = Number(this.getField('projectOrder')?.value || '');
 
-        const getVal = (id) => {
-            const el = document.getElementById(id);
-            return el ? el.value.trim() : '';
-        };
+        if (!title || !description) {
+            this.showFormMessage('error', 'Title and description are required.');
+            return;
+        }
+
+        const technologies = AdminUI.toTechArray(technologiesRaw);
+        if (!technologies.length) {
+            this.showFormMessage('error', 'Please provide at least one technology.');
+            return;
+        }
+
+        if (link && !AdminUI.isValidHttpUrl(link)) {
+            this.showFormMessage('error', 'Project link must be a valid http/https URL.');
+            return;
+        }
+
+        this.setSaving(true);
 
         const projectData = {
-            title: getVal('projectTitle'),
-            description: getVal('projectDescription'),
-            status: getVal('projectStatus'),
-            technologies: getVal('projectTechnologies')
-                .split(',')
-                .map(tech => tech.trim())
-                .filter(tech => tech.length > 0),
-            link: getVal('projectLink') || null,
-            icon: getVal('projectIcon') || 'default',
-            category: 'general',
+            title,
+            description,
+            status: AdminUI.normalizeProjectStatus(statusRaw),
+            technologies,
+            link: link || null,
+            icon: icon || 'default',
+            category: category || 'general',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        // Set order for new projects only
-        if (!this.currentProjectId) {
-            const snapshot = await db.collection(COLLECTIONS.PROJECTS).get();
-            projectData.order = snapshot.size + 1;
-        }
-
         try {
             if (this.currentProjectId) {
+                if (Number.isFinite(explicitOrder) && explicitOrder > 0) {
+                    projectData.order = explicitOrder;
+                }
                 await db.collection(COLLECTIONS.PROJECTS).doc(this.currentProjectId).update(projectData);
-                console.log('✅ Project updated');
+                this.showFormMessage('success', 'Project updated successfully.');
+                AdminUI.notify('success', 'Project updated.');
             } else {
+                if (Number.isFinite(explicitOrder) && explicitOrder > 0) {
+                    projectData.order = explicitOrder;
+                } else {
+                    const snapshot = await db.collection(COLLECTIONS.PROJECTS).get();
+                    projectData.order = snapshot.size + 1;
+                }
                 projectData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                 await db.collection(COLLECTIONS.PROJECTS).add(projectData);
-                console.log('✅ Project added');
+                this.showFormMessage('success', 'Project added successfully.');
+                AdminUI.notify('success', 'Project created.');
             }
 
-            this.closeModal();
+            window.setTimeout(() => this.closeModal(), 250);
         } catch (error) {
-            console.error('Error saving project:', error);
-            alert('Failed to save project. Please try again.');
+            console.error('Failed saving project:', error);
+            this.showFormMessage('error', 'Failed to save project. Please try again.');
+        } finally {
+            this.setSaving(false);
         }
     }
 
     async deleteProject(projectId, projectTitle) {
-        if (!confirm(`Are you sure you want to delete "${projectTitle}"?\n\nThis action cannot be undone.`)) {
-            return;
-        }
+        const confirmed = window.confirm(`Delete "${projectTitle}"? This action cannot be undone.`);
+        if (!confirmed) return;
 
         try {
             await db.collection(COLLECTIONS.PROJECTS).doc(projectId).delete();
-            console.log('✅ Project deleted');
+            AdminUI.notify('success', 'Project deleted.');
         } catch (error) {
-            console.error('Error deleting project:', error);
-            alert('Failed to delete project');
+            console.error('Failed deleting project:', error);
+            AdminUI.notify('error', 'Failed to delete project.');
         }
-    }
-
-    showError() {
-        if (this.projectsList) {
-            this.projectsList.innerHTML = `
-                <div class="admin-error-state">
-                    <p>Failed to load projects. Please refresh the page.</p>
-                </div>
-            `;
-        }
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 }
 
-// Certificates Admin Manager
 class CertificatesAdmin {
     constructor() {
-        this.certsList = document.querySelector('#certificatesTab .admin-list');
-        this.addBtn = document.getElementById('addCertificateBtn');
-        this.modal = document.getElementById('editCertificateModal');
-        this.form = document.getElementById('certificateForm');
-        this.closeBtn = document.getElementById('closeCertificateModal');
-        this.cancelBtn = document.getElementById('cancelCertificateBtn');
-        this.modalTitle = document.getElementById('certificateModalTitle');
+        this.certsList = document.querySelector('#certificatesTab .admin-list') || document.getElementById('certificatesList');
+        this.certsCount = document.getElementById('certificatesCount');
+        this.addBtn = document.getElementById('addCertificateBtn') || document.getElementById('addCertBtn');
+        this.modal = document.getElementById('editCertificateModal') || document.getElementById('certModal');
+        this.form = document.getElementById('certificateForm') || document.getElementById('certForm');
+        this.modalTitle = document.getElementById('certificateModalTitle') || document.getElementById('certModalTitle');
+        this.closeBtn = document.getElementById('closeCertificateModal') || document.getElementById('closeCertModal');
+        this.cancelBtn = document.getElementById('cancelCertificateBtn') || document.getElementById('cancelCertBtn');
+        this.formMessage = document.getElementById('certFormMessage');
+        this.saveBtn = this.form?.querySelector('button[type="submit"]');
+        this.saveLabel = this.saveBtn?.querySelector('span');
+        this.defaultSaveLabel = this.saveLabel?.textContent || this.saveBtn?.textContent || 'Save Certificate';
         this.currentCertId = null;
-        
-        if (!this.certsList || !this.addBtn || !this.modal || !this.form) {
-            console.error('❌ Certificates Admin: Required elements not found');
-            console.log('certsList:', this.certsList);
-            console.log('addBtn:', this.addBtn);
-            console.log('modal:', this.modal);
-            console.log('form:', this.form);
-            return;
-        }
-        
-        this.init();
+        this.previewBox = document.getElementById('certPreviewBox');
+        this.previewImage = document.getElementById('certImagePreview');
+        this.previewHint = document.getElementById('certPreviewHint');
     }
 
     init() {
+        if (!this.certsList || !this.addBtn || !this.modal || !this.form) return;
+
         this.loadCertificates();
-        
         this.addBtn.addEventListener('click', () => this.openAddModal());
-        
-        if (this.closeBtn) {
-            this.closeBtn.addEventListener('click', () => this.closeModal());
-        }
-        
-        if (this.cancelBtn) {
-            this.cancelBtn.addEventListener('click', () => this.closeModal());
-        }
-        
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-        
-        this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) this.closeModal();
+        this.closeBtn?.addEventListener('click', () => this.closeModal());
+        this.cancelBtn?.addEventListener('click', () => this.closeModal());
+        this.form.addEventListener('submit', (event) => this.handleSubmit(event));
+        this.getField('certificateImageUrl', 'certImage')?.addEventListener('input', (event) => {
+            this.updateImagePreview(event.target.value);
         });
+        this.modal.addEventListener('click', (event) => {
+            if (event.target === this.modal) this.closeModal();
+        });
+
+        this.certsList.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-action]');
+            if (!button) return;
+            const certId = button.dataset.id;
+            if (!certId) return;
+            if (button.dataset.action === 'edit') {
+                this.openEditModal(certId);
+            } else if (button.dataset.action === 'delete') {
+                const title = button.dataset.title || 'this certificate';
+                this.deleteCertificate(certId, title);
+            }
+        });
+    }
+
+    getField(...ids) {
+        for (const id of ids) {
+            const element = document.getElementById(id);
+            if (element) return element;
+        }
+        return null;
+    }
+
+    setField(value, ...ids) {
+        const field = this.getField(...ids);
+        if (field) field.value = value ?? '';
+    }
+
+    setSaving(isSaving) {
+        if (!this.saveBtn) return;
+        this.saveBtn.disabled = isSaving;
+        if (this.saveLabel) {
+            this.saveLabel.textContent = isSaving ? 'SAVING...' : this.defaultSaveLabel;
+        }
+    }
+
+    showFormMessage(type, message) {
+        if (this.formMessage) {
+            this.formMessage.className = `form-message ${type}`;
+            this.formMessage.textContent = message;
+            this.formMessage.style.display = 'block';
+            return;
+        }
+        AdminUI.notify(type, message);
+    }
+
+    clearFormMessage() {
+        if (!this.formMessage) return;
+        this.formMessage.className = 'form-message';
+        this.formMessage.textContent = '';
+        this.formMessage.style.display = 'none';
+    }
+
+    openModal() {
+        this.modal.style.display = 'flex';
+        this.modal.classList.add('open', 'active');
+    }
+
+    closeModal() {
+        this.modal.style.display = 'none';
+        this.modal.classList.remove('open', 'active');
+        this.form.reset();
+        this.currentCertId = null;
+        this.clearFormMessage();
+        this.resetImagePreview();
+    }
+
+    normalizeCertificateImagePath(imagePath) {
+        if (window.PortfolioUtils?.normalizeCertificateImagePath) {
+            return window.PortfolioUtils.normalizeCertificateImagePath(imagePath);
+        }
+        return String(imagePath || '').trim();
+    }
+
+    resetImagePreview() {
+        if (this.previewBox) this.previewBox.classList.remove('has-image');
+        if (this.previewImage) {
+            this.previewImage.removeAttribute('src');
+        }
+        if (this.previewHint) {
+            this.previewHint.textContent = 'Enter a valid image path or URL to preview.';
+        }
+    }
+
+    updateImagePreview(rawPath) {
+        if (!this.previewBox || !this.previewImage || !this.previewHint) return;
+
+        const normalizedPath = this.normalizeCertificateImagePath(rawPath);
+        if (!normalizedPath) {
+            this.resetImagePreview();
+            return;
+        }
+
+        this.previewImage.onload = () => {
+            this.previewBox.classList.add('has-image');
+        };
+
+        this.previewImage.onerror = () => {
+            this.previewBox.classList.remove('has-image');
+            this.previewImage.removeAttribute('src');
+            this.previewHint.textContent = 'Unable to load preview for this path.';
+        };
+
+        this.previewImage.src = normalizedPath;
     }
 
     loadCertificates() {
@@ -465,250 +723,178 @@ class CertificatesAdmin {
             .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const certs = [];
-                snapshot.forEach((doc) => {
-                    certs.push({ id: doc.id, ...doc.data() });
-                });
+                snapshot.forEach((doc) => certs.push({ id: doc.id, ...doc.data() }));
                 this.renderCertificates(certs);
             }, (error) => {
-                console.error('Error loading certificates:', error);
-                this.showError();
+                console.error('Failed loading certificates:', error);
+                if (this.certsCount) this.certsCount.textContent = '-';
+                this.certsList.innerHTML = `
+                    <div class="admin-error-state">
+                        <p>Failed to load certificates.</p>
+                    </div>
+                `;
             });
     }
 
     renderCertificates(certs) {
-        if (!this.certsList) return;
-        
-        if (certs.length === 0) {
+        if (this.certsCount) this.certsCount.textContent = String(certs.length);
+
+        if (!certs.length) {
             this.certsList.innerHTML = `
                 <div class="admin-empty-state">
-                    <p>No certificates yet. Click "Add Certificate" to create one.</p>
+                    <p>No certificates yet. Add your first certificate.</p>
                 </div>
             `;
             return;
         }
 
-        this.certsList.innerHTML = certs.map(cert => `
-            <div class="admin-item" data-cert-id="${cert.id}">
-                <div class="admin-item-info">
-                    <h4 class="admin-item-title">${this.escapeHtml(cert.title)}</h4>
-                    <p class="admin-item-meta">${this.escapeHtml(cert.issuer)}</p>
-                    ${(cert.date || cert.issueDate) ? `<p class="admin-item-meta">${this.escapeHtml(cert.date || cert.issueDate)}</p>` : ''}
-                </div>
-                <div class="admin-item-actions">
-                    <button class="edit-item-btn" data-action="edit" data-id="${cert.id}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                    </button>
-                    <button class="delete-item-btn" data-action="delete" data-id="${cert.id}" data-title="${this.escapeHtml(cert.title)}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `).join('');
-        
-        // Add event listeners
-        this.attachButtonListeners();
-    }
+        this.certsList.innerHTML = certs.map((cert) => {
+            const title = AdminUI.escapeHtml(cert.title || 'Untitled Certificate');
+            const issuer = AdminUI.escapeHtml(cert.issuer || 'Unknown Issuer');
+            const date = AdminUI.escapeHtml(cert.date || cert.issueDate || '');
 
-    attachButtonListeners() {
-        // Edit buttons
-        document.querySelectorAll('#certificatesTab .edit-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const certId = btn.dataset.id;
-                this.openEditModal(certId);
-            });
-        });
-
-        // Delete buttons
-        document.querySelectorAll('#certificatesTab .delete-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const certId = btn.dataset.id;
-                const certTitle = btn.dataset.title;
-                this.deleteCertificate(certId, certTitle);
-            });
-        });
+            return `
+                <div class="admin-list-item admin-item" data-cert-id="${cert.id}">
+                    <div class="admin-item-info">
+                        <div class="admin-item-name">${title}</div>
+                        <p>${issuer}</p>
+                        ${date ? `<p>${date}</p>` : ''}
+                    </div>
+                    <div class="admin-item-actions">
+                        <button class="admin-edit-btn" data-action="edit" data-id="${cert.id}" type="button">Edit</button>
+                        <button class="admin-del-btn admin-delete-btn" data-action="delete" data-id="${cert.id}" data-title="${title}" type="button">Delete</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     openAddModal() {
         this.currentCertId = null;
         if (this.modalTitle) this.modalTitle.textContent = 'Add New Certificate';
         this.form.reset();
-        this.modal.style.display = 'flex';
-        this.modal.classList.add('active');
+        this.clearFormMessage();
+        this.resetImagePreview();
+        this.openModal();
     }
 
     async openEditModal(certId) {
         try {
             const doc = await db.collection(COLLECTIONS.CERTIFICATES).doc(certId).get();
             if (!doc.exists) {
-                alert('Certificate not found');
+                AdminUI.notify('error', 'Certificate not found.');
                 return;
             }
 
             const cert = doc.data();
             this.currentCertId = certId;
-
             if (this.modalTitle) this.modalTitle.textContent = 'Edit Certificate';
-            
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val || '';
-            };
-            
-            setVal('certificateTitle', cert.title);
-            setVal('certificateIssuer', cert.issuer);
-            setVal('certificateDate', cert.date || cert.issueDate);
-            setVal('certificateImageUrl', cert.imageUrl);
 
-            this.modal.style.display = 'flex';
-            this.modal.classList.add('active');
+            this.setField(cert.title, 'certificateTitle', 'certTitle');
+            this.setField(cert.issuer, 'certificateIssuer', 'certIssuer');
+            this.setField(cert.date || cert.issueDate || '', 'certificateDate', 'certDate');
+            this.setField(cert.imageUrl, 'certificateImageUrl', 'certImage');
+            if (typeof cert.order === 'number') this.setField(cert.order, 'certOrder');
+            this.updateImagePreview(cert.imageUrl || '');
+
+            this.clearFormMessage();
+            this.openModal();
         } catch (error) {
-            console.error('Error loading certificate:', error);
-            alert('Failed to load certificate');
+            console.error('Failed loading certificate:', error);
+            AdminUI.notify('error', 'Failed to load certificate.');
         }
     }
 
-    closeModal() {
-        this.modal.style.display = 'none';
-        this.modal.classList.remove('active');
-        this.form.reset();
-        this.currentCertId = null;
-    }
+    async handleSubmit(event) {
+        event.preventDefault();
+        this.clearFormMessage();
 
-    normalizeCertificateImagePath(imagePath) {
-        const trimmed = (imagePath || '').trim();
-        if (!trimmed) return '';
+        const title = (this.getField('certificateTitle', 'certTitle')?.value || '').trim();
+        const issuer = (this.getField('certificateIssuer', 'certIssuer')?.value || '').trim();
+        const date = (this.getField('certificateDate', 'certDate')?.value || '').trim();
+        const imageRaw = (this.getField('certificateImageUrl', 'certImage')?.value || '').trim();
+        const orderValue = Number(this.getField('certOrder')?.value || '');
+        const imageUrl = this.normalizeCertificateImagePath(imageRaw);
 
-        const normalizedPath = trimmed.replace(/\\/g, '/');
-
-        if (/^(?:https?:)?\/\//i.test(normalizedPath) || normalizedPath.startsWith('data:') || normalizedPath.startsWith('blob:')) {
-            return normalizedPath;
-        }
-
-        if (normalizedPath.startsWith('../') || normalizedPath.startsWith('./') || normalizedPath.startsWith('/')) {
-            return normalizedPath;
-        }
-
-        if (normalizedPath.startsWith('assets/')) {
-            return `../${normalizedPath}`;
-        }
-
-        return `../assets/certificates/${normalizedPath}`;
-    }
-
-    async handleSubmit(e) {
-        e.preventDefault();
-
-        const getVal = (id) => {
-            const el = document.getElementById(id);
-            return el ? el.value.trim() : '';
-        };
-
-        const normalizedImagePath = this.normalizeCertificateImagePath(getVal('certificateImageUrl'));
-        if (!normalizedImagePath) {
-            alert('Please provide a certificate image path.');
+        if (!title || !issuer || !imageUrl) {
+            this.showFormMessage('error', 'Title, issuer, and image path are required.');
             return;
         }
 
-        const issuedDate = getVal('certificateDate') || null;
+        this.setSaving(true);
 
         const certData = {
-            title: getVal('certificateTitle'),
-            issuer: getVal('certificateIssuer'),
-            date: issuedDate,
-            issueDate: issuedDate,
-            imageUrl: normalizedImagePath,
+            title,
+            issuer,
+            date: date || null,
+            issueDate: date || null,
+            imageUrl,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        // Set order for new certificates only
-        if (!this.currentCertId) {
-            const snapshot = await db.collection(COLLECTIONS.CERTIFICATES).get();
-            certData.order = snapshot.size + 1;
-        }
-
         try {
             if (this.currentCertId) {
+                if (Number.isFinite(orderValue) && orderValue > 0) {
+                    certData.order = orderValue;
+                }
                 await db.collection(COLLECTIONS.CERTIFICATES).doc(this.currentCertId).update(certData);
-                console.log('✅ Certificate updated');
+                this.showFormMessage('success', 'Certificate updated successfully.');
+                AdminUI.notify('success', 'Certificate updated.');
             } else {
+                if (Number.isFinite(orderValue) && orderValue > 0) {
+                    certData.order = orderValue;
+                } else {
+                    const snapshot = await db.collection(COLLECTIONS.CERTIFICATES).get();
+                    certData.order = snapshot.size + 1;
+                }
                 certData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                 await db.collection(COLLECTIONS.CERTIFICATES).add(certData);
-                console.log('✅ Certificate added');
+                this.showFormMessage('success', 'Certificate added successfully.');
+                AdminUI.notify('success', 'Certificate created.');
             }
 
-            this.closeModal();
+            window.setTimeout(() => this.closeModal(), 250);
         } catch (error) {
-            console.error('Error saving certificate:', error);
-            alert('Failed to save certificate. Please try again.');
+            console.error('Failed saving certificate:', error);
+            this.showFormMessage('error', 'Failed to save certificate. Please try again.');
+        } finally {
+            this.setSaving(false);
         }
     }
 
     async deleteCertificate(certId, certTitle) {
-        if (!confirm(`Are you sure you want to delete "${certTitle}"?\n\nThis action cannot be undone.`)) {
-            return;
-        }
+        const confirmed = window.confirm(`Delete "${certTitle}"? This action cannot be undone.`);
+        if (!confirmed) return;
 
         try {
             await db.collection(COLLECTIONS.CERTIFICATES).doc(certId).delete();
-            console.log('✅ Certificate deleted');
+            AdminUI.notify('success', 'Certificate deleted.');
         } catch (error) {
-            console.error('Error deleting certificate:', error);
-            alert('Failed to delete certificate');
+            console.error('Failed deleting certificate:', error);
+            AdminUI.notify('error', 'Failed to delete certificate.');
         }
-    }
-
-    showError() {
-        if (this.certsList) {
-            this.certsList.innerHTML = `
-                <div class="admin-error-state">
-                    <p>Failed to load certificates. Please refresh the page.</p>
-                </div>
-            `;
-        }
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 }
 
-// Initialize admin functionality
-let adminAuth, adminTabs, projectsAdmin, certificatesAdmin;
+function bootstrapAdmin() {
+    if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
+        window.setTimeout(bootstrapAdmin, 250);
+        return;
+    }
 
-// Wait for Firebase to be ready
-setTimeout(() => {
-    if (typeof firebase === 'undefined' || firebase.apps.length === 0) {
-        console.error('❌ Firebase not initialized');
-        return;
-    }
-    
-    if (typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
-        console.error('❌ Firebase services not initialized');
-        return;
-    }
-    
-    console.log('✅ Initializing admin functionality...');
-    
-    try {
-        adminAuth = new AdminAuth();
-        adminTabs = new AdminTabs();
-        projectsAdmin = new ProjectsAdmin();
-        certificatesAdmin = new CertificatesAdmin();
-        
-        console.log('✅ Admin functionality initialized');
-    } catch (error) {
-        console.error('❌ Error initializing admin:', error);
-    }
-}, 1000);
+    const authManager = new AdminAuth();
+    authManager.init();
+
+    const tabs = new AdminTabs();
+    tabs.init();
+
+    const projectsAdmin = new ProjectsAdmin();
+    projectsAdmin.init();
+
+    const certificatesAdmin = new CertificatesAdmin();
+    certificatesAdmin.init();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    bootstrapAdmin();
+});

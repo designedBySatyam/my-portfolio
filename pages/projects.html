@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Satyam Pandey's Projects">
+  <title>Projects | Satyam Pandey</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/projects-certificates.css">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+  <div class="grid-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Nav -->
+  <nav class="nav-container">
+    <div class="nav-left">
+      <a href="resume.html" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        <span>Back</span>
+      </a>
+    </div>
+
+    <div class="nav-center">
+      <div class="logo-admin-container">
+        <div class="nav-logo">
+          <svg width="36" height="36" viewBox="0 0 40 40">
+            <path d="M20 4 L36 14 L36 26 L20 36 L4 26 L4 14 Z" fill="none" stroke="url(#ng4)" stroke-width="1.5"/>
+            <circle cx="20" cy="20" r="7" fill="url(#ng4)" opacity="0.25"/>
+            <defs>
+              <linearGradient id="ng4" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f5ff"/><stop offset="100%" stop-color="#7b2fff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="logo-text">SP</span>
+        </div>
+        <div class="nav-divider"></div>
+        <button class="admin-btn" id="adminLoginBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Admin</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="theme-icon sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <header class="page-header">
+      <p class="header-decoration">Satyam Pandey</p>
+      <h1 class="page-title" id="pageTitle">
+        <span class="title-bracket">&lt;</span>
+        <span id="titleText">PROJECTS</span>
+        <span class="title-bracket">/&gt;</span>
+      </h1>
+
+      <p class="page-subtitle" id="pageSubtitle">Innovative solutions at the intersection of technology and creativity</p>
+      <div class="header-line"></div>
+    </header>
+
+    <!-- Projects Section -->
+    <section class="view-section active" id="projectsSection">
+      <div class="projects-toolbar">
+        <div class="toolbar-group">
+          <label for="projectSearchInput" class="toolbar-label">Search</label>
+          <input type="text" id="projectSearchInput" class="toolbar-input" placeholder="Search by title, description, tech...">
+        </div>
+        <div class="toolbar-group">
+          <label for="projectStatusFilter" class="toolbar-label">Status</label>
+          <select id="projectStatusFilter" class="toolbar-select">
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="active">Active</option>
+            <option value="research">Research</option>
+            <option value="planning">Planning</option>
+          </select>
+        </div>
+        <div class="toolbar-group">
+          <label for="projectSortOrder" class="toolbar-label">Sort</label>
+          <select id="projectSortOrder" class="toolbar-select">
+            <option value="order-asc">Default</option>
+            <option value="title-asc">Title A-Z</option>
+            <option value="title-desc">Title Z-A</option>
+          </select>
+        </div>
+      </div>
+      <div class="project-chips" id="projectTechChips" aria-label="Quick technology filters"></div>
+      <p class="projects-meta" id="projectsMeta" role="status" aria-live="polite">Loading projects...</p>
+      <div class="projects-grid" id="projectsGrid">
+        <!-- Loaded dynamically from Firebase -->
+        <div class="empty-state">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="9" y1="9" x2="15" y2="9"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+          <p>Projects loading... or add via Admin panel.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Navigation -->
+    <nav class="page-navigation">
+      <a href="resume.html" class="nav-btn secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        VIEW RESUME
+      </a>
+      <a href="contact.html" class="nav-btn primary">
+        GET IN TOUCH
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </nav>
+
+  </main>
+
+  <!-- Admin Login Modal -->
+  <div class="admin-modal" id="adminModal">
+    <div class="admin-modal-content">
+      <button class="modal-close" id="closeAdminModal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      <div class="admin-login-form" id="adminLoginForm">
+        <div class="admin-logo">
+          <div class="logo-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#lockGrad)" stroke-width="1.5" class="lock-icon">
+            <defs>
+              <linearGradient id="lockGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f5ff"/>
+                <stop offset="100%" stop-color="#7b2fff"/>
+              </linearGradient>
+            </defs>
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1" fill="url(#lockGrad)"/>
+          </svg>
+          <div class="logo-pulse"></div>
+        </div>
+        <h2>ADMIN ACCESS</h2>
+        <p class="admin-subtitle">Enter credentials to manage portfolio</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="adminEmail">Email</label>
+            <input type="email" id="adminEmail" placeholder="admin@example.com" required>
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" placeholder="********" required>
+          </div>
+          <button type="submit" class="admin-login-btn">
+            <span>AUTHENTICATE</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </form>
+        <div class="admin-error" id="adminError"></div>
+      </div>
+
+      <div class="admin-panel" id="adminPanel" style="display:none;">
+        <div class="admin-header">
+          <h2>ADMIN PANEL</h2>
+          <div class="admin-actions">
+            <span class="admin-user">Logged in as <strong id="adminUserEmail"></strong></span>
+            <button class="admin-logout-btn" id="adminLogoutBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="projects">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="9" y1="9" x2="15" y2="9"/>
+            </svg>
+            Projects
+          </button>
+          <button class="admin-tab" data-tab="certificates">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="7"/>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+            </svg>
+            Certificates
+          </button>
+        </div>
+
+        <div class="admin-content">
+          <div class="admin-tab-content active" id="projectsTab">
+            <div class="admin-tab-header">
+              <h3>Manage Projects</h3>
+              <button class="add-new-btn" id="addProjectBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Project
+              </button>
+            </div>
+            <div class="admin-list" id="projectsList"></div>
+          </div>
+
+          <div class="admin-tab-content" id="certificatesTab">
+            <div class="admin-tab-header">
+              <h3>Manage Certificates</h3>
+              <button class="add-new-btn" id="addCertificateBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Certificate
+              </button>
+            </div>
+            <div class="admin-list" id="adminCertificatesList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Project Modal -->
+  <div class="edit-modal" id="editProjectModal">
+    <div class="edit-modal-content">
+      <div class="edit-modal-header">
+        <h3 id="projectModalTitle">Add New Project</h3>
+        <button class="modal-close" id="closeProjectModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <form id="projectForm" class="edit-form">
+        <input type="hidden" id="projectId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="projectTitle">Title *</label>
+            <input type="text" id="projectTitle" required>
+          </div>
+          <div class="form-group">
+            <label for="projectStatus">Status *</label>
+            <select id="projectStatus" required>
+              <option value="Completed">Completed</option>
+              <option value="Active">Active</option>
+              <option value="Research">Research</option>
+              <option value="Planning">Planning</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="projectDescription">Description *</label>
+          <textarea id="projectDescription" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="projectTechnologies">Technologies (comma-separated) *</label>
+          <input type="text" id="projectTechnologies" placeholder="React, Node.js, MongoDB" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="projectLink">Project Link</label>
+            <input type="url" id="projectLink" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label for="projectIcon">Icon Type</label>
+            <select id="projectIcon">
+              <option value="default">Default</option>
+              <option value="web">Web</option>
+              <option value="mobile">Mobile</option>
+              <option value="database">Database</option>
+              <option value="hardware">Hardware</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" id="cancelProjectBtn">Cancel</button>
+          <button type="submit" class="save-btn">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Certificate Modal -->
+  <div class="edit-modal" id="editCertificateModal">
+    <div class="edit-modal-content">
+      <div class="edit-modal-header">
+        <h3 id="certificateModalTitle">Add New Certificate</h3>
+        <button class="modal-close" id="closeCertificateModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <form id="certificateForm" class="edit-form">
+        <input type="hidden" id="certificateId">
+        <div class="form-group">
+          <label for="certificateTitle">Title *</label>
+          <input type="text" id="certificateTitle" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="certificateIssuer">Issuer *</label>
+            <input type="text" id="certificateIssuer" required>
+          </div>
+          <div class="form-group">
+            <label for="certificateDate">Issue Date</label>
+            <input type="text" id="certificateDate" placeholder="January 2024">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="certificateImageUrl">Image Path / URL *</label>
+          <input type="text" id="certificateImageUrl" placeholder="../assets/certificates/cert.jpg" required>
+          <small>Use local asset path, e.g. ../assets/certificates/aws.jpg</small>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" id="cancelCertificateBtn">Cancel</button>
+          <button type="submit" class="save-btn">Save Certificate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/firebase-config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="../js/script.js"></script>
+  <script src="../js/shared-utils.js"></script>
+  <script src="../js/projects-certificates.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>
+
