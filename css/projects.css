@@ -6,8 +6,6 @@
   position: relative;
   z-index: 2;
   padding: calc(var(--nav-h) + 60px) 80px 80px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 /* â”€â”€ Page Header â”€â”€ */
