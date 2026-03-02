@@ -376,7 +376,18 @@ class FirebaseProjects {
             const icon = this.getIconSVG(project.icon || 'default');
 
             return `
-                <article class="project-card" data-category="${this.escapeHtml(project.category || 'general')}">
+                <article class="project-card" 
+                        data-category="${this.escapeHtml(project.category || 'general')}"
+                        data-title="${title}"
+                        data-desc="${description}"
+                        data-status="${this.escapeHtml(status.label)}"
+                        data-status-class="${status.className}"
+                        data-tech="${this.escapeHtml(technologies.join(','))}"
+                        data-link="${this.escapeHtml(link || '')}"
+                        data-icon="${this.escapeHtml(project.icon || 'default')}"
+                        role="button"
+                        tabindex="0"
+                        aria-label="View details for ${title}">
                     <div class="project-card-glow"></div>
 
                     <div class="card-header">
@@ -410,6 +421,15 @@ class FirebaseProjects {
                 </article>
             `;
         }).join('');
+
+        // Attach click listeners for project detail modal
+        this.projectsContainer.querySelectorAll('.project-card').forEach((card) => {
+            const open = () => ProjectModal.open(card, this);
+            card.addEventListener('click', open);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+            });
+        });
     }
 
     getIconSVG(iconType) {
@@ -491,6 +511,14 @@ class FirebaseCertificates {
     setupEventListeners() {
         this.closeViewer?.addEventListener('click', () => this.closeCurrentCertificate());
         this.zoomBtn?.addEventListener('click', () => this.toggleZoom());
+
+        // Click cert image to open lightbox
+        this.certViewer?.addEventListener('click', () => {
+            const certId = this.certViewer.dataset.certId;
+            if (certId && this.certificatesById) {
+                CertLightbox.open(this.certificatesById, certId);
+            }
+        });
     }
 
     showLoading() {
@@ -627,6 +655,8 @@ class FirebaseCertificates {
         if (imageUrl && this.certViewer) {
             this.certViewer.src = imageUrl;
             this.certViewer.classList.add('visible');
+            // Store cert data for lightbox
+            this.certViewer.dataset.certId = certId;
             if (this.certPlaceholder) this.certPlaceholder.style.display = 'none';
 
             if (this.downloadBtn) {
@@ -713,3 +743,151 @@ document.addEventListener('DOMContentLoaded', () => {
         new FirebaseCertificates();
     }, 500);
 });
+
+// ── Project Detail Modal ─────────────────────────────────────────
+const ProjectModal = {
+    overlay: null,
+    box: null,
+
+    init() {
+        this.overlay = document.getElementById('projectModal');
+        if (!this.overlay) return;
+
+        document.getElementById('projectModalClose')?.addEventListener('click', () => this.close());
+
+        this.overlay.addEventListener('click', (e) => {
+            if (e.target === this.overlay) this.close();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.close();
+        });
+    },
+
+    open(card, manager) {
+        if (!this.overlay) this.init();
+        if (!this.overlay) return;
+
+        const title      = card.dataset.title || '';
+        const desc       = card.dataset.desc  || '';
+        const statusLabel= card.dataset.status || '';
+        const statusClass= card.dataset.statusClass || '';
+        const techs      = card.dataset.tech ? card.dataset.tech.split(',').filter(Boolean) : [];
+        const link       = card.dataset.link || '';
+        const iconType   = card.dataset.icon || 'default';
+
+        document.getElementById('pmodalIcon').innerHTML  = manager.getIconSVG(iconType);
+        document.getElementById('pmodalTitle').textContent = title;
+        document.getElementById('pmodalDesc').textContent  = desc;
+
+        const statusEl = document.getElementById('pmodalStatus');
+        statusEl.className = `pmodal-status status-tag ${statusClass}`;
+        statusEl.innerHTML = `<span class="status-dot"></span>${manager.escapeHtml(statusLabel)}`;
+
+        const techEl = document.getElementById('pmodalTech');
+        techEl.innerHTML = techs.map(t =>
+            `<span class="tech-tag">${manager.escapeHtml(t)}</span>`
+        ).join('');
+
+        const actionsEl = document.getElementById('pmodalActions');
+        actionsEl.innerHTML = link
+            ? `<a href="${manager.escapeHtml(link)}" target="_blank" rel="noopener" class="pmodal-link">
+                <span>View Project</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                </svg>
+               </a>`
+            : '';
+
+        this.overlay.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    },
+
+    close() {
+        if (!this.overlay) return;
+        this.overlay.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+};
+
+// Init modal when DOM ready
+document.addEventListener('DOMContentLoaded', () => ProjectModal.init());
+
+// ── Certificate Lightbox ─────────────────────────────────────────
+const CertLightbox = {
+    overlay: null,
+    certsMap: null,
+    certIds: [],
+    currentIdx: 0,
+
+    init() {
+        this.overlay = document.getElementById('certLightbox');
+        if (!this.overlay) return;
+
+        document.getElementById('certLightboxClose')?.addEventListener('click', () => this.close());
+        document.getElementById('certLightboxPrev')?.addEventListener('click', () => this.navigate(-1));
+        document.getElementById('certLightboxNext')?.addEventListener('click', () => this.navigate(1));
+
+        this.overlay.addEventListener('click', (e) => {
+            if (e.target === this.overlay) this.close();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!this.overlay?.classList.contains('open')) return;
+            if (e.key === 'Escape')      this.close();
+            if (e.key === 'ArrowLeft')   this.navigate(-1);
+            if (e.key === 'ArrowRight')  this.navigate(1);
+        });
+    },
+
+    open(certsMap, certId) {
+        if (!this.overlay) this.init();
+        if (!this.overlay) return;
+
+        this.certsMap = certsMap;
+        this.certIds  = [...certsMap.keys()];
+        this.currentIdx = this.certIds.indexOf(certId);
+        if (this.currentIdx === -1) this.currentIdx = 0;
+
+        this.render();
+        this.overlay.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    },
+
+    render() {
+        const id   = this.certIds[this.currentIdx];
+        const cert = this.certsMap.get(id);
+        if (!cert) return;
+
+        const img = document.getElementById('certLightboxImg');
+        img.src = cert.imageUrl || '';
+        img.alt = cert.title || 'Certificate';
+        document.getElementById('certLightboxTitle').textContent  = cert.title  || '';
+        document.getElementById('certLightboxIssuer').textContent = cert.issuer || '';
+
+        // Show/hide nav arrows
+        const prev = document.getElementById('certLightboxPrev');
+        const next = document.getElementById('certLightboxNext');
+        prev.style.visibility = this.currentIdx > 0 ? 'visible' : 'hidden';
+        next.style.visibility = this.currentIdx < this.certIds.length - 1 ? 'visible' : 'hidden';
+    },
+
+    navigate(dir) {
+        const newIdx = this.currentIdx + dir;
+        if (newIdx < 0 || newIdx >= this.certIds.length) return;
+        this.currentIdx = newIdx;
+        this.render();
+    },
+
+    close() {
+        if (!this.overlay) return;
+        this.overlay.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => CertLightbox.init());

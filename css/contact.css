@@ -246,6 +246,7 @@
   background: radial-gradient(circle at 30% 50%, rgba(0,245,255,0.06), transparent);
   opacity: 0;
   transition: opacity 0.3s;
+  pointer-events: none;
 }
 
 .social-card:hover .card-glow { opacity: 1; }
@@ -393,3 +394,42 @@
 
 .char-counter.near-limit { color: #ffaa00; }
 .char-counter.at-limit   { color: #f74f8e; }
+
+/* ── Copy email card ─────────────────────────────────────── */
+.email-copy-card {
+  cursor: pointer;
+  user-select: none;
+}
+
+.copy-btn-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.email-copy-card:hover .copy-btn-wrap {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(79, 142, 247, 0.08);
+}
+
+.email-copy-card.copied .copy-btn-wrap {
+  border-color: var(--green, #22c55e);
+  color: var(--green, #22c55e);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.copy-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}

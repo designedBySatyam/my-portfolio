@@ -225,3 +225,107 @@
     new ContactForm().init();
   });
 })();
+
+// ── Copy email to clipboard ──────────────────────────────────────
+(function initCopyEmail() {
+  const card     = document.getElementById('copyEmailCard');
+  const copyBtn  = card?.querySelector('.copy-btn-wrap');
+  const label    = document.getElementById('copyLabel');
+  const copyIco  = card?.querySelector('.copy-icon');
+  const checkIco = card?.querySelector('.check-icon');
+  const EMAIL    = 'hello.satyam27@gmail.com';
+  let   timer;
+
+  function openEmailClient() {
+    window.location.href = 'mailto:' + EMAIL;
+  }
+
+  function setCopyFeedback(success) {
+    if (success) {
+      label.textContent      = 'Done!';
+      copyIco.style.display  = 'none';
+      checkIco.style.display = 'block';
+      card.classList.add('copied');
+    } else {
+      label.textContent      = 'Ctrl+C';
+      copyIco.style.display  = 'block';
+      checkIco.style.display = 'none';
+      card.classList.remove('copied');
+    }
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      label.textContent      = 'Copy';
+      copyIco.style.display  = 'block';
+      checkIco.style.display = 'none';
+      card.classList.remove('copied');
+    }, 2000);
+  }
+
+  function legacyCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } catch {
+      copied = false;
+    }
+    document.body.removeChild(ta);
+    return copied;
+  }
+
+  async function copyEmailToClipboard() {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(EMAIL);
+        return true;
+      } catch {
+        // Fallback below
+      }
+    }
+    return legacyCopy(EMAIL);
+  }
+
+  async function triggerCopy(event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    const copied = await copyEmailToClipboard();
+    setCopyFeedback(copied);
+  }
+
+  function isCopyActionTarget(target) {
+    return target instanceof Element && !!target.closest('.copy-btn-wrap');
+  }
+
+  card?.addEventListener('click', (e) => {
+    if (isCopyActionTarget(e.target)) {
+      triggerCopy(e);
+      return;
+    }
+    openEmailClient();
+  });
+
+  card?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (isCopyActionTarget(e.target)) {
+      triggerCopy(e);
+      return;
+    }
+    e.preventDefault();
+    openEmailClient();
+  });
+
+  copyBtn?.addEventListener('click', triggerCopy);
+  copyBtn?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { triggerCopy(e); }
+  });
+})();
