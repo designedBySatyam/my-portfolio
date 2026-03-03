@@ -193,11 +193,25 @@ class FirebaseProjects {
 
     loadProjects() {
         db.collection(COLLECTIONS.PROJECTS)
-            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const projects = [];
                 snapshot.forEach((doc) => projects.push({ id: doc.id, ...doc.data() }));
+
+                projects.sort((a, b) => {
+                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
+                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return String(a.title || '').localeCompare(String(b.title || ''));
+                });
+
                 this.allProjects = projects;
+                // Update projects count badge
+                const badge = document.getElementById('projectsCount');
+                if (badge) {
+                    badge.textContent = projects.length;
+                    badge.setAttribute('aria-label', `${projects.length} projects`);
+                    badge.classList.add('loaded');
+                }
                 this.renderTechChips();
                 this.applyProjectFilters();
             }, (error) => {
@@ -558,10 +572,16 @@ class FirebaseCertificates {
 
     loadCertificates() {
         db.collection(COLLECTIONS.CERTIFICATES)
-            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const certificates = [];
                 snapshot.forEach((doc) => certificates.push({ id: doc.id, ...doc.data() }));
+
+                certificates.sort((a, b) => {
+                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
+                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return String(a.title || '').localeCompare(String(b.title || ''));
+                });
 
                 if (certificates.length === 0) {
                     this.showEmptyState();
@@ -580,11 +600,16 @@ class FirebaseCertificates {
 
         this.certificatesById = new Map(certificates.map((cert) => [cert.id, cert]));
 
+        // Update certificates count badge
+        const badge = document.getElementById('certificatesCount');
+        if (badge) {
+            badge.textContent = certificates.length;
+            badge.setAttribute('aria-label', `${certificates.length} certificates`);
+            badge.classList.add('loaded');
+        }
+
         this.certList.innerHTML = certificates.map((cert) => {
-            const imageUrl = this.normalizeCertificateImagePath(cert.imageUrl);
-            const thumb = imageUrl
-                ? `<img src="${imageUrl}" alt="${this.escapeHtml(cert.title || 'Certificate')}" loading="lazy">`
-                : this.getIconSVG(cert.issuer || 'default');
+            const thumb = this.getIconSVG(cert.issuer || cert.title || cert.icon || 'default');
 
             return `
                 <div class="cert-list-item" data-cert-id="${cert.id}" role="option" tabindex="0" aria-selected="false">
@@ -726,7 +751,20 @@ class FirebaseCertificates {
                 <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
             </svg>`
         };
-        return icons[(provider || 'default').toLowerCase()] || icons.default;
+        const normalized = String(provider || 'default').toLowerCase();
+
+        let iconKey = normalized;
+        if (normalized.includes('aws')) {
+            iconKey = 'aws';
+        } else if (normalized.includes('ibm')) {
+            iconKey = 'ibm';
+        } else if (normalized.includes('microsoft') || normalized.includes('azure')) {
+            iconKey = 'microsoft';
+        } else if (!icons[normalized]) {
+            iconKey = 'default';
+        }
+
+        return icons[iconKey] || icons.default;
     }
 
     escapeHtml(text) {

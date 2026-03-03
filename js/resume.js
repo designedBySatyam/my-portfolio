@@ -41,12 +41,27 @@ class SkillAnimations {
 class TimelineAnimations {
     constructor() {
         this.timelineItems = document.querySelectorAll('.timeline-item');
+        this.timeline = document.querySelector('.timeline');
         this.init();
     }
 
     init() {
         if (this.timelineItems.length === 0) return;
 
+        // Observe the timeline container to trigger the line drawing
+        if (this.timeline) {
+            const lineObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('line-visible');
+                        lineObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            lineObserver.observe(this.timeline);
+        }
+
+        // Observe individual items for slide-in
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {

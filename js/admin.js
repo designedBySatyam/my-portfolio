@@ -135,8 +135,39 @@ class AdminAuth {
         this.defaultSubmitLabel = this.submitLabel?.textContent || 'LOGIN';
     }
 
+    bindModalControls() {
+        if (!this.embeddedMode || !this.adminModal) return;
+
+        if (this.openBtn && !this.openBtn.dataset.modalBound) {
+            this.openBtn.dataset.modalBound = 'true';
+            this.openBtn.addEventListener('click', () => {
+                this.adminModal.style.display = 'flex';
+            });
+        }
+
+        if (this.closeBtn && !this.closeBtn.dataset.modalBound) {
+            this.closeBtn.dataset.modalBound = 'true';
+            this.closeBtn.addEventListener('click', () => this.hideModal());
+        }
+
+        if (!this.adminModal.dataset.modalBound) {
+            this.adminModal.dataset.modalBound = 'true';
+            this.adminModal.addEventListener('click', (event) => {
+                if (event.target === this.adminModal) this.hideModal();
+            });
+        }
+    }
+
     init() {
+        this.bindModalControls();
         if (!this.loginForm || !this.emailInput || !this.passwordInput) return;
+
+        if (typeof auth === 'undefined' || !auth || typeof auth.onAuthStateChanged !== 'function') {
+            this.resolveLoader();
+            this.showLogin();
+            this.showError('Admin services are still loading. Please try again in a moment.');
+            return;
+        }
 
         // Fallback: if Firebase doesn't fire within 6s, show login
         const authTimeout = window.setTimeout(() => {
@@ -153,22 +184,6 @@ class AdminAuth {
                 this.showLogin();
             }
         });
-
-        if (this.openBtn && this.embeddedMode) {
-            this.openBtn.addEventListener('click', () => {
-                this.adminModal.style.display = 'flex';
-            });
-        }
-
-        if (this.closeBtn && this.embeddedMode) {
-            this.closeBtn.addEventListener('click', () => this.hideModal());
-        }
-
-        if (this.adminModal) {
-            this.adminModal.addEventListener('click', (event) => {
-                if (event.target === this.adminModal) this.hideModal();
-            });
-        }
 
         this.loginForm.addEventListener('submit', (event) => this.handleLogin(event));
         this.logoutBtn?.addEventListener('click', () => this.handleLogout());
@@ -388,10 +403,17 @@ class ProjectsAdmin {
 
     loadProjects() {
         db.collection(COLLECTIONS.PROJECTS)
-            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const projects = [];
                 snapshot.forEach((doc) => projects.push({ id: doc.id, ...doc.data() }));
+
+                projects.sort((a, b) => {
+                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
+                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return String(a.title || '').localeCompare(String(b.title || ''));
+                });
+
                 this.renderProjects(projects);
             }, (error) => {
                 console.error('Failed loading projects:', error);
@@ -720,10 +742,17 @@ class CertificatesAdmin {
 
     loadCertificates() {
         db.collection(COLLECTIONS.CERTIFICATES)
-            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const certs = [];
                 snapshot.forEach((doc) => certs.push({ id: doc.id, ...doc.data() }));
+
+                certs.sort((a, b) => {
+                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
+                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return String(a.title || '').localeCompare(String(b.title || ''));
+                });
+
                 this.renderCertificates(certs);
             }, (error) => {
                 console.error('Failed loading certificates:', error);
@@ -877,12 +906,14 @@ class CertificatesAdmin {
 }
 
 function bootstrapAdmin() {
+    const authManager = new AdminAuth();
+    authManager.bindModalControls();
+
     if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
         window.setTimeout(bootstrapAdmin, 250);
         return;
     }
 
-    const authManager = new AdminAuth();
     authManager.init();
 
     const tabs = new AdminTabs();

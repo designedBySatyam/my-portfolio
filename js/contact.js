@@ -143,6 +143,26 @@
       return '';
     }
 
+    shakeForm() {
+      // Highlight empty required fields
+      ['user_name', 'user_email', 'message'].forEach(name => {
+        const field = this.form?.querySelector(`[name="${name}"]`);
+        if (!field || field.value.trim()) return;
+        field.classList.add('field-error');
+        field.addEventListener('input', () => field.classList.remove('field-error'), { once: true });
+      });
+
+      // Shake the submit button
+      if (!this.submitBtn) return;
+      this.submitBtn.classList.remove('shake');
+      // Force reflow so animation restarts if triggered twice quickly
+      void this.submitBtn.offsetWidth;
+      this.submitBtn.classList.add('shake');
+      this.submitBtn.addEventListener('animationend', () => {
+        this.submitBtn.classList.remove('shake');
+      }, { once: true });
+    }
+
     setLoadingState(isLoading) {
       if (!this.submitBtn || !this.submitText) return;
       this.submitBtn.disabled = isLoading;
@@ -189,6 +209,7 @@
       const validationError = this.validate();
       if (validationError) {
         this.showStatus('error', validationError);
+        this.shakeForm();
         return;
       }
 
