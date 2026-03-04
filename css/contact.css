@@ -6,6 +6,7 @@
   position: relative;
   z-index: 2;
   padding: calc(var(--nav-h) + 60px) 80px 80px;
+  overflow-x: hidden;
 }
 
 /* ── Header ── */
@@ -33,7 +34,7 @@
 /* ── Contact Grid ── */
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr minmax(0, 400px);
   gap: 32px;
   opacity: 0;
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.25s forwards;
@@ -355,6 +356,7 @@
 @media (max-width: 960px) {
   .contact-main {
     padding: calc(var(--nav-h) + 32px) 24px 60px;
+    overflow-x: hidden;
   }
 
   .contact-grid {
@@ -363,6 +365,60 @@
 
   .form-container {
     padding: 32px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-main {
+    padding: calc(var(--nav-h) + 20px) 16px 48px;
+  }
+
+  .contact-grid {
+    gap: 20px;
+  }
+
+  .form-container {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .info-container {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .social-card {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .copy-btn-wrap {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+
+  .submit-btn {
+    padding: 14px 20px;
+    font-size: 0.65rem;
+  }
+
+  .char-counter {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .contact-main {
+    padding: calc(var(--nav-h) + 16px) 12px 40px;
+  }
+
+  .form-container {
+    padding: 20px 14px;
+  }
+
+  .social-card {
+    padding: 12px 14px;
+    gap: 10px;
   }
 }
 
@@ -430,28 +486,4 @@
 .copy-label {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-}
-
-/* ── Shake animation on empty submit ────────────────────────── */
-@keyframes shake {
-  0%        { transform: translateX(0); }
-  15%       { transform: translateX(-7px); }
-  30%       { transform: translateX(6px); }
-  45%       { transform: translateX(-5px); }
-  60%       { transform: translateX(4px); }
-  75%       { transform: translateX(-3px); }
-  90%       { transform: translateX(2px); }
-  100%      { transform: translateX(0); }
-}
-
-.submit-btn.shake {
-  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-.input-wrapper input.field-error,
-.input-wrapper textarea.field-error {
-  border-color: #f74f8e;
-  background: rgba(247, 79, 142, 0.05);
-  box-shadow: 0 0 0 3px rgba(247, 79, 142, 0.1);
-  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
