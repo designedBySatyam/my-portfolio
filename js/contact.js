@@ -227,6 +227,9 @@
 })();
 
 // ── Copy email to clipboard ──────────────────────────────────────
+// ── IST Live Clock ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+
 (function initCopyEmail() {
   const card     = document.getElementById('copyEmailCard');
   const copyBtn  = card?.querySelector('.copy-btn-wrap');
@@ -361,3 +364,5 @@
   tick();
   setInterval(tick, 1000);
 })();
+
+}); // end DOMContentLoaded

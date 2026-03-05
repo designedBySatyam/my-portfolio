@@ -340,7 +340,7 @@ class LeetCodeStats {
 /*
    CHAPTER NAV SCROLL SPY
 */
-(function initChapterSpy() {
+function initChapterSpy() {
   const links    = document.querySelectorAll('.ch-link');
   if (!links.length) return;
 
@@ -360,7 +360,7 @@ class LeetCodeStats {
   }, { threshold: 0.25, rootMargin: '-60px 0px -40% 0px' });
 
   sections.forEach(s => obs.observe(s.el));
-})();
+}
 
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
@@ -368,4 +368,5 @@ document.addEventListener('DOMContentLoaded', () => {
     new TimelineAnimations();
     new DownloadTracking();
     new LeetCodeStats();
+    initChapterSpy();
 });
