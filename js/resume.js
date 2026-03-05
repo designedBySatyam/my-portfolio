@@ -4,7 +4,7 @@
  * ============================================
  */
 
-// Skill Bar Animations
+// Skill Bar Animations + Typewriter on skill names
 class SkillAnimations {
     constructor() {
         this.skillItems = document.querySelectorAll('.skill-item');
@@ -29,11 +29,34 @@ class SkillAnimations {
     }
 
     animateSkill(skillItem) {
+        // Animate the bar fill
         const skillFill = skillItem.querySelector('.skill-fill');
-        if (skillFill) {
-            // Adding the class triggers the CSS skillGrow animation
-            skillFill.classList.add('animate');
-        }
+        if (skillFill) skillFill.classList.add('animate');
+
+        // Typewriter on skill label (text node before the <span>)
+        const iconEl = skillItem.querySelector('.skill-icon');
+        if (!iconEl) return;
+
+        const textNode = [...iconEl.childNodes].find(
+            n => n.nodeType === Node.TEXT_NODE && n.textContent.trim()
+        );
+        if (!textNode) return;
+
+        const fullText = textNode.textContent.trim();
+        textNode.textContent = '';
+
+        let i = 0;
+        const speed = 42;
+        const type = () => {
+            if (i <= fullText.length) {
+                textNode.textContent = fullText.slice(0, i) + (i < fullText.length ? '|' : '');
+                i++;
+                setTimeout(type, speed);
+            } else {
+                textNode.textContent = fullText;
+            }
+        };
+        setTimeout(type, 120);
     }
 }
 
@@ -41,27 +64,12 @@ class SkillAnimations {
 class TimelineAnimations {
     constructor() {
         this.timelineItems = document.querySelectorAll('.timeline-item');
-        this.timeline = document.querySelector('.timeline');
         this.init();
     }
 
     init() {
         if (this.timelineItems.length === 0) return;
 
-        // Observe the timeline container to trigger the line drawing
-        if (this.timeline) {
-            const lineObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('line-visible');
-                        lineObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.15 });
-            lineObserver.observe(this.timeline);
-        }
-
-        // Observe individual items for slide-in
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -110,9 +118,116 @@ class DownloadTracking {
     }
 }
 
+
+
+/* ══════════════════════════════════════════════════
+   LEETCODE STATS
+══════════════════════════════════════════════════ */
+class LeetCodeStats {
+    constructor() {
+        this.grid     = document.getElementById('lcStatsGrid');
+        this.username = 'satyam-pandey27';
+        this.init();
+    }
+
+    async init() {
+        if (!this.grid) return;
+
+        // Use alfa-leetcode-api (free, no auth)
+        const url = `https://alfa-leetcode-api.onrender.com/${this.username}/solved`;
+
+        try {
+            const res  = await fetch(url, { signal: AbortSignal.timeout(8000) });
+            if (!res.ok) throw new Error('API error');
+            const data = await res.json();
+            this.render(data);
+        } catch (_) {
+            // Fallback: use leetcode-stats-api
+            try {
+                const res2 = await fetch(
+                    `https://leetcode-stats-api.herokuapp.com/${this.username}`,
+                    { signal: AbortSignal.timeout(8000) }
+                );
+                if (!res2.ok) throw new Error();
+                const data2 = await res2.json();
+                this.renderFallback(data2);
+            } catch (_2) {
+                this.showError();
+            }
+        }
+    }
+
+    render(data) {
+        const total = data.solvedProblem || 0;
+        const easy  = data.easySolved   || 0;
+        const med   = data.mediumSolved || 0;
+        const hard  = data.hardSolved   || 0;
+
+        this.grid.innerHTML = `
+            <div class="lc-stat-card">
+                <span class="lc-stat-num">${total}</span>
+                <span class="lc-stat-label">Total Solved</span>
+                <div class="lc-progress-bar">
+                    <div class="lc-progress-fill lc-total" style="--lc-w:${Math.min((total/800)*100,100)}%"></div>
+                </div>
+            </div>
+            <div class="lc-stat-card lc-easy">
+                <span class="lc-stat-num">${easy}</span>
+                <span class="lc-stat-label">Easy</span>
+                <div class="lc-progress-bar">
+                    <div class="lc-progress-fill lc-easy-fill" style="--lc-w:${Math.min((easy/200)*100,100)}%"></div>
+                </div>
+            </div>
+            <div class="lc-stat-card lc-medium">
+                <span class="lc-stat-num">${med}</span>
+                <span class="lc-stat-label">Medium</span>
+                <div class="lc-progress-bar">
+                    <div class="lc-progress-fill lc-med-fill" style="--lc-w:${Math.min((med/400)*100,100)}%"></div>
+                </div>
+            </div>
+            <div class="lc-stat-card lc-hard">
+                <span class="lc-stat-num">${hard}</span>
+                <span class="lc-stat-label">Hard</span>
+                <div class="lc-progress-bar">
+                    <div class="lc-progress-fill lc-hard-fill" style="--lc-w:${Math.min((hard/200)*100,100)}%"></div>
+                </div>
+            </div>
+        `;
+
+        // Animate bars in
+        requestAnimationFrame(() => {
+            this.grid.querySelectorAll('.lc-progress-fill').forEach((el, i) => {
+                setTimeout(() => el.classList.add('lc-animate'), i * 120);
+            });
+        });
+    }
+
+    renderFallback(data) {
+        // leetcode-stats-api schema
+        this.render({
+            solvedProblem: data.totalSolved   || 0,
+            easySolved:    data.easySolved    || 0,
+            mediumSolved:  data.mediumSolved  || 0,
+            hardSolved:    data.hardSolved    || 0
+        });
+    }
+
+    showError() {
+        if (!this.grid) return;
+        this.grid.innerHTML = `
+            <div class="lc-loading">
+                <p style="color:var(--text-dim);font-size:.8rem;font-family:var(--font-mono)">
+                    Stats unavailable — LeetCode API may be offline
+                </p>
+            </div>
+        `;
+    }
+}
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
     new SkillAnimations();
     new TimelineAnimations();
     new DownloadTracking();
+    new LeetCodeStats();
 });

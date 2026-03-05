@@ -47,7 +47,8 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 // Collection names
 const COLLECTIONS = {
     PROJECTS: 'projects',
-    CERTIFICATES: 'certificates'
+    CERTIFICATES: 'certificates',
+    CONFIG: 'config'
 };
 
 // Export for use in other files

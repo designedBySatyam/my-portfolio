@@ -214,6 +214,21 @@
                     </svg>
                     CERTIFICATES
                 </button>
+                <button class="tab-btn" data-tab="siteconfig">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    SITE CONFIG
+                </button>
+                <button class="tab-btn" data-tab="analytics">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    ANALYTICS
+                </button>
             </div>
 
             <!-- Projects Tab -->
@@ -428,6 +443,152 @@
             </form>
         </div>
     </div>
+
+
+            <!-- Site Config Tab -->
+            <div id="siteconfigTab" class="tab-content">
+                <header class="admin-header">
+                    <div>
+                        <h1>SITE CONFIGURATION</h1>
+                        <p>Control availability status, now playing widget, and visitor stats</p>
+                    </div>
+                </header>
+
+                <!-- Open to Work -->
+                <section class="config-section">
+                    <h2 class="config-section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        AVAILABILITY
+                    </h2>
+                    <div class="config-card">
+                        <div class="config-row">
+                            <div>
+                                <label class="config-label">Open to Work</label>
+                                <p class="config-desc">Shows a banner on home &amp; contact pages</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="otwToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group" style="margin-top:16px">
+                            <label class="field-label">Custom Message (optional)</label>
+                            <input type="text" id="otwMessage" class="field-input"
+                                placeholder="Open to work — available for internships &amp; freelance projects"
+                                maxlength="120">
+                        </div>
+                        <button id="saveOtwBtn" class="btn-primary" style="margin-top:16px">SAVE AVAILABILITY</button>
+                        <p id="otwStatus" class="config-status"></p>
+                    </div>
+                </section>
+
+                <!-- Now Playing -->
+                <section class="config-section">
+                    <h2 class="config-section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polygon points="10 8 16 12 10 16 10 8"/>
+                        </svg>
+                        NOW PLAYING
+                    </h2>
+                    <div class="config-card">
+                        <div class="config-row" style="margin-bottom:16px">
+                            <div>
+                                <label class="config-label">Show Widget</label>
+                                <p class="config-desc">Displays now-playing card on home page</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="npActive">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="field-label">Song Title *</label>
+                                <input type="text" id="npSong" class="field-input" placeholder="Blinding Lights">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label">Artist *</label>
+                                <input type="text" id="npArtist" class="field-input" placeholder="The Weeknd">
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="field-label">Album Art URL</label>
+                                <input type="url" id="npAlbumArt" class="field-input" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label">Song Link</label>
+                                <input type="url" id="npLink" class="field-input" placeholder="https://open.spotify.com/...">
+                            </div>
+                        </div>
+                        <button id="saveNpBtn" class="btn-primary" style="margin-top:16px">SAVE NOW PLAYING</button>
+                        <p id="npStatus" class="config-status"></p>
+                    </div>
+                </section>
+
+                <!-- Visitor Stats -->
+                <section class="config-section">
+                    <h2 class="config-section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        VISITOR STATS
+                    </h2>
+                    <div class="config-card">
+                        <div class="config-stat-row">
+                            <span class="config-label">Total Visitors</span>
+                            <span class="config-stat-value" id="totalVisitors">—</span>
+                        </div>
+                        <button id="resetVisitorsBtn" class="btn-secondary btn-small" style="margin-top:12px">Reset Counter</button>
+                    </div>
+                </section>
+            </div>
+
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="tab-content">
+                <header class="admin-header">
+                    <div>
+                        <h1>PAGE ANALYTICS</h1>
+                        <p>Session-based page view counts</p>
+                    </div>
+                    <button id="refreshAnalyticsBtn" class="btn-secondary btn-small">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                        </svg>
+                        REFRESH
+                    </button>
+                </header>
+
+                <div class="analytics-grid" id="analyticsGrid">
+                    <div class="analytics-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading analytics...</p>
+                    </div>
+                </div>
+
+                <div class="analytics-total-row">
+                    <span class="analytics-total-label">TOTAL PAGE VIEWS</span>
+                    <span class="analytics-total-value" id="analyticsTotalViews">—</span>
+                </div>
+
+                <div class="analytics-note">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    Counts one view per browser session per page. Resets automatically when a visitor starts a new session.
+                </div>
+            </div>
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal">

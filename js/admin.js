@@ -135,39 +135,8 @@ class AdminAuth {
         this.defaultSubmitLabel = this.submitLabel?.textContent || 'LOGIN';
     }
 
-    bindModalControls() {
-        if (!this.embeddedMode || !this.adminModal) return;
-
-        if (this.openBtn && !this.openBtn.dataset.modalBound) {
-            this.openBtn.dataset.modalBound = 'true';
-            this.openBtn.addEventListener('click', () => {
-                this.adminModal.style.display = 'flex';
-            });
-        }
-
-        if (this.closeBtn && !this.closeBtn.dataset.modalBound) {
-            this.closeBtn.dataset.modalBound = 'true';
-            this.closeBtn.addEventListener('click', () => this.hideModal());
-        }
-
-        if (!this.adminModal.dataset.modalBound) {
-            this.adminModal.dataset.modalBound = 'true';
-            this.adminModal.addEventListener('click', (event) => {
-                if (event.target === this.adminModal) this.hideModal();
-            });
-        }
-    }
-
     init() {
-        this.bindModalControls();
         if (!this.loginForm || !this.emailInput || !this.passwordInput) return;
-
-        if (typeof auth === 'undefined' || !auth || typeof auth.onAuthStateChanged !== 'function') {
-            this.resolveLoader();
-            this.showLogin();
-            this.showError('Admin services are still loading. Please try again in a moment.');
-            return;
-        }
 
         // Fallback: if Firebase doesn't fire within 6s, show login
         const authTimeout = window.setTimeout(() => {
@@ -184,6 +153,22 @@ class AdminAuth {
                 this.showLogin();
             }
         });
+
+        if (this.openBtn && this.embeddedMode) {
+            this.openBtn.addEventListener('click', () => {
+                this.adminModal.style.display = 'flex';
+            });
+        }
+
+        if (this.closeBtn && this.embeddedMode) {
+            this.closeBtn.addEventListener('click', () => this.hideModal());
+        }
+
+        if (this.adminModal) {
+            this.adminModal.addEventListener('click', (event) => {
+                if (event.target === this.adminModal) this.hideModal();
+            });
+        }
 
         this.loginForm.addEventListener('submit', (event) => this.handleLogin(event));
         this.logoutBtn?.addEventListener('click', () => this.handleLogout());
@@ -403,17 +388,10 @@ class ProjectsAdmin {
 
     loadProjects() {
         db.collection(COLLECTIONS.PROJECTS)
+            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const projects = [];
                 snapshot.forEach((doc) => projects.push({ id: doc.id, ...doc.data() }));
-
-                projects.sort((a, b) => {
-                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
-                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
-                    if (aOrder !== bOrder) return aOrder - bOrder;
-                    return String(a.title || '').localeCompare(String(b.title || ''));
-                });
-
                 this.renderProjects(projects);
             }, (error) => {
                 console.error('Failed loading projects:', error);
@@ -742,17 +720,10 @@ class CertificatesAdmin {
 
     loadCertificates() {
         db.collection(COLLECTIONS.CERTIFICATES)
+            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const certs = [];
                 snapshot.forEach((doc) => certs.push({ id: doc.id, ...doc.data() }));
-
-                certs.sort((a, b) => {
-                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
-                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
-                    if (aOrder !== bOrder) return aOrder - bOrder;
-                    return String(a.title || '').localeCompare(String(b.title || ''));
-                });
-
                 this.renderCertificates(certs);
             }, (error) => {
                 console.error('Failed loading certificates:', error);
@@ -906,14 +877,12 @@ class CertificatesAdmin {
 }
 
 function bootstrapAdmin() {
-    const authManager = new AdminAuth();
-    authManager.bindModalControls();
-
     if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
         window.setTimeout(bootstrapAdmin, 250);
         return;
     }
 
+    const authManager = new AdminAuth();
     authManager.init();
 
     const tabs = new AdminTabs();
@@ -924,8 +893,218 @@ function bootstrapAdmin() {
 
     const certificatesAdmin = new CertificatesAdmin();
     certificatesAdmin.init();
+
+    const siteConfig = new SiteConfigManager();
+    siteConfig.init();
+
+    const analytics = new AnalyticsManager();
+    analytics.init();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     bootstrapAdmin();
 });
+/* ══════════════════════════════════════════════════
+   SITE CONFIG MANAGER
+══════════════════════════════════════════════════ */
+class SiteConfigManager {
+    constructor() {
+        // Open to Work
+        this.otwToggle   = document.getElementById('otwToggle');
+        this.otwMessage  = document.getElementById('otwMessage');
+        this.saveOtwBtn  = document.getElementById('saveOtwBtn');
+        this.otwStatus   = document.getElementById('otwStatus');
+
+        // Now Playing
+        this.npActive    = document.getElementById('npActive');
+        this.npSong      = document.getElementById('npSong');
+        this.npArtist    = document.getElementById('npArtist');
+        this.npAlbumArt  = document.getElementById('npAlbumArt');
+        this.npLink      = document.getElementById('npLink');
+        this.saveNpBtn   = document.getElementById('saveNpBtn');
+        this.npStatus    = document.getElementById('npStatus');
+
+        // Visitor stats
+        this.totalVisitors    = document.getElementById('totalVisitors');
+        this.resetVisitorsBtn = document.getElementById('resetVisitorsBtn');
+    }
+
+    init() {
+        if (!this.otwToggle) return;
+        this.loadSiteConfig();
+        this.loadNowPlaying();
+        this.loadVisitorStats();
+
+        this.saveOtwBtn?.addEventListener('click', () => this.saveAvailability());
+        this.saveNpBtn?.addEventListener('click',  () => this.saveNowPlaying());
+        this.resetVisitorsBtn?.addEventListener('click', () => this.resetVisitors());
+    }
+
+    async loadSiteConfig() {
+        try {
+            const doc = await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').get();
+            const data = doc.exists ? doc.data() : {};
+            if (this.otwToggle) this.otwToggle.checked = !!data.openToWork;
+            if (this.otwMessage) this.otwMessage.value = data.otwMessage || '';
+        } catch (e) { console.error('loadSiteConfig:', e); }
+    }
+
+    async loadNowPlaying() {
+        try {
+            const doc = await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').get();
+            const data = doc.exists ? doc.data() : {};
+            if (this.npActive)   this.npActive.checked   = !!data.active;
+            if (this.npSong)     this.npSong.value        = data.song      || '';
+            if (this.npArtist)   this.npArtist.value      = data.artist    || '';
+            if (this.npAlbumArt) this.npAlbumArt.value    = data.albumArt  || '';
+            if (this.npLink)     this.npLink.value         = data.link      || '';
+        } catch (e) { console.error('loadNowPlaying:', e); }
+    }
+
+    loadVisitorStats() {
+        db.collection(COLLECTIONS.CONFIG).doc('siteStats')
+            .onSnapshot((doc) => {
+                const count = doc.exists ? (doc.data()?.visitors || 0) : 0;
+                if (this.totalVisitors) this.totalVisitors.textContent = count.toLocaleString();
+            });
+    }
+
+    async saveAvailability() {
+        if (!this.saveOtwBtn) return;
+        this.saveOtwBtn.disabled = true;
+        this.saveOtwBtn.textContent = 'SAVING...';
+        try {
+            await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
+                openToWork: !!this.otwToggle?.checked,
+                otwMessage: this.otwMessage?.value?.trim() || '',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            this.setStatus(this.otwStatus, 'success', 'Saved!');
+        } catch (e) {
+            this.setStatus(this.otwStatus, 'error', 'Save failed.');
+        } finally {
+            this.saveOtwBtn.disabled = false;
+            this.saveOtwBtn.textContent = 'SAVE AVAILABILITY';
+        }
+    }
+
+    async saveNowPlaying() {
+        if (!this.saveNpBtn) return;
+        this.saveNpBtn.disabled = true;
+        this.saveNpBtn.textContent = 'SAVING...';
+        try {
+            await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').set({
+                active:   !!this.npActive?.checked,
+                song:     this.npSong?.value?.trim()     || '',
+                artist:   this.npArtist?.value?.trim()   || '',
+                albumArt: this.npAlbumArt?.value?.trim() || '',
+                link:     this.npLink?.value?.trim()     || '',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            this.setStatus(this.npStatus, 'success', 'Saved!');
+        } catch (e) {
+            this.setStatus(this.npStatus, 'error', 'Save failed.');
+        } finally {
+            this.saveNpBtn.disabled = false;
+            this.saveNpBtn.textContent = 'SAVE NOW PLAYING';
+        }
+    }
+
+    async resetVisitors() {
+        if (!confirm('Reset visitor counter to 0?')) return;
+        try {
+            await db.collection(COLLECTIONS.CONFIG).doc('siteStats').set(
+                { visitors: 0 }, { merge: true }
+            );
+        } catch (e) { console.error('resetVisitors:', e); }
+    }
+
+    setStatus(el, type, msg) {
+        if (!el) return;
+        el.textContent = msg;
+        el.style.color = type === 'success' ? '#4ff7a0' : '#f74f8e';
+        setTimeout(() => { el.textContent = ''; }, 3000);
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   PAGE ANALYTICS MANAGER
+══════════════════════════════════════════════════ */
+class AnalyticsManager {
+    constructor() {
+        this.grid        = document.getElementById('analyticsGrid');
+        this.totalEl     = document.getElementById('analyticsTotalViews');
+        this.refreshBtn  = document.getElementById('refreshAnalyticsBtn');
+        this.pageIcons   = {
+            index:    '🏠', resume:  '📄',
+            projects: '💼', contact: '✉️'
+        };
+        this.pageColors  = {
+            index:    '#4f8ef7', resume:  '#a78bfa',
+            projects: '#00f5ff', contact: '#f74f8e'
+        };
+    }
+
+    init() {
+        if (!this.grid) return;
+        this.load();
+        this.refreshBtn?.addEventListener('click', () => this.load());
+    }
+
+    load() {
+        if (this.grid) {
+            this.grid.innerHTML = '<div class="analytics-loading"><div class="loading-spinner"></div><p>Loading...</p></div>';
+        }
+
+        db.collection(COLLECTIONS.CONFIG).doc('pageAnalytics')
+            .get()
+            .then((doc) => {
+                const data = doc.exists ? doc.data() : {};
+                this.render(data);
+            })
+            .catch(() => {
+                if (this.grid) this.grid.innerHTML = '<p class="analytics-error">Failed to load analytics.</p>';
+            });
+    }
+
+    render(data) {
+        const pages   = ['index', 'resume', 'projects', 'contact'];
+        const names   = { index: 'Home', resume: 'Resume', projects: 'Work', contact: 'Contact' };
+        const counts  = pages.map(p => ({ key: p, name: names[p], count: data[p] || 0 }));
+        const maxView = Math.max(...counts.map(p => p.count), 1);
+        const total   = counts.reduce((a, c) => a + c.count, 0);
+
+        if (this.totalEl) {
+            this.totalEl.textContent = total.toLocaleString();
+        }
+
+        this.grid.innerHTML = counts.map(({ key, name, count }) => {
+            const pct   = Math.round((count / maxView) * 100);
+            const color = this.pageColors[key] || '#4f8ef7';
+            const icon  = this.pageIcons[key]  || '📄';
+            const share = total > 0 ? Math.round((count / total) * 100) : 0;
+
+            return `
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <span class="analytics-page-icon">${icon}</span>
+                        <span class="analytics-page-name">${name}</span>
+                        <span class="analytics-share">${share}%</span>
+                    </div>
+                    <div class="analytics-count">${count.toLocaleString()}</div>
+                    <div class="analytics-bar-wrap">
+                        <div class="analytics-bar" style="--bar-w:${pct}%;--bar-color:${color}"></div>
+                    </div>
+                    <span class="analytics-views-label">views</span>
+                </div>
+            `;
+        }).join('');
+
+        // Animate bars
+        requestAnimationFrame(() => {
+            this.grid.querySelectorAll('.analytics-bar').forEach((el, i) => {
+                setTimeout(() => el.classList.add('analytics-bar-animate'), i * 100);
+            });
+        });
+    }
+}

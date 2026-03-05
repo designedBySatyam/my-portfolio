@@ -432,26 +432,73 @@
   font-size: 0.7rem;
 }
 
-/* ── Shake animation on empty submit ────────────────────────── */
-@keyframes shake {
-  0%        { transform: translateX(0); }
-  15%       { transform: translateX(-7px); }
-  30%       { transform: translateX(6px); }
-  45%       { transform: translateX(-5px); }
-  60%       { transform: translateX(4px); }
-  75%       { transform: translateX(-3px); }
-  90%       { transform: translateX(2px); }
-  100%      { transform: translateX(0); }
+/* ══════════════════════════════════════════════════
+   IST LIVE CLOCK
+══════════════════════════════════════════════════ */
+.ist-clock-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: border-color 0.3s;
+}
+.ist-clock-card:hover { border-color: var(--border-glow); }
+
+.ist-clock-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.submit-btn.shake {
-  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+.ist-label {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cyan);
 }
 
-.input-wrapper input.field-error,
-.input-wrapper textarea.field-error {
-  border-color: #f74f8e;
-  background: rgba(247, 79, 142, 0.05);
-  box-shadow: 0 0 0 3px rgba(247, 79, 142, 0.1);
-  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+.ist-time {
+  font-family: var(--font-mono);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.ist-date {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.ist-clock-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ist-globe {
+  stroke: var(--cyan);
+  opacity: 0.6;
+  animation: istSpin 20s linear infinite;
+}
+@keyframes istSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.ist-zone {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-align: center;
 }

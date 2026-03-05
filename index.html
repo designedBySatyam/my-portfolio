@@ -23,7 +23,7 @@
   <title>Satyam Pandey | Creative Developer</title>
   <!-- Manifest & Icons -->
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/designedBySatyam/assets/main/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -107,6 +107,9 @@
           </a>
         </div>
 
+        <!-- Now Playing Widget -->
+        <div id="nowPlayingSlot" hidden></div>
+
       </aside>
 
       <section class="hero-text">
@@ -186,6 +189,10 @@
             <span class="metric-value">2028</span>
             <span class="metric-label">Graduation</span>
           </div>
+          <div class="metric visitor-metric">
+            <span class="metric-value" id="visitorCount">—</span>
+            <span class="metric-label">Visitors</span>
+          </div>
         </div>
       </section>
     </div>
@@ -193,5 +200,9 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/script.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/features.js"></script>
 </body>
 </html>
