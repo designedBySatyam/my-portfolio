@@ -35,14 +35,17 @@ db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
     }
 });
 
-// Initialize Auth with explicit LOCAL persistence
-//   LOCAL  = survives browser restarts (best for admin)
-//   SESSION = cleared when tab closes
-//   NONE   = in-memory only
-const auth = firebase.auth();
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
-    console.warn('Auth persistence error:', err.message);
-});
+// Initialize Auth when auth SDK is loaded on the page.
+// Some public pages include only app + firestore for lighter payload.
+let auth = null;
+if (typeof firebase.auth === 'function') {
+    auth = firebase.auth();
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
+        console.warn('Auth persistence error:', err.message);
+    });
+} else {
+    console.warn('Firebase Auth SDK not loaded on this page; auth features disabled.');
+}
 
 // Collection names
 const COLLECTIONS = {
