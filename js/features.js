@@ -69,23 +69,41 @@
 
 /* ══════════════════════════════════════════════════
    FIREBASE-DEPENDENT FEATURES
-   (waits up to 3s for window.db to be ready)
+   Robust init for slower mobile/script loads
 ══════════════════════════════════════════════════ */
-function waitForDb(cb, attempts = 0) {
-  if (window.db && window.COLLECTIONS) {
-    cb();
-  } else if (attempts < 30) {
-    setTimeout(() => waitForDb(cb, attempts + 1), 100);
-  }
-}
+let firebaseFeaturesInitialized = false;
 
-waitForDb(() => {
+function initFirebaseFeaturesOnce() {
+  if (firebaseFeaturesInitialized) return true;
+  if (!window.db || !window.COLLECTIONS) return false;
+
+  firebaseFeaturesInitialized = true;
   initOpenToWork();
   initNowPlaying();
   initVisitorCounter();
   initPageAnalytics();
   initCurrentlyBuilding();
-});
+  return true;
+}
+
+if (!initFirebaseFeaturesOnce()) {
+  const startedAt = Date.now();
+  const intervalId = setInterval(() => {
+    const ready = initFirebaseFeaturesOnce();
+    const timedOut = Date.now() - startedAt > 20000;
+    if (ready || timedOut) {
+      clearInterval(intervalId);
+      if (timedOut && !ready) {
+        console.warn('Firebase features could not initialize (db unavailable).');
+      }
+    }
+  }, 250);
+
+  window.addEventListener('firebase-ready', () => {
+    initFirebaseFeaturesOnce();
+    clearInterval(intervalId);
+  }, { once: true });
+}
 
 
 /* ══════════════════════════════════════════════════

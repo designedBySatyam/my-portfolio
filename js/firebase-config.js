@@ -59,4 +59,5 @@ if (typeof window !== 'undefined') {
     window.db = db;
     window.auth = auth;
     window.COLLECTIONS = COLLECTIONS;
+    window.dispatchEvent(new Event('firebase-ready'));
 }
