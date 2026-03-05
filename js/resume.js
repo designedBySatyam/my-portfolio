@@ -224,6 +224,32 @@ class LeetCodeStats {
     }
 }
 
+
+/* ══════════════════════════════════════════════════
+   CHAPTER NAV SCROLL SPY
+══════════════════════════════════════════════════ */
+(function initChapterSpy() {
+  const links    = document.querySelectorAll('.ch-link');
+  if (!links.length) return;
+
+  const sections = [...links].map(l => {
+    const id = l.dataset.section;
+    return { el: document.getElementById(id), link: l };
+  }).filter(s => s.el);
+
+  const activate = (id) => {
+    links.forEach(l => l.classList.toggle('active', l.dataset.section === id));
+  };
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) activate(entry.target.id);
+    });
+  }, { threshold: 0.25, rootMargin: '-60px 0px -40% 0px' });
+
+  sections.forEach(s => obs.observe(s.el));
+})();
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
     new SkillAnimations();

@@ -1,30 +1,25 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Résumé of Satyam Pandey — BTech CSE student, creative developer specialising in web and full-stack development.">
   <meta name="robots" content="index, follow">
-  <!-- Open Graph -->
   <meta property="og:type"        content="website">
   <meta property="og:site_name"   content="Satyam Pandey">
   <meta property="og:title"       content="Resume | Satyam Pandey">
   <meta property="og:description" content="Skills, education and experience of Satyam Pandey, creative developer.">
   <meta property="og:image"       content="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/og-image.webp">
-  <meta property="og:url"         content="https://satyampandey.dev/pages/resume.html">
-  <!-- Twitter Card -->
+  <meta property="og:url"         content="https://satyam-pandey27.netlify.app/pages/resume.html">
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="Resume | Satyam Pandey">
   <meta name="twitter:description" content="Skills, education and experience of Satyam Pandey, creative developer.">
   <meta name="twitter:image"       content="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/og-image.webp">
   <link rel="canonical" href="https://satyam-pandey27.netlify.app/pages/resume.html">
   <meta name="theme-color" content="#020510">
-  <!-- Title -->
   <title>Resume | Satyam Pandey</title>
-  <!-- Manifest & Icons -->
   <link rel="manifest" href="../manifest.json">
-  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
-  <!-- Fonts -->
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/designedBySatyam/assets/main/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
@@ -32,7 +27,6 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/resume.css">
-  <!-- Nav component — must load before script.js -->
   <script src="../js/nav.js"></script>
 </head>
 <body>
@@ -42,378 +36,464 @@
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
 
-  <!-- Navigation — injected by js/nav.js -->
   <div id="site-nav"></div>
 
-  <main class="resume-main">
-    <header class="resume-hero">
-      <div class="section-tag resume-tag">CAREER DOSSIER</div>
-      <div class="resume-hero-grid">
-        <div class="hero-primary">
-          <h1 class="resume-title">
-            <span class="title-bracket">&lt;</span>
-            SATYAM PANDEY
-            <span class="title-bracket">/&gt;</span>
+  <!-- Sticky chapter nav -->
+  <nav class="chapter-nav" id="chapterNav" aria-label="Resume sections">
+    <div class="chapter-nav-inner">
+      <a class="ch-link active" href="#hero" data-section="hero">
+        <span class="ch-num">00</span>
+        <span class="ch-label">Identity</span>
+      </a>
+      <a class="ch-link" href="#education" data-section="education">
+        <span class="ch-num">01</span>
+        <span class="ch-label">Education</span>
+      </a>
+      <a class="ch-link" href="#skills" data-section="skills">
+        <span class="ch-num">02</span>
+        <span class="ch-label">Skills</span>
+      </a>
+      <a class="ch-link" href="#highlights" data-section="highlights">
+        <span class="ch-num">03</span>
+        <span class="ch-label">Highlights</span>
+      </a>
+      <a class="ch-link" href="#focus" data-section="focus">
+        <span class="ch-num">04</span>
+        <span class="ch-label">Focus</span>
+      </a>
+      <a class="ch-link" href="#activity" data-section="activity">
+        <span class="ch-num">05</span>
+        <span class="ch-label">Activity</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="resume-main" id="resumeMain">
+
+    <!-- ══ 00 · IDENTITY ══════════════════════════════════════ -->
+    <section class="rs-section rs-hero" id="hero">
+      <div class="rs-section-bg-num" aria-hidden="true">00</div>
+
+      <div class="rs-hero-top">
+        <span class="rs-eyebrow">// CAREER DOSSIER · 2026</span>
+        <div class="rs-hero-actions">
+          <a href="https://raw.githubusercontent.com/designedBySatyam/assets/main/pdfs/Satyam_Pandey_Resume.pdf"
+             download class="rs-btn rs-btn-primary" id="downloadCvBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            DOWNLOAD CV
+          </a>
+          <a href="contact.html" class="rs-btn rs-btn-ghost">LET'S CONNECT ↗</a>
+        </div>
+      </div>
+
+      <div class="rs-hero-body">
+        <div class="rs-hero-name-wrap">
+          <h1 class="rs-name">
+            <span class="rs-name-line">SATYAM</span>
+            <span class="rs-name-line rs-name-outline">PANDEY</span>
           </h1>
-          <p class="resume-subtitle">BTech Computer Science and Engineering (2024-2028)</p>
-          <p class="objective-text">
-            Computer Science student focused on frontend engineering, problem-solving, and immersive user experiences.
-            Seeking opportunities to build reliable products with strong design execution and clean code quality.
-          </p>
-          <div class="hero-actions">
-            <a href="https://raw.githubusercontent.com/designedBySatyam/assets/main/pdfs/Satyam_Pandey_Resume.pdf" download class="download-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              DOWNLOAD CV
-            </a>
-            <a href="contact.html" class="contact-btn">
-              LET'S CONNECT
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </a>
+          <div class="rs-hero-role">
+            <span class="rs-role-badge">Creative Developer</span>
+            <span class="rs-role-badge">Frontend Engineer</span>
+            <span class="rs-role-badge">Three.js Specialist</span>
           </div>
         </div>
 
-        <aside class="hero-side">
-          <section class="resume-card status-card">
-            <h2 class="status-title">AT A GLANCE</h2>
-            <div class="stat-grid">
-              <article class="stat-item">
-                <span class="stat-value">4th</span>
-                <span class="stat-label">Semester</span>
-              </article>
-              <article class="stat-item">
-                <span class="stat-value">2028</span>
-                <span class="stat-label">Graduation</span>
-              </article>
-              <article class="stat-item">
-                <span class="stat-value">Open</span>
-                <span class="stat-label">Opportunities</span>
-              </article>
-            </div>
-            <div class="meta-list">
-              <div class="meta-row">
-                <span class="meta-key">Email</span>
-                <a href="mailto:hello.satyam27@gmail.com" class="meta-value">hello.satyam27@gmail.com</a>
-              </div>
-              <div class="meta-row">
-                <span class="meta-key">GitHub</span>
-                <a href="https://github.com/designedBySatyam" target="_blank" rel="noopener" class="meta-value">@designedBySatyam</a>
-              </div>
-              <div class="meta-row">
-                <span class="meta-key">LinkedIn</span>
-                <a href="https://www.linkedin.com/in/satyampandey27" target="_blank" rel="noopener" class="meta-value">satyampandey27</a>
-              </div>
-            </div>
-          </section>
-        </aside>
-      </div>
-    </header>
+        <div class="rs-hero-right">
+          <p class="rs-objective">
+            Computer Science student focused on frontend engineering,
+            problem-solving, and immersive user experiences. Seeking
+            opportunities to build reliable products with strong design
+            execution and clean code quality.
+          </p>
 
-    <div class="resume-layout">
-      <aside class="resume-column">
-        <section class="resume-card resume-section">
-          <h2 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-            </svg>
-            <span>EDUCATION</span>
-          </h2>
-          <div class="timeline">
-            <article class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content">
-                <span class="timeline-year">2024 - 2028</span>
-                <h3 class="timeline-title">Bachelor of Technology (CSE)</h3>
-                <p class="timeline-institution">Aditya Silver Oak Institute</p>
-                <p class="timeline-detail">Currently in 4th Semester</p>
-              </div>
-            </article>
-            <article class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content">
-                <span class="timeline-year">Completed</span>
-                <h3 class="timeline-title">Higher Secondary Education</h3>
-                <p class="timeline-institution">Scottish Central School</p>
-                <p class="timeline-detail">Score: <span class="highlight-score">67%</span></p>
-              </div>
-            </article>
+          <div class="rs-meta-grid">
+            <div class="rs-meta-item">
+              <span class="rs-meta-key">Programme</span>
+              <span class="rs-meta-val">BTech · CSE · 2024–2028</span>
+            </div>
+            <div class="rs-meta-item">
+              <span class="rs-meta-key">Email</span>
+              <a href="mailto:hello.satyam27@gmail.com" class="rs-meta-val rs-meta-link">hello.satyam27@gmail.com</a>
+            </div>
+            <div class="rs-meta-item">
+              <span class="rs-meta-key">GitHub</span>
+              <a href="https://github.com/designedBySatyam" target="_blank" rel="noopener" class="rs-meta-val rs-meta-link">@designedBySatyam</a>
+            </div>
+            <div class="rs-meta-item">
+              <span class="rs-meta-key">LinkedIn</span>
+              <a href="https://www.linkedin.com/in/satyampandey27" target="_blank" rel="noopener" class="rs-meta-val rs-meta-link">satyampandey27</a>
+            </div>
+            <div class="rs-meta-item">
+              <span class="rs-meta-key">Status</span>
+              <span class="rs-meta-val rs-status-open">
+                <span class="rs-status-dot"></span>Open to Opportunities
+              </span>
+            </div>
           </div>
-        </section>
+        </div>
+      </div>
 
-        <section class="resume-card resume-section">
-          <h2 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            <span>SOFT SKILLS</span>
-          </h2>
-          <div class="skills-grid">
-            <div class="skill-item">
+      <div class="rs-hero-stats">
+        <div class="rs-stat">
+          <span class="rs-stat-val">4th</span>
+          <span class="rs-stat-key">Semester</span>
+        </div>
+        <div class="rs-stat-divider"></div>
+        <div class="rs-stat">
+          <span class="rs-stat-val">2028</span>
+          <span class="rs-stat-key">Graduation</span>
+        </div>
+        <div class="rs-stat-divider"></div>
+        <div class="rs-stat">
+          <span class="rs-stat-val">CSE</span>
+          <span class="rs-stat-key">Major</span>
+        </div>
+        <div class="rs-stat-divider"></div>
+        <div class="rs-stat">
+          <span class="rs-stat-val" id="visitorCount">—</span>
+          <span class="rs-stat-key">Visitors</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 01 · EDUCATION ════════════════════════════════════ -->
+    <section class="rs-section" id="education" data-animate>
+      <div class="rs-section-bg-num" aria-hidden="true">01</div>
+      <header class="rs-section-header">
+        <div class="rs-section-label">
+          <span class="rs-section-num">01</span>
+          <span class="rs-section-title">Education</span>
+        </div>
+        <div class="rs-section-line"></div>
+      </header>
+
+      <div class="rs-edu-grid">
+        <article class="rs-edu-card rs-edu-current">
+          <div class="rs-edu-year-band">
+            <span class="rs-edu-year-big">2024</span>
+            <span class="rs-edu-year-sep">→</span>
+            <span class="rs-edu-year-big rs-year-accent">2028</span>
+          </div>
+          <div class="rs-edu-content">
+            <div class="rs-edu-badge">CURRENT</div>
+            <h3 class="rs-edu-degree">Bachelor of Technology</h3>
+            <p class="rs-edu-field">Computer Science &amp; Engineering</p>
+            <p class="rs-edu-institution">Aditya Silver Oak Institute of Technology</p>
+            <div class="rs-edu-tags">
+              <span class="rs-edu-tag">4th Semester</span>
+              <span class="rs-edu-tag">Full-time</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="rs-edu-card">
+          <div class="rs-edu-year-band">
+            <span class="rs-edu-year-big">HSC</span>
+          </div>
+          <div class="rs-edu-content">
+            <div class="rs-edu-badge rs-badge-done">COMPLETED</div>
+            <h3 class="rs-edu-degree">Higher Secondary Education</h3>
+            <p class="rs-edu-field">Science Stream</p>
+            <p class="rs-edu-institution">Scottish Central School</p>
+            <div class="rs-edu-tags">
+              <span class="rs-edu-tag">Score: 67%</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══ 02 · SKILLS ══════════════════════════════════════ -->
+    <section class="rs-section" id="skills" data-animate>
+      <div class="rs-section-bg-num" aria-hidden="true">02</div>
+      <header class="rs-section-header">
+        <div class="rs-section-label">
+          <span class="rs-section-num">02</span>
+          <span class="rs-section-title">Skills</span>
+        </div>
+        <div class="rs-section-line"></div>
+      </header>
+
+      <div class="rs-skills-layout">
+
+        <div class="rs-skill-group">
+          <h3 class="rs-skill-category">
+            <span class="rs-skill-cat-line"></span>
+            Core Languages
+          </h3>
+          <div class="rs-skill-bars">
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">C++ <span>85%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:85%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">Java <span>80%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">Python <span>75%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:75%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">DSA <span>70%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:70%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-skill-group">
+          <h3 class="rs-skill-category">
+            <span class="rs-skill-cat-line"></span>
+            Web Development
+          </h3>
+          <div class="rs-skill-bars">
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">HTML &amp; CSS <span>90%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:90%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">JavaScript <span>80%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">Three.js <span>72%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:72%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-skill-group">
+          <h3 class="rs-skill-category">
+            <span class="rs-skill-cat-line"></span>
+            Tools &amp; Databases
+          </h3>
+          <div class="rs-skill-bars">
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">MySQL <span>80%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">Git <span>75%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:75%"></div></div>
+            </div>
+            <div class="skill-item" data-animate>
+              <div class="skill-icon">Firebase <span>70%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="--skill-width:70%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-skill-group rs-skill-group-soft">
+          <h3 class="rs-skill-category">
+            <span class="rs-skill-cat-line"></span>
+            Soft Skills
+          </h3>
+          <div class="rs-skill-bars">
+            <div class="skill-item" data-animate>
               <div class="skill-icon">Problem Solving <span>90%</span></div>
               <div class="skill-bar"><div class="skill-fill" style="--skill-width:90%"></div></div>
             </div>
-            <div class="skill-item">
+            <div class="skill-item" data-animate>
               <div class="skill-icon">Teamwork <span>85%</span></div>
               <div class="skill-bar"><div class="skill-fill" style="--skill-width:85%"></div></div>
             </div>
-            <div class="skill-item">
+            <div class="skill-item" data-animate>
               <div class="skill-icon">Communication <span>80%</span></div>
               <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
             </div>
-            <div class="skill-item">
+            <div class="skill-item" data-animate>
               <div class="skill-icon">Adaptability <span>88%</span></div>
               <div class="skill-bar"><div class="skill-fill" style="--skill-width:88%"></div></div>
             </div>
           </div>
-          <div class="soft-tags">
-            <span class="soft-tag">Ownership</span>
-            <span class="soft-tag">Consistency</span>
-            <span class="soft-tag">Learning Mindset</span>
+          <div class="rs-soft-tags">
+            <span class="rs-soft-tag">Ownership</span>
+            <span class="rs-soft-tag">Consistency</span>
+            <span class="rs-soft-tag">Learning Mindset</span>
           </div>
-        </section>
+        </div>
 
-        <a href="projects.html#certificates" class="certs-link-section">
-          <div class="certs-link-text">
-            <div class="certs-link-title">Certifications and Badges</div>
-            <div class="certs-link-sub">AWS, IBM, Django, Python - view full list on Projects</div>
-          </div>
-          <svg class="certs-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="7" y1="17" x2="17" y2="7"/>
-            <polyline points="7 7 17 7 17 17"/>
+      </div>
+
+      <!-- Certs link -->
+      <a href="projects.html#certificates" class="rs-certs-strip">
+        <div class="rs-certs-strip-left">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="7"/>
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
           </svg>
-        </a>
-
-        <section class="resume-card resume-section focus-panel">
-          <h2 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2v20"/>
-              <path d="M2 12h20"/>
-              <path d="M6 6l12 12"/>
-              <path d="M18 6L6 18"/>
-            </svg>
-            <span>CURRENT FOCUS</span>
-          </h2>
-          <div class="focus-list">
-            <article class="focus-item">
-              <span class="focus-chip">Frontend Systems</span>
-              <p>Building reusable UI patterns, consistent components, and clean architecture for multi-page projects.</p>
-            </article>
-            <article class="focus-item">
-              <span class="focus-chip">3D Interactions</span>
-              <p>Improving Three.js visual storytelling with smoother motion and better rendering performance.</p>
-            </article>
-            <article class="focus-item">
-              <span class="focus-chip">Problem Solving</span>
-              <p>Practicing data structures and algorithmic thinking to improve implementation speed and code quality.</p>
-            </article>
+          <div>
+            <div class="rs-certs-title">Certifications &amp; Badges</div>
+            <div class="rs-certs-sub">AWS Academy · IBM · Django · Python — view all on Work page</div>
           </div>
-        </section>
-      </aside>
-
-      <section class="resume-column">
-        <section class="resume-card resume-section">
-          <h2 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="16 18 22 12 16 6"/>
-              <polyline points="8 6 2 12 8 18"/>
-            </svg>
-            <span>TECHNICAL SKILLS</span>
-          </h2>
-
-          <div class="skill-group">
-            <h3 class="skill-category">Core Languages</h3>
-            <div class="skills-grid">
-              <div class="skill-item">
-                <div class="skill-icon">C++ <span>85%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:85%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">Java <span>80%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">Python <span>75%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:75%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">DSA <span>70%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:70%"></div></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="skill-group">
-            <h3 class="skill-category">Web Development</h3>
-            <div class="skills-grid">
-              <div class="skill-item">
-                <div class="skill-icon">HTML and CSS <span>90%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:90%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">JavaScript <span>80%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">Three.js <span>72%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:72%"></div></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="skill-group">
-            <h3 class="skill-category">Tools and Databases</h3>
-            <div class="skills-grid">
-              <div class="skill-item">
-                <div class="skill-icon">MySQL <span>80%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">Git <span>75%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:75%"></div></div>
-              </div>
-              <div class="skill-item">
-                <div class="skill-icon">Firebase <span>70%</span></div>
-                <div class="skill-bar"><div class="skill-fill" style="--skill-width:70%"></div></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="resume-card resume-section">
-          <h2 class="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20h9"/>
-              <path d="M12 4h9"/>
-              <path d="M4 9h16"/>
-              <path d="M4 15h16"/>
-            </svg>
-            <span>HIGHLIGHTS</span>
-          </h2>
-          <ul class="highlight-list">
-            <li>Built and maintain a multi-page portfolio with animated 3D visuals and responsive UI components.</li>
-            <li>Strong hands-on practice in data structures, algorithms, and logic-first problem solving.</li>
-            <li>Comfortable shipping end-to-end frontend features with clean structure and reusable styling patterns.</li>
-            <li>Actively building projects around JavaScript, Three.js, and modern web performance practices.</li>
-          </ul>
-        </section>
-      </section>
-    </div>
-
-    <!-- Page Navigation -->
-    <nav class="page-navigation">
-      <a href="../index.html" class="nav-btn secondary">
+        </div>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </a>
+    </section>
+
+    <!-- ══ 03 · HIGHLIGHTS ══════════════════════════════════ -->
+    <section class="rs-section" id="highlights" data-animate>
+      <div class="rs-section-bg-num" aria-hidden="true">03</div>
+      <header class="rs-section-header">
+        <div class="rs-section-label">
+          <span class="rs-section-num">03</span>
+          <span class="rs-section-title">Highlights</span>
+        </div>
+        <div class="rs-section-line"></div>
+      </header>
+
+      <div class="rs-highlights-grid">
+        <article class="rs-highlight-card" data-animate>
+          <span class="rs-hl-num">01</span>
+          <p class="rs-hl-text">Built and maintain a multi-page portfolio with animated 3D visuals and responsive UI components.</p>
+        </article>
+        <article class="rs-highlight-card" data-animate>
+          <span class="rs-hl-num">02</span>
+          <p class="rs-hl-text">Strong hands-on practice in data structures, algorithms, and logic-first problem solving.</p>
+        </article>
+        <article class="rs-highlight-card" data-animate>
+          <span class="rs-hl-num">03</span>
+          <p class="rs-hl-text">Comfortable shipping end-to-end frontend features with clean structure and reusable styling patterns.</p>
+        </article>
+        <article class="rs-highlight-card" data-animate>
+          <span class="rs-hl-num">04</span>
+          <p class="rs-hl-text">Actively building projects around JavaScript, Three.js, and modern web performance practices.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══ 04 · CURRENT FOCUS ════════════════════════════════ -->
+    <section class="rs-section" id="focus" data-animate>
+      <div class="rs-section-bg-num" aria-hidden="true">04</div>
+      <header class="rs-section-header">
+        <div class="rs-section-label">
+          <span class="rs-section-num">04</span>
+          <span class="rs-section-title">Current Focus</span>
+        </div>
+        <div class="rs-section-line"></div>
+      </header>
+
+      <div class="rs-focus-list">
+        <article class="rs-focus-item" data-animate>
+          <div class="rs-focus-header">
+            <span class="rs-focus-chip">Frontend Systems</span>
+            <span class="rs-focus-arrow">→</span>
+          </div>
+          <p class="rs-focus-desc">Building reusable UI patterns, consistent components, and clean architecture for multi-page projects.</p>
+        </article>
+        <article class="rs-focus-item" data-animate>
+          <div class="rs-focus-header">
+            <span class="rs-focus-chip">3D Interactions</span>
+            <span class="rs-focus-arrow">→</span>
+          </div>
+          <p class="rs-focus-desc">Improving Three.js visual storytelling with smoother motion and better rendering performance.</p>
+        </article>
+        <article class="rs-focus-item" data-animate>
+          <div class="rs-focus-header">
+            <span class="rs-focus-chip">Problem Solving</span>
+            <span class="rs-focus-arrow">→</span>
+          </div>
+          <p class="rs-focus-desc">Practicing data structures and algorithmic thinking to improve implementation speed and code quality.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══ 05 · ACTIVITY ════════════════════════════════════ -->
+    <section class="rs-section rs-activity-section" id="activity" data-animate>
+      <div class="rs-section-bg-num" aria-hidden="true">05</div>
+      <header class="rs-section-header">
+        <div class="rs-section-label">
+          <span class="rs-section-num">05</span>
+          <span class="rs-section-title">Activity</span>
+        </div>
+        <div class="rs-section-line"></div>
+      </header>
+
+      <!-- LeetCode -->
+      <div class="rs-activity-block">
+        <div class="rs-activity-block-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+          </svg>
+          LeetCode Stats
+        </div>
+        <div class="lc-stats-grid" id="lcStatsGrid">
+          <div class="lc-loading">
+            <div class="loading-spinner" style="width:24px;height:24px;margin:0 auto 8px"></div>
+            <p>Fetching stats...</p>
+          </div>
+        </div>
+        <a href="https://leetcode.com/satyam-pandey27" target="_blank" rel="noopener" class="rs-activity-link">
+          View LeetCode profile ↗
+        </a>
+      </div>
+
+      <!-- WakaTime -->
+      <div class="rs-activity-block">
+        <div class="rs-activity-block-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm-.5 4v6.5l5.5 3.3-.8 1.3-6.2-3.7V6h1.5z"/>
+          </svg>
+          WakaTime · Last 7 Days
+        </div>
+        <div class="waka-graph-wrap">
+          <img
+            src="https://wakatime.com/share/@satyam_pandey27/0195e7bc-02ad-4a14-9fca-e0f756db3de1.svg"
+            alt="WakaTime coding activity chart"
+            loading="lazy"
+            class="waka-chart"
+            onerror="this.closest('.waka-graph-wrap').innerHTML='<p class=\'waka-fallback\'>WakaTime stats unavailable — ensure your profile is public</p>'"
+          >
+        </div>
+        <a href="https://wakatime.com/@satyam_pandey27" target="_blank" rel="noopener" class="rs-activity-link">
+          View WakaTime profile ↗
+        </a>
+      </div>
+
+      <!-- GitHub -->
+      <div class="rs-activity-block">
+        <div class="rs-activity-block-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub Contributions
+        </div>
+        <div class="github-graph-wrap">
+          <img
+            src="https://ghchart.rshah.org/4f8ef7/designedBySatyam"
+            alt="GitHub contribution graph"
+            loading="lazy"
+            onerror="this.closest('.github-graph-wrap').innerHTML='<p style=\'font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim);text-align:center;padding:20px\'>Activity graph unavailable</p>'"
+          >
+        </div>
+        <a href="https://github.com/designedBySatyam" target="_blank" rel="noopener" class="rs-activity-link">
+          @designedBySatyam — View full profile ↗
+        </a>
+      </div>
+    </section>
+
+    <!-- Page nav -->
+    <nav class="rs-page-nav">
+      <a href="../index.html" class="rs-btn rs-btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
         </svg>
         BACK HOME
       </a>
-      <a href="projects.html" class="nav-btn primary">
-        VIEW PROJECTS
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <a href="projects.html" class="rs-btn rs-btn-primary">
+        VIEW WORK
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
         </svg>
       </a>
     </nav>
-
-
-  <!-- GitHub Activity -->
-  <section class="github-activity" aria-label="GitHub contribution activity">
-    <div class="github-activity-inner">
-      <div class="github-activity-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-        <h2>GITHUB ACTIVITY</h2>
-      </div>
-      <div class="github-graph-wrap">
-        <img
-          src="https://ghchart.rshah.org/4f8ef7/designedBySatyam"
-          alt="Satyam Pandey's GitHub contribution graph"
-          loading="lazy"
-          onerror="this.closest('.github-graph-wrap').innerHTML='<p style='font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim);text-align:center;padding:20px'>Activity graph unavailable</p>'"
-        >
-      </div>
-      <a
-        href="https://github.com/designedBySatyam"
-        target="_blank"
-        rel="noopener"
-        class="github-profile-link"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-        @designedBySatyam — View full profile ↗
-      </a>
-    </div>
-  </section>
-
-
-  <!-- ── LeetCode Stats ─────────────────────────────── -->
-  <section class="coding-stats-section" aria-label="LeetCode statistics">
-    <div class="coding-stats-inner">
-      <div class="coding-stats-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
-        </svg>
-        <h2>LEETCODE STATS</h2>
-        <span class="stats-username" id="leetcodeUsername">@satyam-pandey27</span>
-      </div>
-
-      <div class="lc-stats-grid" id="lcStatsGrid">
-        <div class="lc-stat-card lc-loading">
-          <div class="loading-spinner" style="width:28px;height:28px;margin:0 auto 8px"></div>
-          <p>Loading stats...</p>
-        </div>
-      </div>
-
-      <a href="https://leetcode.com/satyam-pandey27" target="_blank" rel="noopener" class="coding-profile-link">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-        </svg>
-        View LeetCode profile ↗
-      </a>
-    </div>
-  </section>
-
-  <!-- ── WakaTime Activity ──────────────────────────── -->
-  <section class="coding-stats-section waka-section" aria-label="WakaTime coding activity">
-    <div class="coding-stats-inner">
-      <div class="coding-stats-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm-.5 4v6.5l5.5 3.3-.8 1.3-6.2-3.7V6h1.5z"/>
-        </svg>
-        <h2>WAKATIME ACTIVITY</h2>
-        <span class="stats-username">Last 7 days</span>
-      </div>
-
-      <div class="waka-graph-wrap">
-        <img
-          src="https://wakatime.com/share/@satyam_pandey27/0195e7bc-02ad-4a14-9fca-e0f756db3de1.svg"
-          alt="WakaTime coding activity chart"
-          loading="lazy"
-          class="waka-chart"
-          onerror="this.closest('.waka-graph-wrap').innerHTML='<p class=\'waka-fallback\'>WakaTime stats unavailable — make sure your profile is public</p>'"
-        >
-      </div>
-
-      <a href="https://wakatime.com/@satyam_pandey27" target="_blank" rel="noopener" class="coding-profile-link">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-        </svg>
-        View WakaTime profile ↗
-      </a>
-    </div>
-  </section>
 
   </main>
 
@@ -421,6 +501,9 @@
   <script src="../js/script.js"></script>
   <script src="../js/shared-utils.js"></script>
   <script src="../js/resume.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
   <script src="../js/features.js"></script>
 </body>
 </html>

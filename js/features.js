@@ -167,14 +167,17 @@ function initVisitorCounter() {
     }
   } catch (_) {}
 
-  // Live display
+  // Live display — also handles first-ever visit when doc doesn't exist yet
   ref.onSnapshot((doc) => {
-    if (!doc.exists) return;
-    const count = doc.data()?.visitors || 0;
+    const count = doc.exists ? (doc.data()?.visitors || 0) : 0;
+    // Show 0 on first visit rather than keeping the dash
     el.textContent = count >= 1000
       ? (count / 1000).toFixed(1) + 'k'
-      : count;
-  }, () => {});
+      : String(count);
+  }, () => {
+    // Snapshot failed (offline / permissions) — show dash
+    el.textContent = '—';
+  });
 }
 
 function escHtml(str) {
