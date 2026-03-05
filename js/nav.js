@@ -14,13 +14,13 @@
    * From root (index.html):
    *   home     → index.html
    *   resume   → pages/resume.html
-   *   projects → pages/projects.html
+   *   work     → pages/work.html
    *   contact  → pages/contact.html
    *
-   * From pages/ (resume.html, projects.html, etc.):
+   * From pages/ (resume.html, work.html, etc.):
    *   home     → ../index.html
    *   resume   → resume.html          ← same dir, NO ../ prefix
-   *   projects → projects.html        ← same dir, NO ../ prefix
+   *   work     → work.html        ← same dir, NO ../ prefix
    *   contact  → contact.html         ← same dir, NO ../ prefix
    */
   const inPages = window.location.pathname.includes('/pages/');
@@ -28,7 +28,7 @@
   const href = {
     home:     inPages ? '../index.html'    : 'index.html',
     resume:   inPages ? 'resume.html'      : 'pages/resume.html',
-    projects: inPages ? 'projects.html'    : 'pages/projects.html',
+    work: inPages ? 'work.html'    : 'pages/work.html',
     contact:  inPages ? 'contact.html'     : 'pages/contact.html',
   };
 
@@ -60,7 +60,7 @@
   <div class="nav-links" role="list">
     <a href="${href.home}"     class="nav-link${a('index')}"    role="listitem"${c('index')}>Home</a>
     <a href="${href.resume}"   class="nav-link${a('resume')}"   role="listitem"${c('resume')}>Resume</a>
-    <a href="${href.projects}" class="nav-link${a('projects')}" role="listitem"${c('projects')}>Projects</a>
+    <a href="${href.work}" class="nav-link${a('work')}" role="listitem"${c('work')}>Work</a>
     <a href="${href.contact}"  class="nav-link${a('contact')}"  role="listitem"${c('contact')}>Contact</a>
   </div>
 
@@ -89,7 +89,7 @@
   <div class="nav-drawer" id="navDrawer" aria-hidden="true">
     <a href="${href.home}"     class="drawer-link${a('index')}"${c('index')}>Home</a>
     <a href="${href.resume}"   class="drawer-link${a('resume')}"${c('resume')}>Resume</a>
-    <a href="${href.projects}" class="drawer-link${a('projects')}"${c('projects')}>Projects</a>
+    <a href="${href.work}" class="drawer-link${a('work')}"${c('work')}>Work</a>
     <a href="${href.contact}"  class="drawer-link${a('contact')}"${c('contact')}>Contact</a>
   </div>
 
@@ -115,22 +115,32 @@
     const drawer = document.getElementById('navDrawer');
     if (!toggle || !drawer) return;
 
+    // Create backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'nav-backdrop';
+    document.body.appendChild(backdrop);
+
     const open = () => {
       drawer.classList.add('open');
+      backdrop.classList.add('active');
       toggle.classList.add('is-open');
       toggle.setAttribute('aria-expanded', 'true');
       toggle.setAttribute('aria-label', 'Close navigation menu');
       drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
     };
     const close = () => {
       drawer.classList.remove('open');
+      backdrop.classList.remove('active');
       toggle.classList.remove('is-open');
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-label', 'Open navigation menu');
       drawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
     };
 
     toggle.addEventListener('click', () => drawer.classList.contains('open') ? close() : open());
+    backdrop.addEventListener('click', close);
     drawer.querySelectorAll('.drawer-link').forEach(l => l.addEventListener('click', close));
     document.addEventListener('click', (e) => {
       const nav = document.querySelector('.nav-container');

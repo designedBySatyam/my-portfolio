@@ -9,6 +9,31 @@
  */
 
 /* ══════════════════════════════════════════════════
+   BACK TO TOP BUTTON
+══════════════════════════════════════════════════ */
+(function initBackToTop() {
+  const btn = document.createElement('button');
+  btn.id = 'backToTop';
+  btn.className = 'back-to-top';
+  btn.setAttribute('aria-label', 'Scroll back to top');
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>`;
+  document.body.appendChild(btn);
+
+  let visible = false;
+  window.addEventListener('scroll', () => {
+    const shouldShow = window.scrollY > 400;
+    if (shouldShow !== visible) {
+      visible = shouldShow;
+      btn.classList.toggle('visible', visible);
+    }
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+/* ══════════════════════════════════════════════════
    PAGE TRANSITIONS
 ══════════════════════════════════════════════════ */
 (function initPageTransitions() {
@@ -79,7 +104,6 @@ function initFirebaseFeaturesOnce() {
 
   firebaseFeaturesInitialized = true;
   initOpenToWork();
-  initNowPlaying();
   initVisitorCounter();
   initPageAnalytics();
   initCurrentlyBuilding();

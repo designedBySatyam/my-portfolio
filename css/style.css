@@ -1343,3 +1343,122 @@ html.page-exit {
   border-radius: 0 2px 2px 0;
   box-shadow: 0 0 8px rgba(0,245,255,0.4);
 }
+
+/* ══════════════════════════════════════════════════
+   MOBILE NAV BACKDROP
+══════════════════════════════════════════════════ */
+.nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 5, 16, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 89;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out-expo);
+}
+
+@media (max-width: 768px) {
+  .nav-backdrop { display: block; pointer-events: none; }
+  .nav-backdrop.active { opacity: 1; pointer-events: all; }
+}
+
+/* ══════════════════════════════════════════════════
+   BACK TO TOP BUTTON
+══════════════════════════════════════════════════ */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 800;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s, transform 0.3s var(--ease-out-expo),
+              border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.back-to-top:hover {
+  border-color: var(--border-glow);
+  color: var(--cyan);
+  box-shadow: 0 0 20px rgba(79, 142, 247, 0.25);
+}
+
+@media (max-width: 600px) {
+  .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+}
+
+/* ══════════════════════════════════════════════════
+   COMMAND PALETTE — NO RESULTS STATE
+══════════════════════════════════════════════════ */
+.cmd-no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 36px 24px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.cmd-no-results strong {
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════
+   LEETCODE SKELETON LOADING
+══════════════════════════════════════════════════ */
+@keyframes skelPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.9; }
+}
+
+.lc-skeleton {
+  animation: skelPulse 1.6s ease-in-out infinite;
+}
+
+.lc-skel-num {
+  display: block;
+  width: 48px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--border);
+  margin-bottom: 6px;
+}
+
+.lc-skel-label {
+  display: block;
+  width: 72px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--border);
+  margin-bottom: 12px;
+}
+
+.lc-skel-bar {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+}

@@ -30,7 +30,7 @@
       label: 'Go to Work',
       hint: 'Navigate',
       icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="15" x2="15" y2="15"/></svg>`,
-      action: () => navigate(`${root}pages/projects.html`)
+      action: () => navigate(`${root}pages/work.html`)
     },
     {
       id: 'contact',
@@ -173,7 +173,15 @@
           `;
         }).join('')}
       </div>
-    `).join('');
+    `).join('') || `
+      <div class="cmd-no-results">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <span>No results for "<strong>${q}</strong>"</span>
+      </div>
+    `;
 
     list.querySelectorAll('.cmd-item').forEach(btn => {
       btn.addEventListener('click', () => {
