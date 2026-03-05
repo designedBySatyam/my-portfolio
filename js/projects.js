@@ -193,25 +193,11 @@ class FirebaseProjects {
 
     loadProjects() {
         db.collection(COLLECTIONS.PROJECTS)
+            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const projects = [];
                 snapshot.forEach((doc) => projects.push({ id: doc.id, ...doc.data() }));
-
-                projects.sort((a, b) => {
-                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
-                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
-                    if (aOrder !== bOrder) return aOrder - bOrder;
-                    return String(a.title || '').localeCompare(String(b.title || ''));
-                });
-
                 this.allProjects = projects;
-                // Update projects count badge
-                const badge = document.getElementById('projectsCount');
-                if (badge) {
-                    badge.textContent = projects.length;
-                    badge.setAttribute('aria-label', `${projects.length} projects`);
-                    badge.classList.add('loaded');
-                }
                 this.renderTechChips();
                 this.applyProjectFilters();
             }, (error) => {
@@ -378,6 +364,26 @@ class FirebaseProjects {
         UrlState.set({ q: queryInput, status, sort: sortValue, tech: selectedTech });
     }
 
+    bindTechTagClicks() {
+        if (!this.projectsContainer) return;
+        // Remove old listener if any
+        if (this._techTagHandler) {
+            this.projectsContainer.removeEventListener('click', this._techTagHandler);
+        }
+        this._techTagHandler = (e) => {
+            const btn = e.target.closest('.tech-tag-btn');
+            if (!btn) return;
+            e.stopPropagation();
+            const tech = (btn.getAttribute('data-filter-tech') || '').toLowerCase();
+            // Toggle: clicking same tag again resets to All
+            this.selectedTechChip = this.selectedTechChip === tech ? '' : tech;
+            this.applyProjectFilters();
+            // Scroll to chips
+            this.techChips?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+        this.projectsContainer.addEventListener('click', this._techTagHandler);
+    }
+
     renderProjects(projects) {
         if (!this.projectsContainer) return;
 
@@ -417,7 +423,7 @@ class FirebaseProjects {
 
                     <div class="card-tech">
                         ${(technologies.length ? technologies : ['General']).map((tech) =>
-                            `<span class="tech-tag">${this.escapeHtml(tech)}</span>`
+                            `<button type="button" class="tech-tag tech-tag-btn" data-filter-tech="${this.escapeHtml(tech.toLowerCase())}" title="Filter by ${this.escapeHtml(tech)}">${this.escapeHtml(tech)}</button>`
                         ).join('')}
                     </div>
 
@@ -443,6 +449,7 @@ class FirebaseProjects {
             card.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
             });
+            card.querySelector('.card-link')?.addEventListener('click', (e) => e.stopPropagation());
         });
     }
 
@@ -572,16 +579,10 @@ class FirebaseCertificates {
 
     loadCertificates() {
         db.collection(COLLECTIONS.CERTIFICATES)
+            .orderBy('order', 'asc')
             .onSnapshot((snapshot) => {
                 const certificates = [];
                 snapshot.forEach((doc) => certificates.push({ id: doc.id, ...doc.data() }));
-
-                certificates.sort((a, b) => {
-                    const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : Number.MAX_SAFE_INTEGER;
-                    const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : Number.MAX_SAFE_INTEGER;
-                    if (aOrder !== bOrder) return aOrder - bOrder;
-                    return String(a.title || '').localeCompare(String(b.title || ''));
-                });
 
                 if (certificates.length === 0) {
                     this.showEmptyState();
@@ -600,16 +601,11 @@ class FirebaseCertificates {
 
         this.certificatesById = new Map(certificates.map((cert) => [cert.id, cert]));
 
-        // Update certificates count badge
-        const badge = document.getElementById('certificatesCount');
-        if (badge) {
-            badge.textContent = certificates.length;
-            badge.setAttribute('aria-label', `${certificates.length} certificates`);
-            badge.classList.add('loaded');
-        }
-
         this.certList.innerHTML = certificates.map((cert) => {
-            const thumb = this.getIconSVG(cert.issuer || cert.title || cert.icon || 'default');
+            const imageUrl = this.normalizeCertificateImagePath(cert.imageUrl);
+            const thumb = imageUrl
+                ? `<img src="${imageUrl}" alt="${this.escapeHtml(cert.title || 'Certificate')}" loading="lazy">`
+                : this.getIconSVG(cert.issuer || 'default');
 
             return `
                 <div class="cert-list-item" data-cert-id="${cert.id}" role="option" tabindex="0" aria-selected="false">
@@ -751,20 +747,7 @@ class FirebaseCertificates {
                 <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
             </svg>`
         };
-        const normalized = String(provider || 'default').toLowerCase();
-
-        let iconKey = normalized;
-        if (normalized.includes('aws')) {
-            iconKey = 'aws';
-        } else if (normalized.includes('ibm')) {
-            iconKey = 'ibm';
-        } else if (normalized.includes('microsoft') || normalized.includes('azure')) {
-            iconKey = 'microsoft';
-        } else if (!icons[normalized]) {
-            iconKey = 'default';
-        }
-
-        return icons[iconKey] || icons.default;
+        return icons[(provider || 'default').toLowerCase()] || icons.default;
     }
 
     escapeHtml(text) {
@@ -901,7 +884,10 @@ const CertLightbox = {
         if (!cert) return;
 
         const img = document.getElementById('certLightboxImg');
-        img.src = cert.imageUrl || '';
+        const imageUrl = window.PortfolioUtils?.normalizeCertificateImagePath
+            ? window.PortfolioUtils.normalizeCertificateImagePath(cert.imageUrl)
+            : String(cert.imageUrl || '').trim();
+        img.src = imageUrl;
         img.alt = cert.title || 'Certificate';
         document.getElementById('certLightboxTitle').textContent  = cert.title  || '';
         document.getElementById('certLightboxIssuer').textContent = cert.issuer || '';

@@ -596,3 +596,100 @@
     transform: none;
   }
 }
+
+/* ── "What I'm Building" card ── (added below) */
+
+/* ══════════════════════════════════════════════════
+   WHAT I'M BUILDING CARD
+══════════════════════════════════════════════════ */
+.wib-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 18px;
+  background: var(--surface);
+  border: 1px solid rgba(79,142,247,0.2);
+  border-radius: 10px;
+  margin-bottom: 4px;
+  animation: fadeInUp 0.4s var(--ease-out-expo) forwards;
+  flex-wrap: wrap;
+}
+
+.wib-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.wib-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  animation: wibPulse 2s ease-in-out infinite;
+}
+@keyframes wibPulse {
+  0%,100% { opacity:1; box-shadow: 0 0 6px var(--cyan); }
+  50%      { opacity:0.5; box-shadow: 0 0 14px var(--cyan); }
+}
+
+.wib-label {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+
+.wib-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wib-body::before {
+  content: '/';
+  font-family: var(--font-mono);
+  color: var(--border);
+  font-size: 0.9rem;
+}
+
+.wib-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wib-desc {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wib-link {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s;
+  margin-left: auto;
+}
+.wib-link:hover { color: var(--cyan); }
+
+[data-theme="light"] .wib-card {
+  border-color: rgba(79,142,247,0.25);
+}

@@ -43,6 +43,30 @@
 })();
 
 
+
+/* ══════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+══════════════════════════════════════════════════ */
+(function initScrollProgress() {
+  const bar = document.createElement('div');
+  bar.id = 'scrollProgress';
+  bar.className = 'scroll-progress';
+  document.body.appendChild(bar);
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const scrollTop  = window.scrollY;
+      const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+      const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width  = pct + '%';
+      ticking = false;
+    });
+  }, { passive: true });
+})();
+
 /* ══════════════════════════════════════════════════
    FIREBASE-DEPENDENT FEATURES
    (waits up to 3s for window.db to be ready)
@@ -60,6 +84,7 @@ waitForDb(() => {
   initNowPlaying();
   initVisitorCounter();
   initPageAnalytics();
+  initCurrentlyBuilding();
 });
 
 
@@ -216,4 +241,38 @@ function initPageAnalytics() {
     },
     { merge: true }
   ).catch(() => {});
+}
+// command palette CSS injected via style.css
+
+/* ══════════════════════════════════════════════════
+   WHAT I'M BUILDING CARD
+══════════════════════════════════════════════════ */
+function initCurrentlyBuilding() {
+  const slot = document.getElementById('currentlyBuildingSlot');
+  if (!slot) return;
+
+  db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding')
+    .onSnapshot((doc) => {
+      const data = doc.exists ? doc.data() : {};
+      if (!data.active || !data.title) {
+        slot.innerHTML = '';
+        return;
+      }
+      slot.innerHTML = `
+        <div class="wib-card">
+          <div class="wib-header">
+            <span class="wib-dot"></span>
+            <span class="wib-label">CURRENTLY BUILDING</span>
+          </div>
+          <div class="wib-body">
+            <span class="wib-title">${escHtml(data.title)}</span>
+            ${data.desc ? `<span class="wib-desc">${escHtml(data.desc)}</span>` : ''}
+          </div>
+          ${data.link ? `
+            <a href="${escHtml(data.link)}" target="_blank" rel="noopener" class="wib-link">
+              View progress ↗
+            </a>` : ''}
+        </div>
+      `;
+    }, () => { slot.innerHTML = ''; });
 }

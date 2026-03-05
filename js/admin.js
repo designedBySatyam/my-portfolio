@@ -931,12 +931,22 @@ class SiteConfigManager {
 
     init() {
         if (!this.otwToggle) return;
+        // Bind new WIB fields
+        this.wibActive  = document.getElementById('wibActive');
+        this.wibTitle   = document.getElementById('wibTitle');
+        this.wibDesc    = document.getElementById('wibDesc');
+        this.wibLink    = document.getElementById('wibLink');
+        this.saveWibBtn = document.getElementById('saveWibBtn');
+        this.wibStatus  = document.getElementById('wibStatus');
+
         this.loadSiteConfig();
         this.loadNowPlaying();
+        this.loadCurrentlyBuilding();
         this.loadVisitorStats();
 
         this.saveOtwBtn?.addEventListener('click', () => this.saveAvailability());
         this.saveNpBtn?.addEventListener('click',  () => this.saveNowPlaying());
+        this.saveWibBtn?.addEventListener('click', () => this.saveCurrentlyBuilding());
         this.resetVisitorsBtn?.addEventListener('click', () => this.resetVisitors());
     }
 
@@ -1017,6 +1027,38 @@ class SiteConfigManager {
                 { visitors: 0 }, { merge: true }
             );
         } catch (e) { console.error('resetVisitors:', e); }
+    }
+
+    async loadCurrentlyBuilding() {
+        try {
+            const doc = await db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding').get();
+            const data = doc.exists ? doc.data() : {};
+            if (this.wibActive) this.wibActive.checked = !!data.active;
+            if (this.wibTitle)  this.wibTitle.value    = data.title || '';
+            if (this.wibDesc)   this.wibDesc.value     = data.desc  || '';
+            if (this.wibLink)   this.wibLink.value     = data.link  || '';
+        } catch (e) { console.error('loadCurrentlyBuilding:', e); }
+    }
+
+    async saveCurrentlyBuilding() {
+        if (!this.saveWibBtn) return;
+        this.saveWibBtn.disabled = true;
+        this.saveWibBtn.textContent = 'SAVING...';
+        try {
+            await db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding').set({
+                active: !!this.wibActive?.checked,
+                title:  this.wibTitle?.value?.trim()  || '',
+                desc:   this.wibDesc?.value?.trim()   || '',
+                link:   this.wibLink?.value?.trim()   || '',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            this.setStatus(this.wibStatus, 'success', 'Saved!');
+        } catch (e) {
+            this.setStatus(this.wibStatus, 'error', 'Save failed.');
+        } finally {
+            this.saveWibBtn.disabled = false;
+            this.saveWibBtn.textContent = 'SAVE STATUS';
+        }
     }
 
     setStatus(el, type, msg) {
