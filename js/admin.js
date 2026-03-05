@@ -136,7 +136,31 @@ class AdminAuth {
     }
 
     init() {
+        // Bind modal open/close first so the button always responds.
+        if (this.openBtn && this.embeddedMode) {
+            this.openBtn.addEventListener('click', () => {
+                this.adminModal.style.display = 'flex';
+            });
+        }
+
+        if (this.closeBtn && this.embeddedMode) {
+            this.closeBtn.addEventListener('click', () => this.hideModal());
+        }
+
+        if (this.adminModal) {
+            this.adminModal.addEventListener('click', (event) => {
+                if (event.target === this.adminModal) this.hideModal();
+            });
+        }
+
         if (!this.loginForm || !this.emailInput || !this.passwordInput) return;
+
+        if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+            this.resolveLoader();
+            this.showLogin();
+            this.showError('Admin auth is unavailable. Check Firebase Auth setup.');
+            return;
+        }
 
         // Fallback: if Firebase doesn't fire within 6s, show login
         const authTimeout = window.setTimeout(() => {
@@ -153,22 +177,6 @@ class AdminAuth {
                 this.showLogin();
             }
         });
-
-        if (this.openBtn && this.embeddedMode) {
-            this.openBtn.addEventListener('click', () => {
-                this.adminModal.style.display = 'flex';
-            });
-        }
-
-        if (this.closeBtn && this.embeddedMode) {
-            this.closeBtn.addEventListener('click', () => this.hideModal());
-        }
-
-        if (this.adminModal) {
-            this.adminModal.addEventListener('click', (event) => {
-                if (event.target === this.adminModal) this.hideModal();
-            });
-        }
 
         this.loginForm.addEventListener('submit', (event) => this.handleLogin(event));
         this.logoutBtn?.addEventListener('click', () => this.handleLogout());
@@ -877,7 +885,7 @@ class CertificatesAdmin {
 }
 
 function bootstrapAdmin() {
-    if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
+    if (typeof firebase === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
         window.setTimeout(bootstrapAdmin, 250);
         return;
     }
