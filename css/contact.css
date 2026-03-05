@@ -6,6 +6,7 @@
   position: relative;
   z-index: 2;
   padding: calc(var(--nav-h) + 60px) 80px 80px;
+  overflow-x: hidden;
 }
 
 /* ── Header ── */
@@ -33,7 +34,7 @@
 /* ── Contact Grid ── */
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr minmax(0, 400px);
   gap: 32px;
   opacity: 0;
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.25s forwards;
@@ -355,6 +356,7 @@
 @media (max-width: 960px) {
   .contact-main {
     padding: calc(var(--nav-h) + 32px) 24px 60px;
+    overflow-x: hidden;
   }
 
   .contact-grid {
@@ -363,6 +365,60 @@
 
   .form-container {
     padding: 32px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-main {
+    padding: calc(var(--nav-h) + 20px) 16px 48px;
+  }
+
+  .contact-grid {
+    gap: 20px;
+  }
+
+  .form-container {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .info-container {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .social-card {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .copy-btn-wrap {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+
+  .submit-btn {
+    padding: 14px 20px;
+    font-size: 0.65rem;
+  }
+
+  .char-counter {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .contact-main {
+    padding: calc(var(--nav-h) + 16px) 12px 40px;
+  }
+
+  .form-container {
+    padding: 20px 14px;
+  }
+
+  .social-card {
+    padding: 12px 14px;
+    gap: 10px;
   }
 }
 
