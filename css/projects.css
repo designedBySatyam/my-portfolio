@@ -204,6 +204,13 @@
   padding-right: 32px;
 }
 
+/* Native dropdown list often uses a light popup on desktop browsers.
+   Force readable option text regardless of active page theme. */
+.toolbar-select option {
+  color: #1a2347;
+  background-color: #f5f7ff;
+}
+
 .projects-meta {
   margin-bottom: 22px;
   color: var(--text-dim);
