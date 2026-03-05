@@ -7,8 +7,36 @@
  */
 
 (() => {
-  const inPages = window.location.pathname.includes('/pages/');
-  const root    = inPages ? '../' : '';
+  function resolveRoutes() {
+    if (window.PortfolioRoutes && typeof window.PortfolioRoutes === 'object') {
+      return window.PortfolioRoutes;
+    }
+
+    const pathname = window.location.pathname || '/';
+    const pagesIndex = pathname.indexOf('/pages/');
+    let basePath = '/';
+
+    if (pagesIndex >= 0) {
+      basePath = pathname.slice(0, pagesIndex) || '/';
+    } else if (pathname.endsWith('/')) {
+      basePath = pathname;
+    } else {
+      basePath = pathname.replace(/[^/]*$/, '');
+    }
+
+    if (!basePath.startsWith('/')) basePath = `/${basePath}`;
+    if (!basePath.endsWith('/')) basePath = `${basePath}/`;
+
+    return {
+      base: basePath,
+      home: `${basePath}index.html`,
+      resume: `${basePath}pages/resume.html`,
+      work: `${basePath}pages/work.html`,
+      contact: `${basePath}pages/contact.html`
+    };
+  }
+
+  const routes = resolveRoutes();
 
   const COMMANDS = [
     {
@@ -16,28 +44,28 @@
       label: 'Go to Home',
       hint: 'Navigate',
       icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-      action: () => navigate(`${root}index.html`)
+      action: () => navigate(routes.home)
     },
     {
       id: 'resume',
       label: 'Go to Resume',
       hint: 'Navigate',
       icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
-      action: () => navigate(`${root}pages/resume.html`)
+      action: () => navigate(routes.resume)
     },
     {
       id: 'work',
       label: 'Go to Work',
       hint: 'Navigate',
       icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="15" x2="15" y2="15"/></svg>`,
-      action: () => navigate(`${root}pages/work.html`)
+      action: () => navigate(routes.work)
     },
     {
       id: 'contact',
       label: 'Go to Contact',
       hint: 'Navigate',
       icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
-      action: () => navigate(`${root}pages/contact.html`)
+      action: () => navigate(routes.contact)
     },
     {
       id: 'theme',

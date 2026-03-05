@@ -1,5 +1,5 @@
 /**
- * nav.js — Portfolio Navigation Component
+ * nav.js - Portfolio navigation component
  * Injects <nav> into any page with <div id="site-nav"></div>.
  * Handles active links, theme toggle, and mobile hamburger menu.
  */
@@ -7,49 +7,53 @@
 (() => {
   'use strict';
 
-  /* ── Path resolution ────────────────────────────────────────
-   * Build each link independently so paths are always correct
-   * regardless of whether the current page is at root or in pages/.
-   *
-   * From root (index.html):
-   *   home     → index.html
-   *   resume   → pages/resume.html
-   *   work     → pages/work.html
-   *   contact  → pages/contact.html
-   *
-   * From pages/ (resume.html, work.html, etc.):
-   *   home     → ../index.html
-   *   resume   → resume.html          ← same dir, NO ../ prefix
-   *   work     → work.html        ← same dir, NO ../ prefix
-   *   contact  → contact.html         ← same dir, NO ../ prefix
-   */
-  const inPages = window.location.pathname.includes('/pages/');
+  function resolveRoutes() {
+    const pathname = window.location.pathname || '/';
+    const pagesIndex = pathname.indexOf('/pages/');
+    let basePath = '/';
 
-  const href = {
-    home:     inPages ? '../index.html'    : 'index.html',
-    resume:   inPages ? 'resume.html'      : 'pages/resume.html',
-    work: inPages ? 'work.html'    : 'pages/work.html',
-    contact:  inPages ? 'contact.html'     : 'pages/contact.html',
-  };
+    if (pagesIndex >= 0) {
+      basePath = pathname.slice(0, pagesIndex) || '/';
+    } else if (pathname.endsWith('/')) {
+      basePath = pathname;
+    } else {
+      basePath = pathname.replace(/[^/]*$/, '');
+    }
 
-  /* ── Active page detection ──────────────────────────────────*/
-  const seg     = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
+    if (!basePath.startsWith('/')) basePath = `/${basePath}`;
+    if (!basePath.endsWith('/')) basePath = `${basePath}/`;
+
+    return {
+      base: basePath,
+      home: `${basePath}index.html`,
+      resume: `${basePath}pages/resume.html`,
+      work: `${basePath}pages/work.html`,
+      contact: `${basePath}pages/contact.html`,
+      admin: `${basePath}pages/admin.html`
+    };
+  }
+
+  const routes = resolveRoutes();
+  window.PortfolioRoutes = routes;
+
+  const pathname = window.location.pathname || '/';
+  const seg = pathname.endsWith('/')
+    ? 'index.html'
+    : (pathname.split('/').filter(Boolean).pop() || 'index.html');
   const pageKey = seg.replace('.html', '');
 
-  const a = (k) => pageKey === k ? ' active' : '';
-  const c = (k) => pageKey === k ? ' aria-current="page"' : '';
+  const activeClass = (key) => (pageKey === key ? ' active' : '');
+  const activeAttr = (key) => (pageKey === key ? ' aria-current="page"' : '');
 
-  /* ── Nav HTML ───────────────────────────────────────────────*/
   const navHTML = `
 <nav class="nav-container" role="navigation" aria-label="Main navigation">
-
-  <a href="${href.home}" class="nav-logo" aria-label="Satyam Pandey — Home">
+  <a href="${routes.home}" class="nav-logo" aria-label="Satyam Pandey - Home">
     <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
       <path d="M20 4 L36 14 L36 26 L20 36 L4 26 L4 14 Z" fill="none" stroke="url(#navGrad)" stroke-width="1.5"/>
       <circle cx="20" cy="20" r="7" fill="url(#navGrad)" opacity="0.25"/>
       <defs>
         <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stop-color="#4f8ef7"/>
+          <stop offset="0%" stop-color="#4f8ef7"/>
           <stop offset="100%" stop-color="#f74f8e"/>
         </linearGradient>
       </defs>
@@ -58,13 +62,14 @@
   </a>
 
   <div class="nav-links" role="list">
-    <a href="${href.home}"     class="nav-link${a('index')}"    role="listitem"${c('index')}>Home</a>
-    <a href="${href.resume}"   class="nav-link${a('resume')}"   role="listitem"${c('resume')}>Resume</a>
-    <a href="${href.work}" class="nav-link${a('work')}" role="listitem"${c('work')}>Work</a>
-    <a href="${href.contact}"  class="nav-link${a('contact')}"  role="listitem"${c('contact')}>Contact</a>
+    <a href="${routes.home}" class="nav-link${activeClass('index')}" role="listitem"${activeAttr('index')}>Home</a>
+    <a href="${routes.resume}" class="nav-link${activeClass('resume')}" role="listitem"${activeAttr('resume')}>Resume</a>
+    <a href="${routes.work}" class="nav-link${activeClass('work')}" role="listitem"${activeAttr('work')}>Work</a>
+    <a href="${routes.contact}" class="nav-link${activeClass('contact')}" role="listitem"${activeAttr('contact')}>Contact</a>
   </div>
 
   <div class="nav-right-controls">
+    <a href="${routes.admin}" class="admin-nav-btn${activeClass('admin')}"${activeAttr('admin')}>Admin</a>
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark theme" aria-pressed="false">
       <svg class="theme-icon sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="12" cy="12" r="5"/>
@@ -87,18 +92,20 @@
   </div>
 
   <div class="nav-drawer" id="navDrawer" aria-hidden="true">
-    <a href="${href.home}"     class="drawer-link${a('index')}"${c('index')}>Home</a>
-    <a href="${href.resume}"   class="drawer-link${a('resume')}"${c('resume')}>Resume</a>
-    <a href="${href.work}" class="drawer-link${a('work')}"${c('work')}>Work</a>
-    <a href="${href.contact}"  class="drawer-link${a('contact')}"${c('contact')}>Contact</a>
+    <a href="${routes.home}" class="drawer-link${activeClass('index')}"${activeAttr('index')}>Home</a>
+    <a href="${routes.resume}" class="drawer-link${activeClass('resume')}"${activeAttr('resume')}>Resume</a>
+    <a href="${routes.work}" class="drawer-link${activeClass('work')}"${activeAttr('work')}>Work</a>
+    <a href="${routes.contact}" class="drawer-link${activeClass('contact')}"${activeAttr('contact')}>Contact</a>
+    <a href="${routes.admin}" class="drawer-link admin-link${activeClass('admin')}"${activeAttr('admin')}>Admin</a>
   </div>
-
 </nav>`;
 
-  /* ── Inject ─────────────────────────────────────────────────*/
   function inject() {
     const mount = document.getElementById('site-nav');
-    if (!mount) { console.warn('[nav.js] #site-nav not found'); return; }
+    if (!mount) {
+      console.warn('[nav.js] #site-nav not found');
+      return;
+    }
     mount.outerHTML = navHTML;
     initHamburger();
   }
@@ -109,13 +116,11 @@
     inject();
   }
 
-  /* ── Hamburger ──────────────────────────────────────────────*/
   function initHamburger() {
     const toggle = document.getElementById('navToggle');
     const drawer = document.getElementById('navDrawer');
     if (!toggle || !drawer) return;
 
-    // Create backdrop
     const backdrop = document.createElement('div');
     backdrop.className = 'nav-backdrop';
     document.body.appendChild(backdrop);
@@ -129,6 +134,7 @@
       drawer.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     };
+
     const close = () => {
       drawer.classList.remove('open');
       backdrop.classList.remove('active');
@@ -139,27 +145,28 @@
       document.body.style.overflow = '';
     };
 
-    toggle.addEventListener('click', () => drawer.classList.contains('open') ? close() : open());
+    toggle.addEventListener('click', () => (drawer.classList.contains('open') ? close() : open()));
     backdrop.addEventListener('click', close);
-    drawer.querySelectorAll('.drawer-link').forEach(l => l.addEventListener('click', close));
-    document.addEventListener('click', (e) => {
+    drawer.querySelectorAll('.drawer-link').forEach((link) => link.addEventListener('click', close));
+    document.addEventListener('click', (event) => {
       const nav = document.querySelector('.nav-container');
-      if (nav && !nav.contains(e.target)) close();
+      if (nav && !nav.contains(event.target)) close();
     });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-    window.addEventListener('resize', () => { if (window.innerWidth > 768) close(); });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') close();
+    });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) close();
+    });
   }
 
-  /* ── Theme ──────────────────────────────────────────────────*/
   (function applyStoredTheme() {
     try {
       const stored = localStorage.getItem('portfolio-theme');
       const system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme',
-        (stored === 'light' || stored === 'dark') ? stored : system);
+      document.documentElement.setAttribute('data-theme', stored === 'light' || stored === 'dark' ? stored : system);
     } catch (_) {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
   })();
-
 })();

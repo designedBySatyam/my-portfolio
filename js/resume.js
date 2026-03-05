@@ -87,7 +87,7 @@ class TimelineAnimations {
 // Download Button Analytics
 class DownloadTracking {
     constructor() {
-        this.downloadBtn = document.querySelector('.download-btn');
+        this.downloadBtn = document.querySelector('#downloadCvBtn, .download-btn');
         this.init();
     }
 
@@ -134,9 +134,6 @@ class LeetCodeStats {
 
     async init() {
         if (!this.grid) return;
-
-        // Show skeleton immediately while fetching
-        this.showSkeleton();
 
         const cached = this.readCache();
         if (cached) this.render(cached);
@@ -328,17 +325,6 @@ class LeetCodeStats {
         });
     }
 
-    showSkeleton() {
-        if (!this.grid) return;
-        this.grid.innerHTML = ['Total Solved','Easy','Medium','Hard'].map(() => `
-            <div class="lc-stat-card lc-skeleton">
-                <span class="lc-skel-num"></span>
-                <span class="lc-skel-label"></span>
-                <div class="lc-progress-bar"><div class="lc-skel-bar"></div></div>
-            </div>
-        `).join('');
-    }
-
     showError() {
         if (!this.grid) return;
         this.grid.innerHTML = `
@@ -354,7 +340,7 @@ class LeetCodeStats {
 /*
    CHAPTER NAV SCROLL SPY
 */
-(function initChapterSpy() {
+function initChapterSpy() {
   const links    = document.querySelectorAll('.ch-link');
   if (!links.length) return;
 
@@ -374,7 +360,7 @@ class LeetCodeStats {
   }, { threshold: 0.25, rootMargin: '-60px 0px -40% 0px' });
 
   sections.forEach(s => obs.observe(s.el));
-})();
+}
 
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
@@ -382,4 +368,5 @@ document.addEventListener('DOMContentLoaded', () => {
     new TimelineAnimations();
     new DownloadTracking();
     new LeetCodeStats();
+    initChapterSpy();
 });

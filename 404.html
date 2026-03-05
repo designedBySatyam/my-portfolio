@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
-  <script src="js/nav.js"></script>
-  <script src="js/script.js" defer></script>
+  <script src="js/nav.js?v=20260305d"></script>
+  <script src="js/script.js?v=20260305d" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -278,14 +278,14 @@
       </p>
 
       <div class="actions">
-        <a href="index.html" class="btn btn-primary">
+        <a href="#" id="returnHomeBtn" class="btn btn-primary">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9 22 9 12 15 12 15 22"/>
           </svg>
           Return Home
         </a>
-        <a href="pages/contact.html" class="btn btn-secondary">
+        <a href="#" id="reportIssueBtn" class="btn btn-secondary">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
             <polyline points="22,6 12,13 2,6"/>
@@ -301,5 +301,19 @@
     </div>
   </main>
 
+  <script>
+    (function setSafe404Links() {
+      const path = window.location.pathname || '/';
+      const repoPrefix = path.includes('/my-portfolio/') ? '/my-portfolio' : '';
+
+      const homeHref = `${repoPrefix}/index.html`;
+      const contactHref = `${repoPrefix}/pages/contact.html`;
+
+      const homeBtn = document.getElementById('returnHomeBtn');
+      const reportBtn = document.getElementById('reportIssueBtn');
+      if (homeBtn) homeBtn.setAttribute('href', homeHref);
+      if (reportBtn) reportBtn.setAttribute('href', contactHref);
+    })();
+  </script>
 </body>
 </html>

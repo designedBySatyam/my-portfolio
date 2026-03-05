@@ -18,8 +18,8 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
-  <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/style.css?v=20260305d">
+    <link rel="stylesheet" href="../css/admin.css?v=20260305d">
 
     <!-- Auth guard: hide body until Firebase resolves, prevents flash of wrong screen -->
     <style>
@@ -102,7 +102,7 @@
                     <p>Secure authentication required</p>
                 </div>
 
-                <form id="loginForm" class="auth-form">
+	                <form id="loginForm" class="auth-form">
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" required autocomplete="email" placeholder="you@example.com">
@@ -122,11 +122,18 @@
                         </svg>
                     </button>
 
-                    <div id="authError" class="auth-error"></div>
-                </form>
-            </div>
-        </div>
-    </div>
+	                    <div id="authError" class="auth-error"></div>
+	                </form>
+	                <button type="button" id="backToSiteBtn" class="auth-back-btn" aria-label="Go back to previous page">
+	                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+	                        <line x1="19" y1="12" x2="5" y2="12"/>
+	                        <polyline points="12 19 5 12 12 5"/>
+	                    </svg>
+	                    Back
+	                </button>
+	            </div>
+	        </div>
+	    </div>
 
     <!-- Admin Dashboard -->
     <div id="adminDashboard" class="admin-dashboard" style="display: none;">
@@ -283,9 +290,6 @@
                     </div>
                 </section>
             </div>
-        </main>
-    </div>
-
     <!-- Project Modal -->
     <div id="projectModal" class="modal">
         <div class="modal-content">
@@ -634,6 +638,9 @@
                 </div>
             </div>
 
+        </main>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal">
         <div class="modal-content modal-small">
@@ -652,17 +659,17 @@
 
     <!-- Firebase SDK - Load before other scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="../js/script.js"></script>
+    <script src="../js/script.js?v=20260305d"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <!-- Firebase Configuration -->
-    <script src="../js/firebase-config.js"></script>
-    <script src="../js/shared-utils.js"></script>
+    <script src="../js/firebase-config.js?v=20260305d"></script>
+    <script src="../js/shared-utils.js?v=20260305d"></script>
     
     <!-- Admin Panel Script -->
-    <script src="../js/admin.js"></script>
-    <script src="../js/command-palette.js"></script>
+    <script src="../js/admin.js?v=20260305d"></script>
+    <script src="../js/command-palette.js?v=20260305d"></script>
 </body>
 </html>

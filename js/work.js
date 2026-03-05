@@ -444,13 +444,21 @@ class FirebaseProjects {
 
         // Attach click listeners for project detail modal
         this.projectsContainer.querySelectorAll('.project-card').forEach((card) => {
-            const open = () => ProjectModal.open(card, this);
+            const open = (event) => {
+                if (event?.target instanceof Element && event.target.closest('.tech-tag-btn, .card-link')) {
+                    return;
+                }
+                ProjectModal.open(card, this);
+            };
             card.addEventListener('click', open);
             card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+                if (e.target !== card) return;
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); }
             });
             card.querySelector('.card-link')?.addEventListener('click', (e) => e.stopPropagation());
         });
+
+        this.bindTechTagClicks();
     }
 
     getIconSVG(iconType) {
@@ -602,14 +610,11 @@ class FirebaseCertificates {
         this.certificatesById = new Map(certificates.map((cert) => [cert.id, cert]));
 
         this.certList.innerHTML = certificates.map((cert) => {
-            const imageUrl = this.normalizeCertificateImagePath(cert.imageUrl);
-            const thumb = imageUrl
-                ? `<img src="${imageUrl}" alt="${this.escapeHtml(cert.title || 'Certificate')}" loading="lazy">`
-                : this.getIconSVG(cert.issuer || 'default');
+            const thumb = this.getIssuerLogoMarkup(cert.issuer);
 
             return `
                 <div class="cert-list-item" data-cert-id="${cert.id}" role="option" tabindex="0" aria-selected="false">
-                    <div class="cert-thumb">${thumb}</div>
+                    <div class="cert-thumb" aria-hidden="true">${thumb}</div>
                     <div class="cert-list-info">
                         <div class="cert-list-name">${this.escapeHtml(cert.title || 'Untitled Certificate')}</div>
                         <div class="cert-list-issuer">${this.escapeHtml(cert.issuer || 'Unknown Issuer')}</div>
@@ -729,6 +734,36 @@ class FirebaseCertificates {
             return window.PortfolioUtils.normalizeCertificateImagePath(imagePath);
         }
         return String(imagePath || '').trim();
+    }
+
+    normalizeIssuerKey(issuer = '') {
+        const text = String(issuer || '').toLowerCase();
+        if (text.includes('aws')) return 'aws';
+        if (text.includes('ibm')) return 'ibm';
+        if (text.includes('microsoft')) return 'microsoft';
+        if (text.includes('google')) return 'google';
+        if (text.includes('simplilearn')) return 'simplilearn';
+        if (text.includes('silver oak')) return 'silveroak';
+        if (text.includes('coursera')) return 'coursera';
+        if (text.includes('udemy')) return 'udemy';
+        return 'default';
+    }
+
+    getIssuerLogoMarkup(issuer = '') {
+        const key = this.normalizeIssuerKey(issuer);
+        const labelMap = {
+            aws: 'AWS',
+            ibm: 'IBM',
+            microsoft: 'MS',
+            google: 'G',
+            simplilearn: 'SL',
+            silveroak: 'SOU',
+            coursera: 'C',
+            udemy: 'U',
+            default: 'CERT'
+        };
+
+        return `<span class="issuer-logo issuer-${key}">${this.escapeHtml(labelMap[key] || labelMap.default)}</span>`;
     }
 
     getIconSVG(provider = 'default') {

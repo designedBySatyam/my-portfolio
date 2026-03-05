@@ -130,6 +130,7 @@ class AdminAuth {
         this.errorBox = document.getElementById('adminError') || document.getElementById('authError');
         this.userEmail = document.getElementById('adminUserEmail');
         this.logoutBtn = document.getElementById('adminLogoutBtn') || document.getElementById('logoutBtn');
+        this.backBtn = document.getElementById('backToSiteBtn');
         this.submitBtn = this.loginForm?.querySelector('button[type="submit"]');
         this.submitLabel = this.submitBtn?.querySelector('span');
         this.defaultSubmitLabel = this.submitLabel?.textContent || 'LOGIN';
@@ -180,6 +181,7 @@ class AdminAuth {
 
         this.loginForm.addEventListener('submit', (event) => this.handleLogin(event));
         this.logoutBtn?.addEventListener('click', () => this.handleLogout());
+        this.backBtn?.addEventListener('click', () => this.handleBackNavigation());
     }
 
     resolveLoader() {
@@ -276,24 +278,78 @@ class AdminAuth {
             this.adminModal.style.display = 'none';
         }
     }
+
+    handleBackNavigation() {
+        const sameOriginReferrer = (() => {
+            try {
+                return !!document.referrer && new URL(document.referrer).origin === window.location.origin;
+            } catch (_) {
+                return false;
+            }
+        })();
+
+        if (window.history.length > 1 && sameOriginReferrer) {
+            window.history.back();
+            return;
+        }
+
+        window.location.href = '../index.html';
+    }
 }
 
 class AdminTabs {
     constructor() {
         this.tabs = document.querySelectorAll('.admin-tab, .tab-btn');
         this.contents = document.querySelectorAll('.admin-tab-content, .tab-content');
+        this.tabNames = Array.from(this.tabs)
+            .map((tab) => tab.dataset.tab)
+            .filter(Boolean);
     }
 
     init() {
         if (!this.tabs.length || !this.contents.length) return;
+
         this.tabs.forEach((tab) => {
             tab.addEventListener('click', () => this.switchTab(tab.dataset.tab || 'projects'));
         });
+
+        const fromUrl = this.getTabFromUrl();
+        const fromActive =
+            Array.from(this.tabs).find((tab) => tab.classList.contains('active'))?.dataset.tab
+            || this.tabs[0]?.dataset.tab
+            || 'projects';
+        this.switchTab(fromUrl || fromActive, false);
     }
 
-    switchTab(name) {
-        this.tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === name));
-        this.contents.forEach((content) => content.classList.toggle('active', content.id === `${name}Tab`));
+    isValidTab(name) {
+        return !!name && this.tabNames.includes(name);
+    }
+
+    getTabFromUrl() {
+        try {
+            const raw = new URL(window.location.href).searchParams.get('tab');
+            return this.isValidTab(raw) ? raw : '';
+        } catch (_) {
+            return '';
+        }
+    }
+
+    syncTabToUrl(name) {
+        try {
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('tab') === name) return;
+            url.searchParams.set('tab', name);
+            window.history.replaceState(window.history.state, '', url.toString());
+        } catch (_) {
+            // Ignore URL sync failures.
+        }
+    }
+
+    switchTab(name, persist = true) {
+        const target = this.isValidTab(name) ? name : (this.tabNames[0] || 'projects');
+        this.tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === target));
+        this.contents.forEach((content) => content.classList.toggle('active', content.id === `${target}Tab`));
+        if (persist) this.syncTabToUrl(target);
     }
 }
 
@@ -937,6 +993,27 @@ class SiteConfigManager {
         this.resetVisitorsBtn = document.getElementById('resetVisitorsBtn');
     }
 
+    getCacheKey(docId) {
+        return `sp-config-${docId}`;
+    }
+
+    readCache(docId) {
+        try {
+            const raw = localStorage.getItem(this.getCacheKey(docId));
+            return raw ? JSON.parse(raw) : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    writeCache(docId, data) {
+        try {
+            localStorage.setItem(this.getCacheKey(docId), JSON.stringify(data || {}));
+        } catch (_) {
+            // Ignore storage failures.
+        }
+    }
+
     init() {
         if (!this.otwToggle) return;
         // Bind new WIB fields
@@ -959,15 +1036,32 @@ class SiteConfigManager {
     }
 
     async loadSiteConfig() {
+        const cached = this.readCache('siteConfig');
+        if (cached) {
+            if (this.otwToggle) this.otwToggle.checked = !!cached.openToWork;
+            if (this.otwMessage) this.otwMessage.value = cached.otwMessage || '';
+        }
         try {
             const doc = await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').get();
             const data = doc.exists ? doc.data() : {};
             if (this.otwToggle) this.otwToggle.checked = !!data.openToWork;
             if (this.otwMessage) this.otwMessage.value = data.otwMessage || '';
+            this.writeCache('siteConfig', {
+                openToWork: !!data.openToWork,
+                otwMessage: data.otwMessage || ''
+            });
         } catch (e) { console.error('loadSiteConfig:', e); }
     }
 
     async loadNowPlaying() {
+        const cached = this.readCache('nowPlaying');
+        if (cached) {
+            if (this.npActive) this.npActive.checked = !!cached.active;
+            if (this.npSong) this.npSong.value = cached.song || '';
+            if (this.npArtist) this.npArtist.value = cached.artist || '';
+            if (this.npAlbumArt) this.npAlbumArt.value = cached.albumArt || '';
+            if (this.npLink) this.npLink.value = cached.link || '';
+        }
         try {
             const doc = await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').get();
             const data = doc.exists ? doc.data() : {};
@@ -976,6 +1070,13 @@ class SiteConfigManager {
             if (this.npArtist)   this.npArtist.value      = data.artist    || '';
             if (this.npAlbumArt) this.npAlbumArt.value    = data.albumArt  || '';
             if (this.npLink)     this.npLink.value         = data.link      || '';
+            this.writeCache('nowPlaying', {
+                active: !!data.active,
+                song: data.song || '',
+                artist: data.artist || '',
+                albumArt: data.albumArt || '',
+                link: data.link || ''
+            });
         } catch (e) { console.error('loadNowPlaying:', e); }
     }
 
@@ -992,11 +1093,15 @@ class SiteConfigManager {
         this.saveOtwBtn.disabled = true;
         this.saveOtwBtn.textContent = 'SAVING...';
         try {
-            await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
+            const clientData = {
                 openToWork: !!this.otwToggle?.checked,
-                otwMessage: this.otwMessage?.value?.trim() || '',
+                otwMessage: this.otwMessage?.value?.trim() || ''
+            };
+            await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
+                ...clientData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
+            this.writeCache('siteConfig', clientData);
             this.setStatus(this.otwStatus, 'success', 'Saved!');
         } catch (e) {
             this.setStatus(this.otwStatus, 'error', 'Save failed.');
@@ -1011,14 +1116,18 @@ class SiteConfigManager {
         this.saveNpBtn.disabled = true;
         this.saveNpBtn.textContent = 'SAVING...';
         try {
-            await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').set({
+            const clientData = {
                 active:   !!this.npActive?.checked,
                 song:     this.npSong?.value?.trim()     || '',
                 artist:   this.npArtist?.value?.trim()   || '',
                 albumArt: this.npAlbumArt?.value?.trim() || '',
-                link:     this.npLink?.value?.trim()     || '',
+                link:     this.npLink?.value?.trim()     || ''
+            };
+            await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').set({
+                ...clientData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+            this.writeCache('nowPlaying', clientData);
             this.setStatus(this.npStatus, 'success', 'Saved!');
         } catch (e) {
             this.setStatus(this.npStatus, 'error', 'Save failed.');
@@ -1038,6 +1147,13 @@ class SiteConfigManager {
     }
 
     async loadCurrentlyBuilding() {
+        const cached = this.readCache('currentlyBuilding');
+        if (cached) {
+            if (this.wibActive) this.wibActive.checked = !!cached.active;
+            if (this.wibTitle) this.wibTitle.value = cached.title || '';
+            if (this.wibDesc) this.wibDesc.value = cached.desc || '';
+            if (this.wibLink) this.wibLink.value = cached.link || '';
+        }
         try {
             const doc = await db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding').get();
             const data = doc.exists ? doc.data() : {};
@@ -1045,6 +1161,12 @@ class SiteConfigManager {
             if (this.wibTitle)  this.wibTitle.value    = data.title || '';
             if (this.wibDesc)   this.wibDesc.value     = data.desc  || '';
             if (this.wibLink)   this.wibLink.value     = data.link  || '';
+            this.writeCache('currentlyBuilding', {
+                active: !!data.active,
+                title: data.title || '',
+                desc: data.desc || '',
+                link: data.link || ''
+            });
         } catch (e) { console.error('loadCurrentlyBuilding:', e); }
     }
 
@@ -1053,13 +1175,17 @@ class SiteConfigManager {
         this.saveWibBtn.disabled = true;
         this.saveWibBtn.textContent = 'SAVING...';
         try {
-            await db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding').set({
+            const clientData = {
                 active: !!this.wibActive?.checked,
                 title:  this.wibTitle?.value?.trim()  || '',
                 desc:   this.wibDesc?.value?.trim()   || '',
-                link:   this.wibLink?.value?.trim()   || '',
+                link:   this.wibLink?.value?.trim()   || ''
+            };
+            await db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding').set({
+                ...clientData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+            this.writeCache('currentlyBuilding', clientData);
             this.setStatus(this.wibStatus, 'success', 'Saved!');
         } catch (e) {
             this.setStatus(this.wibStatus, 'error', 'Save failed.');
@@ -1087,11 +1213,11 @@ class AnalyticsManager {
         this.refreshBtn  = document.getElementById('refreshAnalyticsBtn');
         this.pageIcons   = {
             index:    '🏠', resume:  '📄',
-            projects: '💼', contact: '✉️'
+            work:     '💼', contact: '✉️'
         };
         this.pageColors  = {
             index:    '#4f8ef7', resume:  '#a78bfa',
-            projects: '#00f5ff', contact: '#f74f8e'
+            work:     '#00f5ff', contact: '#f74f8e'
         };
     }
 
@@ -1118,9 +1244,13 @@ class AnalyticsManager {
     }
 
     render(data) {
-        const pages   = ['index', 'resume', 'projects', 'contact'];
-        const names   = { index: 'Home', resume: 'Resume', projects: 'Work', contact: 'Contact' };
-        const counts  = pages.map(p => ({ key: p, name: names[p], count: data[p] || 0 }));
+        const workViews = Number(data.work || 0) + Number(data.projects || 0);
+        const counts  = [
+            { key: 'index', name: 'Home', count: Number(data.index || 0) },
+            { key: 'resume', name: 'Resume', count: Number(data.resume || 0) },
+            { key: 'work', name: 'Work', count: workViews },
+            { key: 'contact', name: 'Contact', count: Number(data.contact || 0) }
+        ];
         const maxView = Math.max(...counts.map(p => p.count), 1);
         const total   = counts.reduce((a, c) => a + c.count, 0);
 
