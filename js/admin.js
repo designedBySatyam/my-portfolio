@@ -876,34 +876,6 @@ class CertificatesAdmin {
     }
 }
 
-function bootstrapAdmin() {
-    if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
-        window.setTimeout(bootstrapAdmin, 250);
-        return;
-    }
-
-    const authManager = new AdminAuth();
-    authManager.init();
-
-    const tabs = new AdminTabs();
-    tabs.init();
-
-    const projectsAdmin = new ProjectsAdmin();
-    projectsAdmin.init();
-
-    const certificatesAdmin = new CertificatesAdmin();
-    certificatesAdmin.init();
-
-    const siteConfig = new SiteConfigManager();
-    siteConfig.init();
-
-    const analytics = new AnalyticsManager();
-    analytics.init();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    bootstrapAdmin();
-});
 /* ══════════════════════════════════════════════════
    SITE CONFIG MANAGER
 ══════════════════════════════════════════════════ */
@@ -1150,3 +1122,32 @@ class AnalyticsManager {
         });
     }
 }
+function bootstrapAdmin() {
+    if (typeof firebase === 'undefined' || typeof auth === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
+        window.setTimeout(bootstrapAdmin, 250);
+        return;
+    }
+
+    const authManager = new AdminAuth();
+    authManager.init();
+
+    const tabs = new AdminTabs();
+    tabs.init();
+
+    const projectsAdmin = new ProjectsAdmin();
+    projectsAdmin.init();
+
+    const certificatesAdmin = new CertificatesAdmin();
+    certificatesAdmin.init();
+
+    const siteConfig = new SiteConfigManager();
+    siteConfig.init();
+
+    const analytics = new AnalyticsManager();
+    analytics.init();
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    bootstrapAdmin();
+});
