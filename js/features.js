@@ -76,6 +76,26 @@ const CONFIG_CACHE_KEYS = {
   currentlyBuilding: 'sp-config-currentlyBuilding'
 };
 
+function getFirebaseDb() {
+  if (window.db) return window.db;
+  try {
+    if (typeof db !== 'undefined') return db;
+  } catch (_) {
+    // Ignore scope access errors.
+  }
+  return null;
+}
+
+function getConfigCollectionName() {
+  if (window.COLLECTIONS?.CONFIG) return window.COLLECTIONS.CONFIG;
+  try {
+    if (typeof COLLECTIONS !== 'undefined' && COLLECTIONS?.CONFIG) return COLLECTIONS.CONFIG;
+  } catch (_) {
+    // Ignore scope access errors.
+  }
+  return null;
+}
+
 function readConfigCache(docId) {
   const key = CONFIG_CACHE_KEYS[docId];
   if (!key) return null;
@@ -171,12 +191,17 @@ function getDirectAudioUrl(rawLink) {
   }
 }
 
-function placeBannerAfterNav(banner) {
+function placeBannerInNav(banner) {
   const nav = document.querySelector('.nav-container');
-  if (!nav || !nav.parentNode) return false;
+  if (!nav) return false;
 
-  if (nav.nextSibling === banner) return true;
-  nav.parentNode.insertBefore(banner, nav.nextSibling);
+  const brandGroup = nav.querySelector('.nav-brand-group');
+  const logo = nav.querySelector('.nav-logo');
+  const mount = brandGroup || nav;
+  if (!mount || !logo || !logo.parentNode) return false;
+
+  if (banner.parentNode === mount && logo.nextSibling === banner) return true;
+  mount.insertBefore(banner, logo.nextSibling);
   return true;
 }
 
@@ -184,18 +209,21 @@ let firebaseFeaturesInitialized = false;
 
 function initFirebaseFeaturesOnce() {
   if (firebaseFeaturesInitialized) return true;
-  if (!window.db || !window.COLLECTIONS) return false;
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) return false;
 
   firebaseFeaturesInitialized = true;
-  initOpenToWork();
-  initNowPlaying();
-  initVisitorCounter();
-  initPageAnalytics();
-  initCurrentlyBuilding();
+  try { initOpenToWork(); } catch (error) { console.warn('[features] initOpenToWork failed:', error); }
+  try { initNowPlaying(); } catch (error) { console.warn('[features] initNowPlaying failed:', error); }
+  try { initVisitorCounter(); } catch (error) { console.warn('[features] initVisitorCounter failed:', error); }
+  try { initPageAnalytics(); } catch (error) { console.warn('[features] initPageAnalytics failed:', error); }
+  try { initCurrentlyBuilding(); } catch (error) { console.warn('[features] initCurrentlyBuilding failed:', error); }
   return true;
 }
 
 if (!initFirebaseFeaturesOnce()) {
+  try { initVisitorCounter(); } catch (_) {}
   const startedAt = Date.now();
   const intervalId = setInterval(() => {
     const ready = initFirebaseFeaturesOnce();
@@ -218,16 +246,48 @@ if (!initFirebaseFeaturesOnce()) {
   );
 }
 
-function initOpenToWork() {
-  if (!isPage('index', 'contact')) {
-    renderOTWBanner(false, '');
-    return;
+let otwScrollHandler = null;
+
+function detachOTWScrollBehavior() {
+  if (typeof otwScrollHandler === 'function') {
+    window.removeEventListener('scroll', otwScrollHandler);
   }
+  otwScrollHandler = null;
+}
+
+function attachOTWScrollBehavior(banner) {
+  detachOTWScrollBehavior();
+  if (!banner) return;
+
+  let ticking = false;
+  otwScrollHandler = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      banner.classList.toggle('is-compact', window.scrollY > 90);
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', otwScrollHandler, { passive: true });
+  otwScrollHandler();
+}
+
+function initOpenToWork() {
+  const normalizeAvailabilityStatus = (rawStatus, enabled) => {
+    const value = String(rawStatus || '').trim().toLowerCase();
+    if (value === 'open') return 'available';
+    if (value === 'available' || value === 'working' || value === 'closed') {
+      return value;
+    }
+    return enabled ? 'available' : 'closed';
+  };
 
   const apply = (data = {}) => {
+    const enabled = toBool(data.openToWork ?? data.otwActive ?? data.availabilityActive);
+    const status = normalizeAvailabilityStatus(data.availabilityStatus, enabled);
     renderOTWBanner(
-      toBool(data.openToWork ?? data.otwActive ?? data.availabilityActive),
-      data.otwMessage || data.message || ''
+      enabled,
+      status
     );
   };
 
@@ -235,13 +295,18 @@ function initOpenToWork() {
   if (cached) apply(cached);
   watchConfigCache('siteConfig', apply);
 
-  db.collection(COLLECTIONS.CONFIG)
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) return;
+
+  dbRef.collection(configCollection)
     .doc('siteConfig')
     .onSnapshot(
       (doc) => {
         const data = doc.exists ? doc.data() : {};
         const clientData = {
           openToWork: toBool(data.openToWork ?? data.otwActive ?? data.availabilityActive),
+          availabilityStatus: data.availabilityStatus || '',
           otwMessage: data.otwMessage || data.message || ''
         };
         apply(clientData);
@@ -250,16 +315,18 @@ function initOpenToWork() {
       (error) => {
         console.warn('[features] Failed to load siteConfig:', error?.message || error);
         const fallback = readConfigCache('siteConfig');
-        apply(fallback || { openToWork: false, otwMessage: '' });
+        apply(fallback || { openToWork: false, availabilityStatus: 'closed', otwMessage: '' });
       }
     );
 }
 
-function renderOTWBanner(isOpen, message) {
+function renderOTWBanner(isEnabled, status) {
   let banner = document.getElementById('otwBanner');
 
-  if (!isOpen) {
+  if (!isEnabled) {
     if (banner) banner.remove();
+    document.body.classList.remove('has-otw-banner');
+    detachOTWScrollBehavior();
     return;
   }
 
@@ -271,25 +338,32 @@ function renderOTWBanner(isOpen, message) {
     banner.setAttribute('aria-live', 'polite');
   }
 
-  if (!placeBannerAfterNav(banner)) {
+  if (!placeBannerInNav(banner)) {
     if (!banner.isConnected) document.body.prepend(banner);
     if (!banner.dataset.deferNavMount) {
       banner.dataset.deferNavMount = '1';
-      const remount = () => placeBannerAfterNav(banner);
+      const remount = () => placeBannerInNav(banner);
       document.addEventListener('DOMContentLoaded', remount, { once: true });
       window.setTimeout(remount, 60);
       window.setTimeout(remount, 250);
     }
   }
 
+  document.body.classList.add('has-otw-banner');
+  const normalizedStatus = String(status || '').trim().toLowerCase();
+  const activeStatus = normalizedStatus === 'working' || normalizedStatus === 'closed' || normalizedStatus === 'available'
+    ? normalizedStatus
+    : 'available';
+  const statusLabel = activeStatus.charAt(0).toUpperCase() + activeStatus.slice(1);
+  const statusClass = `otw-status-tag otw-status-tag--${activeStatus} is-active`;
+
+  banner.dataset.status = activeStatus;
   banner.innerHTML = `
-    <span class="otw-dot"></span>
-    <span class="otw-text">
-      ${message || 'Open to work - available for internships & freelance projects'}
-    </span>
-    <a href="${window.location.pathname.includes('/pages/') ? 'contact.html' : 'pages/contact.html'}"
-       class="otw-link">Get in touch</a>
+    <div class="otw-status-pill" role="status" aria-label="Availability: ${statusLabel}">
+      <span class="${statusClass}">${statusLabel}</span>
+    </div>
   `;
+  attachOTWScrollBehavior(banner);
 }
 
 function initNowPlaying() {
@@ -351,7 +425,11 @@ function initNowPlaying() {
   if (cached) apply(cached);
   watchConfigCache('nowPlaying', apply);
 
-  db.collection(COLLECTIONS.CONFIG)
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) return;
+
+  dbRef.collection(configCollection)
     .doc('nowPlaying')
     .onSnapshot(
       (doc) => {
@@ -378,25 +456,94 @@ function initVisitorCounter() {
   const el = document.getElementById('visitorCount');
   if (!el) return;
 
-  const ref = db.collection(COLLECTIONS.CONFIG).doc('siteStats');
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) {
+    let fallbackText = '0';
+    try {
+      fallbackText = localStorage.getItem('sp-visitor-count-cache') || localStorage.getItem('sp-visitor-estimate') || '0';
+    } catch (_) {
+      fallbackText = '0';
+    }
+    el.textContent = fallbackText;
+    return;
+  }
 
-  const key = 'sp-visited';
+  const ref = dbRef.collection(configCollection).doc('siteStats');
+  const sessionKey = 'sp-visited';
+  const cacheKey = 'sp-visitor-count-cache';
+  const localEstimateKey = 'sp-visitor-estimate';
+  let hasRemoteValue = false;
+
+  const formatCount = (value) => {
+    const raw = Number(value);
+    const count = Number.isFinite(raw) ? Math.max(0, Math.trunc(raw)) : 0;
+    return count >= 1000 ? `${(count / 1000).toFixed(1)}k` : String(count);
+  };
+
+  const setDisplay = (value) => {
+    el.textContent = formatCount(value);
+  };
+
+  const readStoredCount = () => {
+    try {
+      const cached = Number(localStorage.getItem(cacheKey));
+      if (Number.isFinite(cached)) return Math.max(0, Math.trunc(cached));
+      const estimated = Number(localStorage.getItem(localEstimateKey));
+      if (Number.isFinite(estimated)) return Math.max(0, Math.trunc(estimated));
+    } catch (_) {
+      // Ignore storage errors.
+    }
+    return null;
+  };
+
+  const storeCount = (value, key = cacheKey) => {
+    try {
+      localStorage.setItem(key, String(Math.max(0, Math.trunc(Number(value) || 0))));
+    } catch (_) {
+      // Ignore storage errors.
+    }
+  };
+
+  const initialStored = readStoredCount();
+  if (initialStored !== null) {
+    setDisplay(initialStored);
+  } else {
+    setDisplay(0);
+  }
+
   try {
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, '1');
-      ref.set({ visitors: firebase.firestore.FieldValue.increment(1) }, { merge: true }).catch(() => {});
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, '1');
+      ref.set({ visitors: firebase.firestore.FieldValue.increment(1) }, { merge: true }).catch(() => {
+        const estimate = readStoredCount() ?? 0;
+        const next = estimate + 1;
+        storeCount(next, localEstimateKey);
+        if (!hasRemoteValue) setDisplay(next);
+      });
     }
   } catch (_) {
     // Ignore sessionStorage errors.
   }
 
+  const fallbackTimer = window.setTimeout(() => {
+    if (hasRemoteValue) return;
+    const fallback = readStoredCount();
+    if (fallback !== null) setDisplay(fallback);
+  }, 2500);
+
   ref.onSnapshot(
     (doc) => {
+      hasRemoteValue = true;
+      window.clearTimeout(fallbackTimer);
       const count = doc.exists ? doc.data()?.visitors || 0 : 0;
-      el.textContent = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : String(count);
+      setDisplay(count);
+      storeCount(count, cacheKey);
     },
     () => {
-      el.textContent = '-';
+      window.clearTimeout(fallbackTimer);
+      const fallback = readStoredCount();
+      setDisplay(fallback ?? 0);
     }
   );
 }
@@ -428,7 +575,11 @@ function initPageAnalytics() {
     // Ignore sessionStorage errors.
   }
 
-  db.collection(COLLECTIONS.CONFIG)
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) return;
+
+  dbRef.collection(configCollection)
     .doc('pageAnalytics')
     .set(
       {
@@ -475,7 +626,11 @@ function initCurrentlyBuilding() {
   if (cached) apply(cached);
   watchConfigCache('currentlyBuilding', apply);
 
-  db.collection(COLLECTIONS.CONFIG)
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) return;
+
+  dbRef.collection(configCollection)
     .doc('currentlyBuilding')
     .onSnapshot(
       (doc) => {

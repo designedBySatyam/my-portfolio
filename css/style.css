@@ -269,6 +269,14 @@ select:focus-visible,
   text-decoration: none;
 }
 
+.nav-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
 .nav-container .nav-logo span {
   font-family: var(--font-mono);
   font-size: 1rem;
@@ -806,22 +814,99 @@ html.page-exit {
    OPEN TO WORK BANNER
 ══════════════════════════════════════════════════ */
 .otw-banner {
-  position: relative;
-  z-index: calc(var(--z-nav, 900) - 1);
-  margin-top: var(--nav-h);
-  display: flex;
+  position: static;
+  z-index: 1;
+  width: auto;
+  margin-top: 0;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  animation: fadeInDown 0.4s ease forwards;
+  pointer-events: none;
+}
+
+.nav-brand-group .otw-banner,
+.nav-container > .otw-banner {
+  margin-left: 4px;
+  animation-duration: 0.3s;
+}
+
+.otw-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  transition: transform 0.2s var(--ease-out-expo);
+}
+
+.otw-status-tag {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 9px 20px;
-  background: linear-gradient(90deg, rgba(79,247,160,0.12), rgba(79,142,247,0.1));
-  border-bottom: 1px solid rgba(79,247,160,0.2);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  animation: fadeInDown 0.4s ease forwards;
-  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 26px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(79, 142, 247, 0.26);
+  background: rgba(79, 142, 247, 0.08);
+  color: #a9c7ff;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s var(--ease-out-expo);
+}
+
+.otw-status-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+  flex-shrink: 0;
+}
+
+.otw-status-tag--available {
+  border-color: rgba(79, 247, 160, 0.34);
+  background: rgba(79, 247, 160, 0.08);
+  color: #5fffc4;
+}
+
+.otw-status-tag--working {
+  border-color: rgba(246, 196, 84, 0.34);
+  background: rgba(246, 196, 84, 0.1);
+  color: #f6c454;
+}
+
+.otw-status-tag--closed {
+  border-color: rgba(255, 107, 127, 0.34);
+  background: rgba(255, 107, 127, 0.1);
+  color: #ff8999;
+}
+
+.otw-status-tag.is-active {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 14px rgba(2, 5, 16, 0.25);
+  transform: translateY(-0.5px);
+}
+
+.otw-banner.is-compact .otw-status-pill {
+  transform: scale(0.96);
+}
+
+.otw-banner.is-compact .otw-status-tag {
+  min-height: 24px;
+  padding: 3px 10px;
+  font-size: 0.52rem;
 }
 
 @keyframes fadeInDown {
@@ -829,37 +914,33 @@ html.page-exit {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.otw-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #4ff7a0;
-  box-shadow: 0 0 8px #4ff7a0;
-  flex-shrink: 0;
-  animation: otwPulse 1.8s ease-in-out infinite;
+[data-theme="light"] .otw-status-pill {
+  background: transparent;
+  box-shadow: none;
 }
 
-@keyframes otwPulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px #4ff7a0; }
-  50%       { opacity: 0.5; box-shadow: 0 0 14px #4ff7a0; }
+[data-theme="light"] .otw-status-tag {
+  border-color: rgba(79, 142, 247, 0.34);
+  background: rgba(255, 255, 255, 0.74);
 }
 
-.otw-text { color: var(--text-muted); }
+@media (max-width: 960px) {
+  .otw-status-pill {
+    padding: 0;
+  }
 
-.otw-link {
-  color: #4ff7a0;
-  text-decoration: none;
-  font-weight: 700;
-  padding: 3px 10px;
-  border: 1px solid rgba(79,247,160,0.3);
-  border-radius: 999px;
-  transition: background 0.2s;
+  .otw-status-tag {
+    min-height: 23px;
+    padding: 3px 9px;
+    font-size: 0.5rem;
+  }
 }
-.otw-link:hover { background: rgba(79,247,160,0.12); }
 
-[data-theme="light"] .otw-banner {
-  background: linear-gradient(90deg, rgba(16,185,129,0.1), rgba(79,142,247,0.08));
-  border-bottom-color: rgba(16,185,129,0.25);
+@media (max-width: 900px) {
+  .nav-brand-group .otw-banner,
+  .nav-container > .otw-banner {
+    display: none;
+  }
 }
 
 /* ══════════════════════════════════════════════════

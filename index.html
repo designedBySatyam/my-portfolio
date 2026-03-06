@@ -31,12 +31,12 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=20260305d">
-  <link rel="stylesheet" href="css/index.css?v=20260305d">
+  <link rel="stylesheet" href="css/style.css?v=20260306d">
+  <link rel="stylesheet" href="css/index.css?v=20260306a">
   <!-- Nav component — must load before script.js -->
-  <script src="js/nav.js?v=20260305d"></script>
+  <script src="js/nav.js?v=20260306b"></script>
 </head>
-<body>
+<body class="home-page">
 
   <!-- 3D Starfield Canvas -->
   <canvas id="starfield"></canvas>
@@ -73,7 +73,7 @@
             <svg viewBox="0 0 200 200" class="hex-svg" aria-hidden="true"></svg>
             <picture>
               <source srcset="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/profile.webp" type="image/webp">
-              <img src="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/profile.jpg" alt="Satyam Pandey" class="profile-img" width="380" height="420">
+              <img src="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/profile.jpg" alt="Satyam Pandey" class="profile-img" width="380" height="420" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='https://avatars.githubusercontent.com/designedBySatyam?v=4';">
             </picture>
           </div>
         </div>
@@ -203,11 +203,11 @@
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="js/script.js?v=20260305d"></script>
+  <script src="js/script.js?v=20260306h"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js?v=20260305d"></script>
-  <script src="js/features.js?v=20260305d"></script>
+  <script src="js/features.js?v=20260306i"></script>
   <script src="js/command-palette.js?v=20260305d"></script>
 </body>
 </html>

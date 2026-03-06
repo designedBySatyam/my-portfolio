@@ -975,6 +975,7 @@ class SiteConfigManager {
     constructor() {
         // Open to Work
         this.otwToggle   = document.getElementById('otwToggle');
+        this.otwStatusSelect = document.getElementById('otwStatusSelect');
         this.otwMessage  = document.getElementById('otwMessage');
         this.saveOtwBtn  = document.getElementById('saveOtwBtn');
         this.otwStatus   = document.getElementById('otwStatus');
@@ -995,6 +996,17 @@ class SiteConfigManager {
 
     getCacheKey(docId) {
         return `sp-config-${docId}`;
+    }
+
+    normalizeAvailabilityStatus(rawStatus, enabled = true) {
+        const value = String(rawStatus || '').trim().toLowerCase();
+        if (value === 'open') {
+            return 'available';
+        }
+        if (value === 'available' || value === 'working' || value === 'closed') {
+            return value;
+        }
+        return enabled ? 'available' : 'closed';
     }
 
     readCache(docId) {
@@ -1038,16 +1050,25 @@ class SiteConfigManager {
     async loadSiteConfig() {
         const cached = this.readCache('siteConfig');
         if (cached) {
-            if (this.otwToggle) this.otwToggle.checked = !!cached.openToWork;
+            const enabled = !!cached.openToWork;
+            if (this.otwToggle) this.otwToggle.checked = enabled;
+            if (this.otwStatusSelect) {
+                this.otwStatusSelect.value = this.normalizeAvailabilityStatus(cached.availabilityStatus, enabled);
+            }
             if (this.otwMessage) this.otwMessage.value = cached.otwMessage || '';
         }
         try {
             const doc = await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').get();
             const data = doc.exists ? doc.data() : {};
-            if (this.otwToggle) this.otwToggle.checked = !!data.openToWork;
+            const enabled = !!data.openToWork;
+            if (this.otwToggle) this.otwToggle.checked = enabled;
+            if (this.otwStatusSelect) {
+                this.otwStatusSelect.value = this.normalizeAvailabilityStatus(data.availabilityStatus, enabled);
+            }
             if (this.otwMessage) this.otwMessage.value = data.otwMessage || '';
             this.writeCache('siteConfig', {
-                openToWork: !!data.openToWork,
+                openToWork: enabled,
+                availabilityStatus: this.normalizeAvailabilityStatus(data.availabilityStatus, enabled),
                 otwMessage: data.otwMessage || ''
             });
         } catch (e) { console.error('loadSiteConfig:', e); }
@@ -1093,8 +1114,11 @@ class SiteConfigManager {
         this.saveOtwBtn.disabled = true;
         this.saveOtwBtn.textContent = 'SAVING...';
         try {
+            const enabled = !!this.otwToggle?.checked;
+            const availabilityStatus = this.normalizeAvailabilityStatus(this.otwStatusSelect?.value, enabled);
             const clientData = {
-                openToWork: !!this.otwToggle?.checked,
+                openToWork: enabled,
+                availabilityStatus,
                 otwMessage: this.otwMessage?.value?.trim() || ''
             };
             await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({

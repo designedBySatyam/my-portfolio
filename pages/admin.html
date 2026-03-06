@@ -471,8 +471,8 @@
                     <div class="config-card">
                         <div class="config-row">
                             <div>
-                                <label class="config-label">Open to Work</label>
-                                <p class="config-desc">Shows a banner on home &amp; contact pages</p>
+                                <label class="config-label">Show Availability Banner</label>
+                                <p class="config-desc">Display status banner on home and contact pages</p>
                             </div>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="otwToggle">
@@ -480,9 +480,17 @@
                             </label>
                         </div>
                         <div class="form-group" style="margin-top:16px">
+                            <label class="field-label">Availability Status</label>
+                            <select id="otwStatusSelect" class="field-input">
+                                <option value="available">Available (Green)</option>
+                                <option value="working">Working (Yellow)</option>
+                                <option value="closed">Closed (Red)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-top:16px">
                             <label class="field-label">Custom Message (optional)</label>
                             <input type="text" id="otwMessage" class="field-input"
-                                placeholder="Open to work — available for internships &amp; freelance projects"
+                                placeholder="Open to work - available for internships and freelance projects."
                                 maxlength="120">
                         </div>
                         <button id="saveOtwBtn" class="btn-primary" style="margin-top:16px">SAVE AVAILABILITY</button>
@@ -673,3 +681,4 @@
     <script src="../js/command-palette.js?v=20260305d"></script>
 </body>
 </html>
+

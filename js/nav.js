@@ -47,19 +47,21 @@
 
   const navHTML = `
 <nav class="nav-container" role="navigation" aria-label="Main navigation">
-  <a href="${routes.home}" class="nav-logo" aria-label="Satyam Pandey - Home">
-    <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-      <path d="M20 4 L36 14 L36 26 L20 36 L4 26 L4 14 Z" fill="none" stroke="url(#navGrad)" stroke-width="1.5"/>
-      <circle cx="20" cy="20" r="7" fill="url(#navGrad)" opacity="0.25"/>
-      <defs>
-        <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#4f8ef7"/>
-          <stop offset="100%" stop-color="#f74f8e"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <span>SP</span>
-  </a>
+  <div class="nav-brand-group">
+    <a href="${routes.home}" class="nav-logo" aria-label="Satyam Pandey - Home">
+      <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        <path d="M20 4 L36 14 L36 26 L20 36 L4 26 L4 14 Z" fill="none" stroke="url(#navGrad)" stroke-width="1.5"/>
+        <circle cx="20" cy="20" r="7" fill="url(#navGrad)" opacity="0.25"/>
+        <defs>
+          <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4f8ef7"/>
+            <stop offset="100%" stop-color="#f74f8e"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>SP</span>
+    </a>
+  </div>
 
   <div class="nav-links" role="list">
     <a href="${routes.home}" class="nav-link${activeClass('index')}" role="listitem"${activeAttr('index')}>Home</a>

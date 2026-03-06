@@ -8,8 +8,8 @@
   z-index: 2;
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  padding: calc(var(--nav-h) + 48px) 72px 72px;
+  align-items: flex-start;
+  padding: calc(var(--nav-h) + 24px) 72px clamp(72px, 9vh, 118px);
 }
 
 .hero-content {
@@ -17,7 +17,12 @@
   display: grid;
   grid-template-columns: 380px minmax(0, 1fr);
   gap: 64px;
-  align-items: center;
+  align-items: start;
+}
+
+body.home-page {
+  min-height: 100dvh;
+  overflow-y: auto;
 }
 
 /* ============================================================
@@ -120,7 +125,9 @@
   aspect-ratio: 1 / 1.1;
   border: 1px solid var(--border);
   overflow: hidden;
-  background: var(--surface);
+  background:
+    radial-gradient(circle at 50% -20%, rgba(79, 142, 247, 0.3), transparent 58%),
+    linear-gradient(165deg, rgba(8, 12, 33, 0.9), rgba(15, 22, 56, 0.8));
 }
 
 /* Inner scan animation */
@@ -177,7 +184,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 14%;
   border-radius: 0;
   clip-path: none;
   transform: none;
@@ -250,16 +257,51 @@
   color: var(--text-dim);
   background: transparent;
   border-radius: 0;
-  transition: all 0.25s ease;
+  transition: color 0.2s ease, background 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .social-link:last-child { border-right: none; }
 
 .social-link:hover {
-  color: var(--accent);
-  background: rgba(79, 142, 247, 0.08);
-  transform: none;
-  box-shadow: none;
+  color: var(--text);
+  background: rgba(79, 142, 247, 0.1);
+}
+
+.social-link::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 6px;
+  background: radial-gradient(circle at 50% 50%, rgba(79, 142, 247, 0.2), transparent 68%);
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.24s ease, transform 0.24s var(--ease-out-expo);
+}
+
+.social-link svg {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.28s var(--ease-bounce), filter 0.28s ease;
+}
+
+.social-link:hover::before,
+.social-link:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.social-link:hover svg,
+.social-link:focus-visible svg {
+  animation: socialPop 0.34s var(--ease-bounce);
+  filter: drop-shadow(0 0 8px rgba(79, 142, 247, 0.45));
+}
+
+@keyframes socialPop {
+  0% { transform: scale(0.82); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 /* ============================================================
@@ -270,6 +312,37 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+@media (min-width: 961px) {
+  .hero-section {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .hero-content {
+    height: auto;
+    min-height: 0;
+    gap: 52px;
+    grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+  }
+
+  .profile-card {
+    height: auto;
+    max-height: none;
+  }
+
+  .profile-image-container {
+    flex: 0 0 auto;
+    aspect-ratio: 1 / 1.1;
+  }
+
+  .hero-text {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
 }
 
 .hero-text > * {
@@ -538,7 +611,7 @@
    ============================================================ */
 
 @media (max-width: 1180px) {
-  .hero-section { padding: calc(var(--nav-h) + 32px) 40px 56px; }
+  .hero-section { padding: calc(var(--nav-h) + 32px) 40px 92px; }
   .hero-content {
     grid-template-columns: 340px minmax(0, 1fr);
     gap: 44px;
@@ -546,20 +619,25 @@
 }
 
 @media (max-width: 960px) {
-  .hero-section { padding: calc(var(--nav-h) + 24px) 24px 48px; }
+  .hero-section { padding: calc(var(--nav-h) + 24px) 24px 88px; }
   .hero-content {
     grid-template-columns: 1fr;
     gap: 32px;
+    height: auto;
   }
 
   .profile-card {
     max-width: 420px;
     margin: 0 auto;
+    height: auto;
   }
 
   .hero-text {
     align-items: flex-start;
     text-align: left;
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
   }
 
   .focus-grid { display: grid; grid-template-columns: 1fr; }
@@ -568,7 +646,7 @@
 }
 
 @media (max-width: 640px) {
-  .hero-section { padding: calc(var(--nav-h) + 18px) 16px 36px; }
+  .hero-section { padding: calc(var(--nav-h) + 18px) 16px 76px; }
   .glitch-text { font-size: clamp(2rem, 11vw, 2.8rem); }
   .focus-card { grid-template-columns: 1fr; }
   .focus-card h3 {
