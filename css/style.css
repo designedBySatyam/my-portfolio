@@ -937,9 +937,39 @@ html.page-exit {
 }
 
 @media (max-width: 900px) {
+  .nav-brand-group {
+    gap: 8px;
+  }
+
   .nav-brand-group .otw-banner,
   .nav-container > .otw-banner {
-    display: none;
+    display: inline-flex;
+    margin-left: 2px;
+  }
+
+  .nav-brand-group .otw-status-tag {
+    min-height: 22px;
+    padding: 3px 9px;
+    font-size: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+
+  .nav-brand-group .otw-status-tag::before {
+    width: 5px;
+    height: 5px;
+  }
+}
+
+@media (max-width: 560px) {
+  .nav-brand-group {
+    gap: 6px;
+  }
+
+  .nav-brand-group .otw-status-tag {
+    min-height: 21px;
+    padding: 3px 8px;
+    font-size: 0.46rem;
+    letter-spacing: 0.07em;
   }
 }
 
