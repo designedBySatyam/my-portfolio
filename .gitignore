@@ -1,0 +1,35 @@
+# Secrets / env files
+.env
+.env.*
+*.env
+*.env.*
+
+# Keys / certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Service accounts / credentials
+*serviceAccount*.json
+*service-account*.json
+*firebase-adminsdk*.json
+
+# Local databases / backups
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.backup
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+
+# Logs
+*.log
