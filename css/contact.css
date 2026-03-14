@@ -1,5 +1,6 @@
 /* ============================================================
    contact.css — Contact Page Styles
+   v20260314 — refined color system
    ============================================================ */
 
 .contact-main {
@@ -104,7 +105,7 @@
 .input-wrapper input,
 .input-wrapper textarea {
   width: 100%;
-  background: rgba(0,245,255,0.02);
+  background: rgba(56, 189, 248, 0.02);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 14px 16px;
@@ -124,12 +125,8 @@
 .input-wrapper input:focus,
 .input-wrapper textarea:focus {
   border-color: var(--cyan);
-  background: rgba(0,245,255,0.04);
-  box-shadow: 0 0 0 3px rgba(0,245,255,0.08), 0 0 20px rgba(0,245,255,0.06);
-}
-
-.input-line {
-  display: none;
+  background: rgba(56, 189, 248, 0.04);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.08), 0 0 18px rgba(56, 189, 248, 0.05);
 }
 
 /* ── Submit Button ── */
@@ -140,7 +137,7 @@
   gap: 12px;
   padding: 16px 32px;
   background: var(--grad-primary);
-  color: var(--bg);
+  color: #fff;
   border: none;
   border-radius: 8px;
   font-family: var(--font-display);
@@ -150,12 +147,12 @@
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s var(--ease-out-expo);
-  box-shadow: 0 0 30px rgba(0,245,255,0.2);
+  box-shadow: 0 0 26px rgba(56, 189, 248, 0.18);
 }
 
 .submit-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0 50px rgba(0,245,255,0.35), 0 8px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 0 44px rgba(56, 189, 248, 0.32), 0 8px 28px rgba(0, 0, 0, 0.4);
 }
 
 .submit-btn.loading {
@@ -175,16 +172,16 @@
 
 .form-status.success {
   display: block;
-  background: rgba(0,245,255,0.08);
-  border: 1px solid rgba(0,245,255,0.25);
+  background: rgba(56, 189, 248, 0.07);
+  border: 1px solid rgba(56, 189, 248, 0.22);
   color: var(--cyan);
 }
 
 .form-status.error {
   display: block;
-  background: rgba(255,0,100,0.08);
-  border: 1px solid rgba(255,0,100,0.25);
-  color: #ff4488;
+  background: rgba(248, 113, 113, 0.07);
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  color: #f87171;
 }
 
 /* ── Info Section ── */
@@ -242,7 +239,7 @@
 .card-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(0,245,255,0.06), transparent);
+  background: radial-gradient(circle at 30% 50%, rgba(56, 189, 248, 0.06), transparent);
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
@@ -253,7 +250,7 @@
 .social-card:hover {
   border-color: var(--border-glow);
   transform: translateX(4px);
-  box-shadow: 0 0 30px rgba(0,245,255,0.08);
+  box-shadow: 0 0 26px rgba(56, 189, 248, 0.07);
 }
 
 .social-icon-box {
@@ -261,15 +258,17 @@
   border-radius: 10px;
   background: var(--surface2);
   border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--cyan);
   flex-shrink: 0;
   transition: all 0.3s;
 }
 
 .social-card:hover .social-icon-box {
-  background: rgba(0,245,255,0.1);
-  box-shadow: 0 0 15px rgba(0,245,255,0.2);
+  background: rgba(56, 189, 248, 0.10);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.18);
 }
 
 .social-info {
@@ -303,30 +302,28 @@
   transform: translate(2px, -2px);
 }
 
+/* ── Focus styles ── */
 .submit-btn:focus-visible,
 .social-card:focus-visible,
 .input-wrapper input:focus-visible,
 .input-wrapper textarea:focus-visible {
   outline: none;
   border-color: var(--border-glow);
-  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.2);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.20);
 }
 
-/* ── Response Info ── */
+/* ── Response info ── */
 .response-info {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  background: rgba(0,245,255,0.04);
-  border: 1px solid rgba(0,245,255,0.1);
+  background: rgba(56, 189, 248, 0.04);
+  border: 1px solid rgba(56, 189, 248, 0.10);
   border-radius: 10px;
 }
 
-.response-info svg {
-  stroke: var(--cyan);
-  flex-shrink: 0;
-}
+.response-info svg { stroke: var(--cyan); flex-shrink: 0; }
 
 .response-info p {
   font-family: var(--font-mono);
@@ -335,103 +332,30 @@
   line-height: 1.5;
 }
 
-.response-info .highlight {
-  font-weight: 700;
-}
+.response-info .highlight { font-weight: 700; }
 
+/* ── Light mode overrides ── */
 [data-theme="light"] .form-container,
 [data-theme="light"] .info-container,
 [data-theme="light"] .social-card {
-  background: rgba(255, 255, 255, 0.64);
+  background: rgba(255, 255, 255, 0.68);
 }
 
-/* ── Back Navigation ── */
+/* ── Back navigation ── */
 .back-navigation {
   display: flex;
   justify-content: center;
   padding: 40px 0 0;
 }
 
-/* ── Responsive ── */
-@media (max-width: 960px) {
-  .contact-main {
-    padding: calc(var(--nav-h) + 32px) 24px 60px;
-    overflow-x: hidden;
-  }
-
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-container {
-    padding: 32px 24px;
-  }
-}
-
-@media (max-width: 600px) {
-  .contact-main {
-    padding: calc(var(--nav-h) + 20px) 16px 48px;
-  }
-
-  .contact-grid {
-    gap: 20px;
-  }
-
-  .form-container {
-    padding: 24px 16px;
-    border-radius: 12px;
-  }
-
-  .info-container {
-    padding: 24px 16px;
-    border-radius: 12px;
-  }
-
-  .social-card {
-    padding: 14px 16px;
-    gap: 12px;
-  }
-
-  .copy-btn-wrap {
-    padding: 4px 8px;
-    font-size: 0.65rem;
-  }
-
-  .submit-btn {
-    padding: 14px 20px;
-    font-size: 0.65rem;
-  }
-
-  .char-counter {
-    font-size: 0.55rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .contact-main {
-    padding: calc(var(--nav-h) + 16px) 12px 40px;
-  }
-
-  .form-container {
-    padding: 20px 14px;
-  }
-
-  .social-card {
-    padding: 12px 14px;
-    gap: 10px;
-  }
-}
-
-/* ── Honeypot field — invisible to real users ── */
+/* ── Honeypot (spam protection) ── */
 .hp-field {
   position: absolute;
   left: -9999px;
-  width: 1px;
-  height: 1px;
+  width: 1px; height: 1px;
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  tabindex: -1;
 }
 
 /* ── Character counter ── */
@@ -446,10 +370,10 @@
   transition: color 0.2s;
 }
 
-.char-counter.near-limit { color: #ffaa00; }
-.char-counter.at-limit   { color: #f74f8e; }
+.char-counter.near-limit { color: #fbbf24; }
+.char-counter.at-limit   { color: #f472b6; }
 
-/* ── Copy email card ─────────────────────────────────────── */
+/* ── Copy email card ── */
 .email-copy-card {
   cursor: pointer;
   user-select: none;
@@ -474,13 +398,13 @@
 .email-copy-card:hover .copy-btn-wrap {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(79, 142, 247, 0.08);
+  background: rgba(56, 189, 248, 0.07);
 }
 
 .email-copy-card.copied .copy-btn-wrap {
-  border-color: var(--green, #22c55e);
-  color: var(--green, #22c55e);
-  background: rgba(34, 197, 94, 0.08);
+  border-color: #4ade80;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.07);
 }
 
 .copy-label {
@@ -488,9 +412,7 @@
   font-size: 0.7rem;
 }
 
-/* ══════════════════════════════════════════════════
-   IST LIVE CLOCK
-══════════════════════════════════════════════════ */
+/* ── IST Live Clock ── */
 .ist-clock-card {
   display: flex;
   align-items: center;
@@ -502,6 +424,7 @@
   margin-bottom: 12px;
   transition: border-color 0.3s;
 }
+
 .ist-clock-card:hover { border-color: var(--border-glow); }
 
 .ist-clock-left {
@@ -546,6 +469,7 @@
   opacity: 0.6;
   animation: istSpin 20s linear infinite;
 }
+
 @keyframes istSpin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
@@ -557,4 +481,37 @@
   letter-spacing: 0.1em;
   color: var(--text-dim);
   text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .contact-main {
+    padding: calc(var(--nav-h) + 32px) 24px 60px;
+    overflow-x: hidden;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-container {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-main    { padding: calc(var(--nav-h) + 20px) 16px 48px; }
+  .contact-grid    { gap: 20px; }
+  .form-container  { padding: 24px 16px; border-radius: 12px; }
+  .info-container  { padding: 24px 16px; border-radius: 12px; }
+  .social-card     { padding: 14px 16px; gap: 12px; }
+  .copy-btn-wrap   { padding: 4px 8px; font-size: 0.65rem; }
+  .submit-btn      { padding: 14px 20px; font-size: 0.65rem; }
+  .char-counter    { font-size: 0.55rem; }
+}
+
+@media (max-width: 400px) {
+  .contact-main   { padding: calc(var(--nav-h) + 16px) 12px 40px; }
+  .form-container { padding: 20px 14px; }
+  .social-card    { padding: 12px 14px; gap: 10px; }
 }
