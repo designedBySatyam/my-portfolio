@@ -455,7 +455,7 @@
                 <header class="admin-header">
                     <div>
                         <h1>SITE CONFIGURATION</h1>
-                        <p>Control availability status, now playing widget, and visitor stats</p>
+                        <p>Control availability status, hero metric, and visitor stats</p>
                     </div>
                 </header>
 
@@ -498,52 +498,6 @@
                     </div>
                 </section>
 
-                <!-- Now Playing -->
-                <section class="config-section">
-                    <h2 class="config-section-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polygon points="10 8 16 12 10 16 10 8"/>
-                        </svg>
-                        NOW PLAYING
-                    </h2>
-                    <div class="config-card">
-                        <div class="config-row" style="margin-bottom:16px">
-                            <div>
-                                <label class="config-label">Show Widget</label>
-                                <p class="config-desc">Displays now-playing card on home page</p>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="npActive">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="form-row-2">
-                            <div class="form-group">
-                                <label class="field-label">Song Title *</label>
-                                <input type="text" id="npSong" class="field-input" placeholder="Blinding Lights">
-                            </div>
-                            <div class="form-group">
-                                <label class="field-label">Artist *</label>
-                                <input type="text" id="npArtist" class="field-input" placeholder="The Weeknd">
-                            </div>
-                        </div>
-                        <div class="form-row-2">
-                            <div class="form-group">
-                                <label class="field-label">Album Art URL</label>
-                                <input type="url" id="npAlbumArt" class="field-input" placeholder="https://...">
-                            </div>
-                            <div class="form-group">
-                                <label class="field-label">Song Link</label>
-                                <input type="url" id="npLink" class="field-input" placeholder="https://open.spotify.com/...">
-                            </div>
-                        </div>
-                        <button id="saveNpBtn" class="btn-primary" style="margin-top:16px">SAVE NOW PLAYING</button>
-                        <p id="npStatus" class="config-status"></p>
-                    </div>
-                </section>
-
-
                 <!-- Currently Building -->
                 <section class="config-section">
                     <h2 class="config-section-title">
@@ -583,6 +537,33 @@
                         </div>
                         <button id="saveWibBtn" class="btn-primary" style="margin-top:16px">SAVE STATUS</button>
                         <p id="wibStatus" class="config-status"></p>
+                    </div>
+                </section>
+
+                <!-- Hero Metric -->
+                <section class="config-section">
+                    <h2 class="config-section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"/>
+                            <rect x="6" y="12" width="3" height="6"/>
+                            <rect x="11" y="9" width="3" height="9"/>
+                            <rect x="16" y="6" width="3" height="12"/>
+                        </svg>
+                        HERO METRIC
+                    </h2>
+                    <div class="config-card">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="field-label">Value</label>
+                                <input type="text" id="metric1Value" class="field-input" placeholder="4th">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label">Label</label>
+                                <input type="text" id="metric1Label" class="field-input" placeholder="Semester">
+                            </div>
+                        </div>
+                        <button id="saveMetricsBtn" class="btn-primary">SAVE METRIC</button>
+                        <p id="metricsStatus" class="config-status"></p>
                     </div>
                 </section>
 
@@ -677,7 +658,7 @@
     <script src="../js/shared-utils.js?v=20260305d"></script>
     
     <!-- Admin Panel Script -->
-    <script src="../js/admin.js?v=20260305d"></script>
+    <script src="../js/admin.js?v=20260317a"></script>
     <script src="../js/command-palette.js?v=20260305d"></script>
 </body>
 </html>

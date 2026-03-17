@@ -980,14 +980,15 @@ class SiteConfigManager {
         this.saveOtwBtn  = document.getElementById('saveOtwBtn');
         this.otwStatus   = document.getElementById('otwStatus');
 
-        // Now Playing
-        this.npActive    = document.getElementById('npActive');
-        this.npSong      = document.getElementById('npSong');
-        this.npArtist    = document.getElementById('npArtist');
-        this.npAlbumArt  = document.getElementById('npAlbumArt');
-        this.npLink      = document.getElementById('npLink');
-        this.saveNpBtn   = document.getElementById('saveNpBtn');
-        this.npStatus    = document.getElementById('npStatus');
+        // Hero Metrics
+        this.metricInputs = [
+            { valueEl: document.getElementById('metric1Value'), labelEl: document.getElementById('metric1Label') }
+        ];
+        this.saveMetricsBtn = document.getElementById('saveMetricsBtn');
+        this.metricsStatus  = document.getElementById('metricsStatus');
+        this.metricDefaults = [
+            { value: '4th', label: 'Semester' }
+        ];
 
         // Visitor stats
         this.totalVisitors    = document.getElementById('totalVisitors');
@@ -1026,6 +1027,49 @@ class SiteConfigManager {
         }
     }
 
+    normalizeHeroMetrics(rawMetrics) {
+        const source = Array.isArray(rawMetrics) ? rawMetrics : [];
+        return this.metricDefaults.map((fallback, index) => {
+            const entry = source[index] || {};
+            const value = String(entry.value ?? '').trim();
+            const label = String(entry.label ?? '').trim();
+            return {
+                value: value || fallback.value || '',
+                label: label || fallback.label || ''
+            };
+        });
+    }
+
+    applyHeroMetricsToInputs(rawMetrics) {
+        if (!this.metricInputs?.length) return;
+        const normalized = this.normalizeHeroMetrics(rawMetrics);
+        normalized.forEach((metric, index) => {
+            const input = this.metricInputs[index];
+            if (!input) return;
+            if (input.valueEl && !input.valueEl.disabled) {
+                input.valueEl.value = metric.value;
+            }
+            if (input.labelEl) {
+                input.labelEl.value = metric.label;
+            }
+        });
+    }
+
+    collectHeroMetricsFromInputs() {
+        if (!this.metricInputs?.length) return this.normalizeHeroMetrics([]);
+        return this.metricInputs.map((input, index) => {
+            const fallback = this.metricDefaults[index] || { value: '', label: '' };
+            const value = input.valueEl && !input.valueEl.disabled
+                ? String(input.valueEl.value || '').trim()
+                : '';
+            const label = input.labelEl ? String(input.labelEl.value || '').trim() : '';
+            return {
+                value: value || fallback.value || '',
+                label: label || fallback.label || ''
+            };
+        });
+    }
+
     init() {
         if (!this.otwToggle) return;
         // Bind new WIB fields
@@ -1037,18 +1081,18 @@ class SiteConfigManager {
         this.wibStatus  = document.getElementById('wibStatus');
 
         this.loadSiteConfig();
-        this.loadNowPlaying();
         this.loadCurrentlyBuilding();
         this.loadVisitorStats();
 
         this.saveOtwBtn?.addEventListener('click', () => this.saveAvailability());
-        this.saveNpBtn?.addEventListener('click',  () => this.saveNowPlaying());
+        this.saveMetricsBtn?.addEventListener('click', () => this.saveHeroMetrics());
         this.saveWibBtn?.addEventListener('click', () => this.saveCurrentlyBuilding());
         this.resetVisitorsBtn?.addEventListener('click', () => this.resetVisitors());
     }
 
     async loadSiteConfig() {
         const cached = this.readCache('siteConfig');
+        this.applyHeroMetricsToInputs(cached?.heroMetrics);
         if (cached) {
             const enabled = !!cached.openToWork;
             if (this.otwToggle) this.otwToggle.checked = enabled;
@@ -1066,39 +1110,17 @@ class SiteConfigManager {
                 this.otwStatusSelect.value = this.normalizeAvailabilityStatus(data.availabilityStatus, enabled);
             }
             if (this.otwMessage) this.otwMessage.value = data.otwMessage || '';
+            const heroMetrics = Array.isArray(data.heroMetrics)
+                ? data.heroMetrics
+                : (cached?.heroMetrics || []);
+            this.applyHeroMetricsToInputs(heroMetrics);
             this.writeCache('siteConfig', {
                 openToWork: enabled,
                 availabilityStatus: this.normalizeAvailabilityStatus(data.availabilityStatus, enabled),
-                otwMessage: data.otwMessage || ''
+                otwMessage: data.otwMessage || '',
+                heroMetrics: this.normalizeHeroMetrics(heroMetrics)
             });
         } catch (e) { console.error('loadSiteConfig:', e); }
-    }
-
-    async loadNowPlaying() {
-        const cached = this.readCache('nowPlaying');
-        if (cached) {
-            if (this.npActive) this.npActive.checked = !!cached.active;
-            if (this.npSong) this.npSong.value = cached.song || '';
-            if (this.npArtist) this.npArtist.value = cached.artist || '';
-            if (this.npAlbumArt) this.npAlbumArt.value = cached.albumArt || '';
-            if (this.npLink) this.npLink.value = cached.link || '';
-        }
-        try {
-            const doc = await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').get();
-            const data = doc.exists ? doc.data() : {};
-            if (this.npActive)   this.npActive.checked   = !!data.active;
-            if (this.npSong)     this.npSong.value        = data.song      || '';
-            if (this.npArtist)   this.npArtist.value      = data.artist    || '';
-            if (this.npAlbumArt) this.npAlbumArt.value    = data.albumArt  || '';
-            if (this.npLink)     this.npLink.value         = data.link      || '';
-            this.writeCache('nowPlaying', {
-                active: !!data.active,
-                song: data.song || '',
-                artist: data.artist || '',
-                albumArt: data.albumArt || '',
-                link: data.link || ''
-            });
-        } catch (e) { console.error('loadNowPlaying:', e); }
     }
 
     loadVisitorStats() {
@@ -1121,11 +1143,12 @@ class SiteConfigManager {
                 availabilityStatus,
                 otwMessage: this.otwMessage?.value?.trim() || ''
             };
+            const existing = this.readCache('siteConfig') || {};
             await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
                 ...clientData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
-            this.writeCache('siteConfig', clientData);
+            this.writeCache('siteConfig', { ...existing, ...clientData });
             this.setStatus(this.otwStatus, 'success', 'Saved!');
         } catch (e) {
             this.setStatus(this.otwStatus, 'error', 'Save failed.');
@@ -1135,29 +1158,28 @@ class SiteConfigManager {
         }
     }
 
-    async saveNowPlaying() {
-        if (!this.saveNpBtn) return;
-        this.saveNpBtn.disabled = true;
-        this.saveNpBtn.textContent = 'SAVING...';
+    async saveHeroMetrics() {
+        if (!this.saveMetricsBtn) return;
+        this.saveMetricsBtn.disabled = true;
+        this.saveMetricsBtn.textContent = 'SAVING...';
+        const heroMetrics = this.collectHeroMetricsFromInputs();
+        const clientData = { heroMetrics };
+        const existing = this.readCache('siteConfig') || {};
+
+        // Optimistic UI: cache + re-enable immediately for snappy feel.
+        this.writeCache('siteConfig', { ...existing, ...clientData });
+        this.setStatus(this.metricsStatus, 'success', 'Saved locally. Syncing...');
+        this.saveMetricsBtn.disabled = false;
+        this.saveMetricsBtn.textContent = 'SAVE METRIC';
+
         try {
-            const clientData = {
-                active:   !!this.npActive?.checked,
-                song:     this.npSong?.value?.trim()     || '',
-                artist:   this.npArtist?.value?.trim()   || '',
-                albumArt: this.npAlbumArt?.value?.trim() || '',
-                link:     this.npLink?.value?.trim()     || ''
-            };
-            await db.collection(COLLECTIONS.CONFIG).doc('nowPlaying').set({
+            await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
                 ...clientData,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            this.writeCache('nowPlaying', clientData);
-            this.setStatus(this.npStatus, 'success', 'Saved!');
+            }, { merge: true });
+            this.setStatus(this.metricsStatus, 'success', 'Saved!');
         } catch (e) {
-            this.setStatus(this.npStatus, 'error', 'Save failed.');
-        } finally {
-            this.saveNpBtn.disabled = false;
-            this.saveNpBtn.textContent = 'SAVE NOW PLAYING';
+            this.setStatus(this.metricsStatus, 'error', 'Sync failed. Try again.');
         }
     }
 

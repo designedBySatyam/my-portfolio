@@ -150,6 +150,34 @@ function toBool(value) {
   return false;
 }
 
+function applyHeroMetrics(data = {}) {
+  const metrics = Array.isArray(data.heroMetrics) ? data.heroMetrics : [];
+  if (!metrics.length) return;
+  const metricItems = document.querySelectorAll('[data-hero-metric]');
+  if (!metricItems.length) return;
+
+  metricItems.forEach((item, index) => {
+    const metric = metrics[index];
+    if (!metric) return;
+    const valueEl = item.querySelector('[data-hero-metric-value]');
+    const labelEl = item.querySelector('[data-hero-metric-label]');
+    const value = String(metric.value ?? '').trim();
+    const label = String(metric.label ?? '').trim();
+    if (label && labelEl) {
+      labelEl.textContent = label;
+    }
+    if (value && valueEl && valueEl.id !== 'visitorCount') {
+      valueEl.textContent = value;
+    }
+  });
+}
+
+(function initHeroMetricsFromCache() {
+  const cached = readConfigCache('siteConfig');
+  if (cached) applyHeroMetrics(cached);
+  watchConfigCache('siteConfig', applyHeroMetrics);
+})();
+
 function getSpotifyEmbedUrl(rawLink) {
   const link = String(rawLink || '').trim();
   if (!link) return '';
@@ -289,9 +317,11 @@ function initOpenToWork() {
       enabled,
       status
     );
+    applyHeroMetrics(data);
   };
 
   const cached = readConfigCache('siteConfig');
+  const cachedHeroMetrics = Array.isArray(cached?.heroMetrics) ? cached.heroMetrics : [];
   if (cached) apply(cached);
   watchConfigCache('siteConfig', apply);
 
@@ -304,10 +334,12 @@ function initOpenToWork() {
     .onSnapshot(
       (doc) => {
         const data = doc.exists ? doc.data() : {};
+        const heroMetrics = Array.isArray(data.heroMetrics) ? data.heroMetrics : cachedHeroMetrics;
         const clientData = {
           openToWork: toBool(data.openToWork ?? data.otwActive ?? data.availabilityActive),
           availabilityStatus: data.availabilityStatus || '',
-          otwMessage: data.otwMessage || data.message || ''
+          otwMessage: data.otwMessage || data.message || '',
+          heroMetrics
         };
         apply(clientData);
         writeConfigCache('siteConfig', clientData);

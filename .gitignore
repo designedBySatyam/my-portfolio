@@ -4,6 +4,9 @@
 *.env
 *.env.*
 
+# Editor settings
+.vscode/
+
 # Keys / certificates
 *.pem
 *.key

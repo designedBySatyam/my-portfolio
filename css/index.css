@@ -468,6 +468,10 @@ body.home-page {
   overflow: hidden;
 }
 
+.profile-card .hero-metrics {
+  border-top: none;
+}
+
 .metric {
   flex: 1;
   display: flex;
