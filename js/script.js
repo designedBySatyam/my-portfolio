@@ -109,6 +109,94 @@
     items.forEach(i => obs.observe(i));
   }
 
+  /* ── Dot Grid Particles ── */
+  function initDotGridParticles() {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let W = 0;
+    let H = 0;
+    let particles = [];
+
+    const getDpr = () => Math.min(window.devicePixelRatio || 1, 2);
+
+    function resize() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      const dpr = getDpr();
+      canvas.width = Math.floor(W * dpr);
+      canvas.height = Math.floor(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function makeParticle() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.4,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        alpha: Math.random() * 0.4 + 0.1,
+        pulse: Math.random() * Math.PI * 2
+      };
+    }
+
+    function vignetteAlpha(x, y) {
+      const dx = (x / W - 0.5) * 2;
+      const dy = (y / H - 0.5) * 2;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      return Math.max(0, 1 - Math.pow(d / 1.0, 1.6));
+    }
+
+    function init() {
+      resize();
+      const count = Math.min(Math.floor((W * H) / 14000), 110);
+      particles = Array.from({ length: count }, makeParticle);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.pulse += 0.012;
+
+        if (p.x < -5) p.x = W + 5;
+        if (p.x > W + 5) p.x = -5;
+        if (p.y < -5) p.y = H + 5;
+        if (p.y > H + 5) p.y = -5;
+
+        const breathe = 0.5 + 0.5 * Math.sin(p.pulse);
+        const va = vignetteAlpha(p.x, p.y);
+        const a = p.alpha * breathe * va;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(167, 139, 250, ${a})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      resize();
+      particles.forEach((p) => {
+        p.x = Math.random() * W;
+        p.y = Math.random() * H;
+      });
+    });
+
+    init();
+    draw();
+  }
+
   /* ══════════════════════════════════════════════════
      SCROLL LOCK CLEANUP
   ══════════════════════════════════════════════════ */
@@ -654,6 +742,7 @@
     initSmoothAnchors();
     initRoleTyper();
     initRevealAnimations();
+    initDotGridParticles();
     initConstellationBackground();
   });
 

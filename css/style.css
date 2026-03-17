@@ -124,6 +124,138 @@
   --grad-accent: linear-gradient(135deg, #0369a1, #9d174d);
 }
 
+/* ── Dot Grid Vignette Theme ── */
+body.theme-dotgrid {
+  --bg-base: #05040a;
+  --bg: #05040a;
+  --bg2: #080712;
+  --bg-start: #05040a;
+  --bg-mid: #080712;
+  --bg-end: #05040a;
+  --dot-color: rgba(180, 155, 255, 0.22);
+  --dot-size: 1.2px;
+  --dot-gap: 22px;
+  --accent: #a78bfa;
+  --accent2: #7c5ce0;
+  --cyan: #a78bfa;
+  --cyan-soft: #c4b5fd;
+  --pink: #c4b5fd;
+  --text: rgba(235, 228, 255, 0.92);
+  --text-muted: rgba(180, 165, 220, 0.72);
+  --text-dim: rgba(180, 165, 220, 0.52);
+  --border: rgba(167, 139, 250, 0.18);
+  --border-glow: rgba(167, 139, 250, 0.45);
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface2: rgba(167, 139, 250, 0.08);
+  --grad-primary: linear-gradient(135deg, #a78bfa, #7c5ce0);
+  --grad-accent: linear-gradient(135deg, #c4b5fd, #7c5ce0);
+  background: var(--bg-base);
+  background-image: none;
+  color: var(--text);
+}
+
+[data-theme="light"] body.theme-dotgrid {
+  --bg-base: #f5f2fb;
+  --bg: #f5f2fb;
+  --bg2: #faf7ff;
+  --bg-start: #f5f2fb;
+  --bg-mid: #f8f5ff;
+  --bg-end: #f2eefb;
+  --dot-color: rgba(110, 90, 190, 0.22);
+  --accent: #6d4cd6;
+  --accent2: #a88bff;
+  --cyan: #6d4cd6;
+  --cyan-soft: #7f6ae8;
+  --pink: #a071ff;
+  --text: #181528;
+  --text-muted: #3f3564;
+  --text-dim: #6b5f90;
+  --border: rgba(110, 90, 190, 0.24);
+  --border-glow: rgba(110, 90, 190, 0.45);
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface2: rgba(110, 90, 190, 0.10);
+  --grad-primary: linear-gradient(135deg, #6d4cd6, #a88bff);
+  --grad-accent: linear-gradient(135deg, #7f6ae8, #c2b0ff);
+}
+
+body.theme-dotgrid #starfield,
+body.theme-dotgrid .grid-bg,
+body.theme-dotgrid .orb {
+  display: none;
+}
+
+body.theme-dotgrid .bg-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+body.theme-dotgrid .dot-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    var(--dot-color) var(--dot-size),
+    transparent var(--dot-size)
+  );
+  background-size: var(--dot-gap) var(--dot-gap);
+  background-position: center center;
+}
+
+body.theme-dotgrid .bloom {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 40% at 25% 35%, rgba(120, 60, 220, 0.07) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 35% at 78% 70%, rgba(80, 40, 180, 0.05) 0%, transparent 100%);
+}
+
+body.theme-dotgrid .vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 65% at 50% 50%,
+    transparent 0%,
+    rgba(5, 4, 10, 0.55) 55%,
+    rgba(5, 4, 10, 0.92) 80%,
+    var(--bg-base) 100%
+  );
+}
+
+[data-theme="light"] body.theme-dotgrid .bloom {
+  background:
+    radial-gradient(ellipse 50% 40% at 25% 35%, rgba(109, 76, 214, 0.08) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 35% at 78% 70%, rgba(168, 139, 255, 0.06) 0%, transparent 100%);
+}
+
+[data-theme="light"] body.theme-dotgrid .vignette {
+  background: radial-gradient(
+    ellipse 70% 65% at 50% 50%,
+    transparent 0%,
+    rgba(245, 242, 251, 0.5) 55%,
+    rgba(245, 242, 251, 0.9) 80%,
+    var(--bg-base) 100%
+  );
+}
+
+body.theme-dotgrid #particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+}
+
+[data-theme="light"] body.theme-dotgrid #particle-canvas {
+  opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-dotgrid #particle-canvas { display: none; }
+}
+
 /* ── High Contrast Mode ────────────────────────────────────── */
 @media (prefers-contrast: more) {
   :root {

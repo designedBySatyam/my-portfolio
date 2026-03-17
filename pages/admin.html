@@ -18,7 +18,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
-  <link rel="stylesheet" href="../css/style.css?v=20260307a">
+  <link rel="stylesheet" href="../css/style.css?v=20260317d">
     <link rel="stylesheet" href="../css/admin.css?v=20260305d">
 
     <!-- Auth guard: hide body until Firebase resolves, prevents flash of wrong screen -->
@@ -49,7 +49,7 @@
       #authLoader.resolved { display: none; }
     </style>
 </head>
-<body>
+<body class="theme-dotgrid">
 
     <!-- Auth loader — shown while Firebase resolves, prevents blank flash -->
     <div id="authLoader" role="status" aria-label="Verifying authentication">
@@ -57,20 +57,12 @@
       <span class="auth-loader-text">Verifying access...</span>
     </div>
 
-    <canvas id="starfield"></canvas>
-
-    <!-- Animated Grid Background -->
-    <div class="grid-bg">
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
+    <div class="bg-wrap" aria-hidden="true">
+        <div class="dot-grid"></div>
+        <div class="bloom"></div>
+        <div class="vignette"></div>
+        <canvas id="particle-canvas"></canvas>
     </div>
-
-    <!-- Floating Orbs -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="auth-screen" style="display:none;">
@@ -648,7 +640,7 @@
 
     <!-- Firebase SDK - Load before other scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="../js/script.js?v=20260305d"></script>
+    <script src="../js/script.js?v=20260317c"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>

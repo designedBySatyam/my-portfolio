@@ -31,7 +31,7 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
-  <link rel="stylesheet" href="../css/style.css?v=20260307a">
+  <link rel="stylesheet" href="../css/style.css?v=20260317d">
   <link rel="stylesheet" href="../css/work.css?v=20260305d">
 
   <!-- Firebase -->
@@ -42,12 +42,14 @@
   <!-- Nav component — must load before script.js -->
   <script src="../js/nav.js?v=20260306b"></script>
 </head>
-<body>
+<body class="theme-dotgrid">
 
-  <canvas id="starfield"></canvas>
-  <div class="grid-bg"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+  <div class="bg-wrap" aria-hidden="true">
+    <div class="dot-grid"></div>
+    <div class="bloom"></div>
+    <div class="vignette"></div>
+    <canvas id="particle-canvas"></canvas>
+  </div>
 
   <!-- Navigation — injected by js/nav.js -->
   <div id="site-nav"></div>
@@ -530,7 +532,7 @@
   </script>
   <script src="../js/firebase-config.js?v=20260305d"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="../js/script.js?v=20260306h"></script>
+  <script src="../js/script.js?v=20260317c"></script>
   <script src="../js/shared-utils.js?v=20260305d"></script>
   <script src="../js/work.js?v=20260305d"></script>
   <script src="../js/admin.js?v=20260317a"></script>

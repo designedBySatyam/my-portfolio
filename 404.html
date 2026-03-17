@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
   <script src="js/nav.js?v=20260305d"></script>
-  <script src="js/script.js?v=20260306h" defer></script>
+  <script src="js/script.js?v=20260317c" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -26,6 +26,98 @@
       --font-mono:    'Space Mono', monospace;
       --nav-h:     64px;
       --grad-primary: linear-gradient(135deg, #4f8ef7, #00f5ff);
+    }
+
+    body.theme-dotgrid {
+      --bg-base: #05040a;
+      --bg: #05040a;
+      --accent: #a78bfa;
+      --cyan: #a78bfa;
+      --text: rgba(235, 228, 255, 0.92);
+      --text-muted: rgba(180, 165, 220, 0.72);
+      --border: rgba(167, 139, 250, 0.18);
+      --surface: rgba(255, 255, 255, 0.04);
+      --grad-primary: linear-gradient(135deg, #a78bfa, #7c5ce0);
+      background: var(--bg-base);
+      background-image: none;
+    }
+
+    [data-theme="light"] body.theme-dotgrid {
+      --bg-base: #f5f2fb;
+      --bg: #f5f2fb;
+      --accent: #6d4cd6;
+      --cyan: #6d4cd6;
+      --text: #181528;
+      --text-muted: #3f3564;
+      --border: rgba(110, 90, 190, 0.24);
+      --surface: rgba(255, 255, 255, 0.72);
+      --grad-primary: linear-gradient(135deg, #6d4cd6, #a88bff);
+    }
+
+    body.theme-dotgrid::before { display: none; }
+
+    body.theme-dotgrid .bg-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    body.theme-dotgrid .dot-grid {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(180,155,255,0.22) 1.2px, transparent 1.2px);
+      background-size: 22px 22px;
+      background-position: center center;
+    }
+
+    body.theme-dotgrid .bloom {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 25% 35%, rgba(120, 60, 220, 0.07) 0%, transparent 100%),
+        radial-gradient(ellipse 40% 35% at 78% 70%, rgba(80, 40, 180, 0.05) 0%, transparent 100%);
+    }
+
+    body.theme-dotgrid .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 70% 65% at 50% 50%,
+        transparent 0%,
+        rgba(5, 4, 10, 0.55) 55%,
+        rgba(5, 4, 10, 0.92) 80%,
+        #05040a 100%
+      );
+    }
+
+    [data-theme="light"] body.theme-dotgrid .bloom {
+      background:
+        radial-gradient(ellipse 50% 40% at 25% 35%, rgba(109, 76, 214, 0.08) 0%, transparent 100%),
+        radial-gradient(ellipse 40% 35% at 78% 70%, rgba(168, 139, 255, 0.06) 0%, transparent 100%);
+    }
+
+    [data-theme="light"] body.theme-dotgrid .vignette {
+      background: radial-gradient(
+        ellipse 70% 65% at 50% 50%,
+        transparent 0%,
+        rgba(245, 242, 251, 0.5) 55%,
+        rgba(245, 242, 251, 0.9) 80%,
+        #f5f2fb 100%
+      );
+    }
+
+    body.theme-dotgrid #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.6;
+    }
+
+    [data-theme="light"] body.theme-dotgrid #particle-canvas {
+      opacity: 0.35;
     }
 
     html, body {
@@ -262,7 +354,14 @@
     }
   </style>
 </head>
-<body>
+  <body class="theme-dotgrid">
+
+  <div class="bg-wrap" aria-hidden="true">
+    <div class="dot-grid"></div>
+    <div class="bloom"></div>
+    <div class="vignette"></div>
+    <canvas id="particle-canvas"></canvas>
+  </div>
 
   <div id="site-nav"></div>
 
