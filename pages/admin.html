@@ -447,7 +447,7 @@
                 <header class="admin-header">
                     <div>
                         <h1>SITE CONFIGURATION</h1>
-                        <p>Control availability status, hero metric, and visitor stats</p>
+                        <p>Control availability status, hero metrics, system log, and visitor stats</p>
                     </div>
                 </header>
 
@@ -529,6 +529,95 @@
                         </div>
                         <button id="saveWibBtn" class="btn-primary" style="margin-top:16px">SAVE STATUS</button>
                         <p id="wibStatus" class="config-status"></p>
+                    </div>
+                </section>
+
+                <!-- System Log -->
+                <section class="config-section">
+                    <h2 class="config-section-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="4 7 7 10 4 13"/>
+                            <line x1="9" y1="13" x2="20" y2="13"/>
+                        </svg>
+                        SYSTEM LOG
+                    </h2>
+                    <div class="config-card">
+                        <div class="config-row" style="margin-bottom:16px">
+                            <div>
+                                <label class="config-label">Show on Home Page</label>
+                                <p class="config-desc">Displays the system log panel on the home page</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="syslogActive">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:12px">
+                            <label class="field-label">Entry 1 Status</label>
+                            <select id="syslog1Status" class="field-input">
+                                <option value="complete">Complete [✓]</option>
+                                <option value="progress">In Progress [~]</option>
+                                <option value="active">Active [+]</option>
+                            </select>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="field-label">Entry 1 Title</label>
+                                <input type="text" id="syslog1Title" class="field-input"
+                                    placeholder="AI Face Recognition System — Final Phase" maxlength="80">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label">Entry 1 Description</label>
+                                <input type="text" id="syslog1Desc" class="field-input"
+                                    placeholder="Real-time detection using Python &amp; OpenCV." maxlength="90">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin:16px 0 12px">
+                            <label class="field-label">Entry 2 Status</label>
+                            <select id="syslog2Status" class="field-input">
+                                <option value="complete">Complete [✓]</option>
+                                <option value="progress">In Progress [~]</option>
+                                <option value="active">Active [+]</option>
+                            </select>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="field-label">Entry 2 Title</label>
+                                <input type="text" id="syslog2Title" class="field-input"
+                                    placeholder="Portfolio Website — Deployed" maxlength="80">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label">Entry 2 Description</label>
+                                <input type="text" id="syslog2Desc" class="field-input"
+                                    placeholder="Interactive UI with responsive design." maxlength="90">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin:16px 0 12px">
+                            <label class="field-label">Entry 3 Status</label>
+                            <select id="syslog3Status" class="field-input">
+                                <option value="progress">In Progress [~]</option>
+                                <option value="complete">Complete [✓]</option>
+                                <option value="active">Active [+]</option>
+                            </select>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="field-label">Entry 3 Title</label>
+                                <input type="text" id="syslog3Title" class="field-input"
+                                    placeholder="Three.js Experiments — In Progress" maxlength="80">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label">Entry 3 Description</label>
+                                <input type="text" id="syslog3Desc" class="field-input"
+                                    placeholder="Learning 3D scenes &amp; rendering optimization." maxlength="90">
+                            </div>
+                        </div>
+
+                        <button id="saveSyslogBtn" class="btn-primary" style="margin-top:16px">SAVE SYSTEM LOG</button>
+                        <p id="syslogStatus" class="config-status"></p>
                     </div>
                 </section>
 

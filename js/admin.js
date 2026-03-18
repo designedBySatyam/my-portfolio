@@ -990,6 +990,45 @@ class SiteConfigManager {
             { value: '4th', label: 'Semester' }
         ];
 
+        // System Log
+        this.syslogActive = document.getElementById('syslogActive');
+        this.syslogItems = [
+            {
+                statusEl: document.getElementById('syslog1Status'),
+                titleEl: document.getElementById('syslog1Title'),
+                descEl: document.getElementById('syslog1Desc')
+            },
+            {
+                statusEl: document.getElementById('syslog2Status'),
+                titleEl: document.getElementById('syslog2Title'),
+                descEl: document.getElementById('syslog2Desc')
+            },
+            {
+                statusEl: document.getElementById('syslog3Status'),
+                titleEl: document.getElementById('syslog3Title'),
+                descEl: document.getElementById('syslog3Desc')
+            }
+        ];
+        this.saveSyslogBtn = document.getElementById('saveSyslogBtn');
+        this.syslogStatus  = document.getElementById('syslogStatus');
+        this.systemLogDefaults = [
+            {
+                status: 'complete',
+                title: 'AI Face Recognition System — Final Phase',
+                desc: 'Real-time detection using Python & OpenCV.'
+            },
+            {
+                status: 'complete',
+                title: 'Portfolio Website — Deployed',
+                desc: 'Interactive UI with responsive design.'
+            },
+            {
+                status: 'progress',
+                title: 'Three.js Experiments — In Progress',
+                desc: 'Learning 3D scenes & rendering optimization.'
+            }
+        ];
+
         // Visitor stats
         this.totalVisitors    = document.getElementById('totalVisitors');
         this.resetVisitorsBtn = document.getElementById('resetVisitorsBtn');
@@ -1040,6 +1079,63 @@ class SiteConfigManager {
         });
     }
 
+    normalizeSystemLogStatus(rawStatus) {
+        const value = String(rawStatus || '').trim().toLowerCase();
+        if (value === 'complete' || value === 'progress' || value === 'active') {
+            return value;
+        }
+        return 'progress';
+    }
+
+    normalizeSystemLog(rawLog) {
+        const source = rawLog && Array.isArray(rawLog.items) ? rawLog.items : [];
+        const active = rawLog && typeof rawLog.active !== 'undefined'
+            ? !!rawLog.active
+            : true;
+        const items = this.systemLogDefaults.map((fallback, index) => {
+            const entry = source[index] || {};
+            const status = this.normalizeSystemLogStatus(entry.status || fallback.status);
+            const hasTitle = Object.prototype.hasOwnProperty.call(entry, 'title');
+            const hasDesc = Object.prototype.hasOwnProperty.call(entry, 'desc');
+            const title = hasTitle ? String(entry.title ?? '').trim() : fallback.title;
+            const desc = hasDesc ? String(entry.desc ?? '').trim() : fallback.desc;
+            return { status, title, desc };
+        });
+        return { active, items };
+    }
+
+    applySystemLogToInputs(rawLog) {
+        if (!this.syslogItems?.length) return;
+        const normalized = this.normalizeSystemLog(rawLog);
+        if (this.syslogActive) this.syslogActive.checked = !!normalized.active;
+        normalized.items.forEach((entry, index) => {
+            const input = this.syslogItems[index];
+            if (!input) return;
+            if (input.statusEl) input.statusEl.value = entry.status;
+            if (input.titleEl) input.titleEl.value = entry.title;
+            if (input.descEl) input.descEl.value = entry.desc;
+        });
+    }
+
+    collectSystemLogFromInputs() {
+        if (!this.syslogItems?.length) return this.normalizeSystemLog({});
+        const items = this.syslogItems.map((input, index) => {
+            const fallback = this.systemLogDefaults[index] || { status: 'progress', title: '', desc: '' };
+            const status = input.statusEl ? this.normalizeSystemLogStatus(input.statusEl.value) : fallback.status;
+            const title = input.titleEl ? String(input.titleEl.value || '').trim() : '';
+            const desc = input.descEl ? String(input.descEl.value || '').trim() : '';
+            return {
+                status: status || fallback.status,
+                title,
+                desc
+            };
+        });
+        return {
+            active: !!this.syslogActive?.checked,
+            items
+        };
+    }
+
     applyHeroMetricsToInputs(rawMetrics) {
         if (!this.metricInputs?.length) return;
         const normalized = this.normalizeHeroMetrics(rawMetrics);
@@ -1087,12 +1183,14 @@ class SiteConfigManager {
         this.saveOtwBtn?.addEventListener('click', () => this.saveAvailability());
         this.saveMetricsBtn?.addEventListener('click', () => this.saveHeroMetrics());
         this.saveWibBtn?.addEventListener('click', () => this.saveCurrentlyBuilding());
+        this.saveSyslogBtn?.addEventListener('click', () => this.saveSystemLog());
         this.resetVisitorsBtn?.addEventListener('click', () => this.resetVisitors());
     }
 
     async loadSiteConfig() {
         const cached = this.readCache('siteConfig');
         this.applyHeroMetricsToInputs(cached?.heroMetrics);
+        this.applySystemLogToInputs(cached?.systemLog);
         if (cached) {
             const enabled = !!cached.openToWork;
             if (this.otwToggle) this.otwToggle.checked = enabled;
@@ -1113,12 +1211,15 @@ class SiteConfigManager {
             const heroMetrics = Array.isArray(data.heroMetrics)
                 ? data.heroMetrics
                 : (cached?.heroMetrics || []);
+            const systemLog = this.normalizeSystemLog(data.systemLog || cached?.systemLog);
             this.applyHeroMetricsToInputs(heroMetrics);
+            this.applySystemLogToInputs(systemLog);
             this.writeCache('siteConfig', {
                 openToWork: enabled,
                 availabilityStatus: this.normalizeAvailabilityStatus(data.availabilityStatus, enabled),
                 otwMessage: data.otwMessage || '',
-                heroMetrics: this.normalizeHeroMetrics(heroMetrics)
+                heroMetrics: this.normalizeHeroMetrics(heroMetrics),
+                systemLog
             });
         } catch (e) { console.error('loadSiteConfig:', e); }
     }
@@ -1180,6 +1281,28 @@ class SiteConfigManager {
             this.setStatus(this.metricsStatus, 'success', 'Saved!');
         } catch (e) {
             this.setStatus(this.metricsStatus, 'error', 'Sync failed. Try again.');
+        }
+    }
+
+    async saveSystemLog() {
+        if (!this.saveSyslogBtn) return;
+        this.saveSyslogBtn.disabled = true;
+        this.saveSyslogBtn.textContent = 'SAVING...';
+        try {
+            const systemLog = this.collectSystemLogFromInputs();
+            const clientData = { systemLog };
+            const existing = this.readCache('siteConfig') || {};
+            await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
+                ...clientData,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            this.writeCache('siteConfig', { ...existing, ...clientData });
+            this.setStatus(this.syslogStatus, 'success', 'Saved!');
+        } catch (e) {
+            this.setStatus(this.syslogStatus, 'error', 'Save failed.');
+        } finally {
+            this.saveSyslogBtn.disabled = false;
+            this.saveSyslogBtn.textContent = 'SAVE SYSTEM LOG';
         }
     }
 
@@ -1278,15 +1401,39 @@ class AnalyticsManager {
             this.grid.innerHTML = '<div class="analytics-loading"><div class="loading-spinner"></div><p>Loading...</p></div>';
         }
 
-        db.collection(COLLECTIONS.CONFIG).doc('pageAnalytics')
-            .get()
-            .then((doc) => {
-                const data = doc.exists ? doc.data() : {};
-                this.render(data);
+        Promise.all([
+            db.collection(COLLECTIONS.CONFIG).doc('pageAnalytics').get(),
+            db.collection(COLLECTIONS.CONFIG).doc('siteStats').get()
+        ])
+            .then(([pageDoc, statsDoc]) => {
+                const pageData = pageDoc.exists ? pageDoc.data() : {};
+                const statsData = statsDoc.exists ? statsDoc.data() : {};
+                const siteViews = statsData.pageViews || {};
+                const merged = this.mergeAnalytics(pageData, siteViews);
+                this.render(merged);
             })
             .catch(() => {
                 if (this.grid) this.grid.innerHTML = '<p class="analytics-error">Failed to load analytics.</p>';
             });
+    }
+
+    mergeAnalytics(pageData = {}, siteViews = {}) {
+        const merged = {};
+        const keys = new Set([
+            ...Object.keys(pageData || {}),
+            ...Object.keys(siteViews || {})
+        ]);
+
+        keys.forEach((key) => {
+            const a = Number(pageData?.[key] ?? 0);
+            const b = Number(siteViews?.[key] ?? 0);
+            const hasA = Number.isFinite(a) && a !== 0;
+            const hasB = Number.isFinite(b) && b !== 0;
+            if (!hasA && !hasB) return;
+            merged[key] = (Number.isFinite(a) ? a : 0) + (Number.isFinite(b) ? b : 0);
+        });
+
+        return merged;
     }
 
     render(data) {

@@ -77,10 +77,10 @@
     const el = document.getElementById('roleTyper');
     if (!el || PRM) return;
     const roles = [
-      'CREATIVE DEVELOPER',
-      'IMMERSIVE EXPERIENCE BUILDER',
-      'THREE.JS SPECIALIST',
-      'INTERACTIVE WEB DESIGNER',
+      'ASPIRING SOFTWARE DEVELOPER',
+      'FRONTEND DEVELOPER | Student',
+      'WEB DEVELOPMENT STUDENT',
+      'TECH ENTHUSIAST',
     ];
     let ri = 0, ci = 0, del = false;
     function tick() {

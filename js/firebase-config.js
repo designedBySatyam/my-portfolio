@@ -7,12 +7,12 @@
 
 // Your Firebase configuration object
 const firebaseConfig = {
-    apiKey: "AIzaSyABkncm1ImUQ1gXLphJT8WJe5ShcaIAbTU",
-    authDomain: "my-fort-folio.firebaseapp.com",
-    projectId: "my-fort-folio",
-    storageBucket: "my-fort-folio.firebasestorage.app",
-    messagingSenderId: "381839537534",
-    appId: "1:381839537534:web:55830d5570860be9226f2f"
+    apiKey: "AIzaSyB7XKSD5xJCv7Im_1pieGTmKe22-yYv2T4",
+    authDomain: "satyam-pandey27.firebaseapp.com",
+    projectId: "satyam-pandey27",
+    storageBucket: "satyam-pandey27.firebasestorage.app",
+    messagingSenderId: "655414857184",
+    appId: "1:655414857184:web:28a13556c80d45a278ef85"
 };
 
 // Initialize Firebase

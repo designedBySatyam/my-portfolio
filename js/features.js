@@ -152,24 +152,62 @@ function toBool(value) {
 
 function applyHeroMetrics(data = {}) {
   const metrics = Array.isArray(data.heroMetrics) ? data.heroMetrics : [];
-  if (!metrics.length) return;
   const metricItems = document.querySelectorAll('[data-hero-metric]');
-  if (!metricItems.length) return;
+  if (metrics.length && metricItems.length) {
+    metricItems.forEach((item, index) => {
+      const metric = metrics[index];
+      if (!metric) return;
+      const valueEl = item.querySelector('[data-hero-metric-value]');
+      const labelEl = item.querySelector('[data-hero-metric-label]');
+      const value = String(metric.value ?? '').trim();
+      const label = String(metric.label ?? '').trim();
+      if (label && labelEl) {
+        labelEl.textContent = label;
+      }
+      if (value && valueEl && valueEl.id !== 'visitorCount') {
+        valueEl.textContent = value;
+      }
+    });
+  }
+  applySystemLog(data);
+}
 
-  metricItems.forEach((item, index) => {
-    const metric = metrics[index];
-    if (!metric) return;
-    const valueEl = item.querySelector('[data-hero-metric-value]');
-    const labelEl = item.querySelector('[data-hero-metric-label]');
-    const value = String(metric.value ?? '').trim();
-    const label = String(metric.label ?? '').trim();
-    if (label && labelEl) {
-      labelEl.textContent = label;
-    }
-    if (value && valueEl && valueEl.id !== 'visitorCount') {
-      valueEl.textContent = value;
-    }
-  });
+function applySystemLog(data = {}) {
+  if (!isPage('index')) return;
+  const container = document.querySelector('.system-log');
+  const list = container?.querySelector('.system-log-list');
+  if (!container || !list) return;
+
+  const systemLog = data.systemLog || {};
+  if (typeof systemLog.active !== 'undefined') {
+    container.hidden = !toBool(systemLog.active);
+  }
+
+  const items = Array.isArray(systemLog.items) ? systemLog.items : [];
+  const visibleItems = items.filter((item) => String(item?.title || '').trim());
+  if (!visibleItems.length) return;
+
+  const statusMap = {
+    complete: { cls: 'is-complete', label: '[✓]' },
+    progress: { cls: 'is-progress', label: '[~]' },
+    active: { cls: 'is-active', label: '[+]' }
+  };
+
+  list.innerHTML = visibleItems.map((item) => {
+    const statusKey = String(item.status || '').trim().toLowerCase();
+    const status = statusMap[statusKey] || statusMap.progress;
+    const title = escHtml(item.title || '');
+    const desc = escHtml(item.desc || '');
+    return `
+      <li class="system-log-item ${status.cls}">
+        <span class="sl-status">${status.label}</span>
+        <div class="sl-body">
+          <span class="sl-title">${title}</span>
+          ${desc ? `<span class="sl-desc">${desc}</span>` : ''}
+        </div>
+      </li>
+    `;
+  }).join('');
 }
 
 (function initHeroMetricsFromCache() {
@@ -321,7 +359,8 @@ function initOpenToWork() {
   };
 
   const cached = readConfigCache('siteConfig');
-  const cachedHeroMetrics = Array.isArray(cached?.heroMetrics) ? cached.heroMetrics : [];
+    const cachedHeroMetrics = Array.isArray(cached?.heroMetrics) ? cached.heroMetrics : [];
+    const cachedSystemLog = cached?.systemLog || {};
   if (cached) apply(cached);
   watchConfigCache('siteConfig', apply);
 
@@ -339,7 +378,8 @@ function initOpenToWork() {
           openToWork: toBool(data.openToWork ?? data.otwActive ?? data.availabilityActive),
           availabilityStatus: data.availabilityStatus || '',
           otwMessage: data.otwMessage || data.message || '',
-          heroMetrics
+          heroMetrics,
+          systemLog: data.systemLog || cachedSystemLog
         };
         apply(clientData);
         writeConfigCache('siteConfig', clientData);
@@ -592,12 +632,14 @@ function initPageAnalytics() {
     resume: 'Resume',
     work: 'Work',
     projects: 'Work',
+    'projects-certificates': 'Work',
     contact: 'Contact'
   };
 
   const seg = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
-  const pageKey = seg.replace('.html', '') || 'index';
-  const pageName = pageMap[pageKey] || pageKey;
+  const rawKey = seg.replace('.html', '') || 'index';
+  const pageKey = (rawKey === 'projects' || rawKey === 'projects-certificates') ? 'work' : rawKey;
+  const pageName = pageMap[rawKey] || pageMap[pageKey] || pageKey;
 
   const key = `sp-view-${pageKey}`;
   try {
@@ -612,12 +654,12 @@ function initPageAnalytics() {
   if (!dbRef || !configCollection) return;
 
   dbRef.collection(configCollection)
-    .doc('pageAnalytics')
+    .doc('siteStats')
     .set(
       {
-        [pageKey]: firebase.firestore.FieldValue.increment(1),
-        [`${pageKey}_name`]: pageName,
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        [`pageViews.${pageKey}`]: firebase.firestore.FieldValue.increment(1),
+        [`pageViewsNames.${pageKey}`]: pageName,
+        pageViewsUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
       },
       { merge: true }
     )
@@ -683,3 +725,11 @@ function initCurrentlyBuilding() {
       }
     );
 }
+
+(function initGithubActivityOnLoad() {
+  try {
+    initGithubActivity();
+  } catch (error) {
+    console.warn('[features] initGithubActivity failed:', error);
+  }
+})();
