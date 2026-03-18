@@ -3,4 +3,4 @@ Allow: /
 Disallow: /pages/admin.html
 Disallow: /js/firebase-config.js
 
-Sitemap: https://satyam-pandey27.netlify.app/sitemap.xml
+Sitemap: https://satyam-pandey27.web.app/sitemap.xml

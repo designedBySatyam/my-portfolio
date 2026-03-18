@@ -263,10 +263,13 @@ class AdminAuth {
 
     showPanel(user) {
         if (this.loginBlock) this.loginBlock.style.display = 'none';
-        if (this.panelBlock) this.panelBlock.style.display = 'block';
+        if (this.panelBlock) {
+            const displayMode = this.panelBlock === this.adminDashboard ? 'grid' : 'block';
+            this.panelBlock.style.display = displayMode;
+        }
         if (this.userEmail) this.userEmail.textContent = user.email || '';
         if (this.standaloneMode && this.loginScreen) this.loginScreen.style.display = 'none';
-        if (this.standaloneMode && this.adminDashboard) this.adminDashboard.style.display = 'block';
+        if (this.standaloneMode && this.adminDashboard) this.adminDashboard.style.display = 'grid';
 
         this.emailInput.value = '';
         this.passwordInput.value = '';
