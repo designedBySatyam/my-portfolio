@@ -1017,18 +1017,18 @@ class SiteConfigManager {
         this.systemLogDefaults = [
             {
                 status: 'complete',
-                title: 'AI Face Recognition System — Final Phase',
-                desc: 'Real-time detection using Python & OpenCV.'
+                title: 'Face Recognition v2 - 12.4k frames | 94.1% accuracy',
+                desc: 'Inference 22 FPS on CPU after threshold tuning.'
             },
             {
                 status: 'complete',
-                title: 'Portfolio Website — Deployed',
-                desc: 'Interactive UI with responsive design.'
+                title: 'Portfolio Platform - Lighthouse 96/100',
+                desc: 'Homepage LCP 1.8s and CLS 0.02 after asset optimization.'
             },
             {
                 status: 'progress',
-                title: 'Three.js Experiments — In Progress',
-                desc: 'Learning 3D scenes & rendering optimization.'
+                title: 'Three.js Scene - draw calls reduced 35%',
+                desc: 'Frame time cut from 24ms to 14ms on integrated graphics.'
             }
         ];
 

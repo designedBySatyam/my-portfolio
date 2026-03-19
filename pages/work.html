@@ -18,6 +18,31 @@
   <meta name="twitter:description" content="Web apps, tools and certifications built by Satyam Pandey.">
   <meta name="twitter:image"       content="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/og-image.webp?v=20260318">
     <link rel="canonical" href="https://satyam-pandey27.web.app/pages/work.html">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://satyam-pandey27.web.app/#person",
+      "name": "Satyam Pandey",
+      "url": "https://satyam-pandey27.web.app/"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://satyam-pandey27.web.app/pages/work.html#webpage",
+      "url": "https://satyam-pandey27.web.app/pages/work.html",
+      "name": "Projects & Certificates | Satyam Pandey",
+      "isPartOf": {
+        "@id": "https://satyam-pandey27.web.app/#website"
+      },
+      "about": {
+        "@id": "https://satyam-pandey27.web.app/#person"
+      }
+    }
+  ]
+}
+</script>
   <meta name="theme-color" content="#020510">
   <!-- Title -->
   <title>Projects & Certificates | Satyam Pandey</title>
@@ -516,20 +541,6 @@
       </form>
     </div>
   </div>
-
-  <script>
-    // Live clock in admin login deco panel
-    (function() {
-      function tick() {
-        const el = document.getElementById('decoTime');
-        if (!el) return;
-        const now = new Date();
-        el.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-      }
-      tick();
-      setInterval(tick, 1000);
-    })();
-  </script>
   <script src="../js/firebase-config.js?v=20260305d"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="../js/script.js?v=20260317c"></script>
@@ -538,5 +549,6 @@
   <script src="../js/admin.js?v=20260317a"></script>
   <script src="../js/features.js?v=20260316a"></script>
   <script src="../js/command-palette.js?v=20260305d"></script>
+  <script type="module" src="../js/pages/work-bootstrap.js?v=20260319a"></script>
 </body>
 </html>
