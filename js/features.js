@@ -257,6 +257,23 @@ function getDirectAudioUrl(rawLink) {
   }
 }
 
+function getSafeExternalLink(rawLink) {
+  const link = String(rawLink || '').trim();
+  if (!link) return '';
+
+  const spotifyUriMatch = link.match(/^spotify:track:([A-Za-z0-9]+)$/i);
+  if (spotifyUriMatch?.[1]) {
+    return `https://open.spotify.com/track/${spotifyUriMatch[1]}`;
+  }
+
+  try {
+    const url = new URL(link, window.location.href);
+    return (url.protocol === 'http:' || url.protocol === 'https:') ? url.href : '';
+  } catch (_) {
+    return '';
+  }
+}
+
 function placeBannerInNav(banner) {
   const nav = document.querySelector('.nav-container');
   if (!nav) return false;
@@ -452,11 +469,12 @@ function initNowPlaying() {
     }
 
     const songLink = String(data.link || '').trim();
+    const songHref = getSafeExternalLink(songLink);
     const embedUrl = getSpotifyEmbedUrl(songLink);
     const directAudioUrl = getDirectAudioUrl(songLink);
     const canPlayInline = Boolean(embedUrl || directAudioUrl);
-    const songElement = songLink
-      ? `<a class="np-song" href="${escHtml(songLink)}" target="_blank" rel="noopener">${escHtml(data.song)}</a>`
+    const songElement = songHref
+      ? `<a class="np-song" href="${escHtml(songHref)}" target="_blank" rel="noopener noreferrer">${escHtml(data.song)}</a>`
       : `<span class="np-song">${escHtml(data.song)}</span>`;
 
     slot.hidden = false;
@@ -678,6 +696,8 @@ function initCurrentlyBuilding() {
       return;
     }
 
+    const progressHref = getSafeExternalLink(data.link);
+
     slot.innerHTML = `
       <div class="wib-card">
         <div class="wib-header">
@@ -688,8 +708,8 @@ function initCurrentlyBuilding() {
           <span class="wib-title">${escHtml(data.title)}</span>
           ${data.desc ? `<span class="wib-desc">${escHtml(data.desc)}</span>` : ''}
         </div>
-        ${data.link ? `
-          <a href="${escHtml(data.link)}" target="_blank" rel="noopener" class="wib-link">
+        ${progressHref ? `
+          <a href="${escHtml(progressHref)}" target="_blank" rel="noopener noreferrer" class="wib-link">
             View progress
           </a>` : ''}
       </div>

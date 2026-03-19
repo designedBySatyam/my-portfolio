@@ -1,6 +1,14 @@
+let clockTickTimeoutId = null;
+
 export function initWorkDecoClock() {
   const clockEl = document.getElementById('decoTime');
-  if (!clockEl) return;
+  if (!clockEl) {
+    if (clockTickTimeoutId) {
+      window.clearTimeout(clockTickTimeoutId);
+      clockTickTimeoutId = null;
+    }
+    return;
+  }
 
   const updateClock = () => {
     const now = new Date();
@@ -11,6 +19,20 @@ export function initWorkDecoClock() {
     });
   };
 
+  const scheduleNextTick = () => {
+    const now = new Date();
+    const delay = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    clockTickTimeoutId = window.setTimeout(() => {
+      updateClock();
+      scheduleNextTick();
+    }, Math.max(250, delay));
+  };
+
+  if (clockTickTimeoutId) {
+    window.clearTimeout(clockTickTimeoutId);
+    clockTickTimeoutId = null;
+  }
+
   updateClock();
-  window.setInterval(updateClock, 1000);
+  scheduleNextTick();
 }

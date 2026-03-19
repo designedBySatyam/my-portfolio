@@ -943,11 +943,41 @@ class CertificatesAdmin {
     }
 }
 
+const ADMIN_BOOTSTRAP_RETRY_MS = 250;
+const ADMIN_BOOTSTRAP_TIMEOUT_MS = 15000;
+let adminBootstrapStartedAt = 0;
+let adminBootstrapTimedOut = false;
+
 function bootstrapAdmin() {
+    if (!adminBootstrapStartedAt) {
+        adminBootstrapStartedAt = Date.now();
+    }
+
     if (typeof firebase === 'undefined' || typeof db === 'undefined' || typeof COLLECTIONS === 'undefined') {
-        window.setTimeout(bootstrapAdmin, 250);
+        const timedOut = Date.now() - adminBootstrapStartedAt >= ADMIN_BOOTSTRAP_TIMEOUT_MS;
+        if (timedOut) {
+            if (!adminBootstrapTimedOut) {
+                adminBootstrapTimedOut = true;
+                document.body.style.visibility = 'visible';
+                const loader = document.getElementById('authLoader');
+                if (loader) loader.classList.add('resolved');
+                const authError = document.getElementById('adminError') || document.getElementById('authError');
+                if (authError) {
+                    authError.textContent = 'Admin services failed to initialize. Refresh and verify Firebase scripts.';
+                    authError.style.display = 'block';
+                } else {
+                    AdminUI.notify('error', 'Admin services failed to initialize.');
+                }
+                console.error('Admin bootstrap timed out waiting for Firebase globals.');
+            }
+            return;
+        }
+        window.setTimeout(bootstrapAdmin, ADMIN_BOOTSTRAP_RETRY_MS);
         return;
     }
+
+    adminBootstrapTimedOut = false;
+    adminBootstrapStartedAt = 0;
 
     const authManager = new AdminAuth();
     authManager.init();
@@ -1346,12 +1376,19 @@ class SiteConfigManager {
         if (!this.saveWibBtn) return;
         this.saveWibBtn.disabled = true;
         this.saveWibBtn.textContent = 'SAVING...';
+        const rawLink = this.wibLink?.value?.trim() || '';
+        if (rawLink && !AdminUI.isValidHttpUrl(rawLink)) {
+            this.setStatus(this.wibStatus, 'error', 'Link must be a valid http/https URL.');
+            this.saveWibBtn.disabled = false;
+            this.saveWibBtn.textContent = 'SAVE STATUS';
+            return;
+        }
         try {
             const clientData = {
                 active: !!this.wibActive?.checked,
                 title:  this.wibTitle?.value?.trim()  || '',
                 desc:   this.wibDesc?.value?.trim()   || '',
-                link:   this.wibLink?.value?.trim()   || ''
+                link:   rawLink
             };
             await db.collection(COLLECTIONS.CONFIG).doc('currentlyBuilding').set({
                 ...clientData,
