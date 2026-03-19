@@ -8,40 +8,86 @@
 
 (function() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.__portfolioExtrasBooted) return;
+  window.__portfolioExtrasBooted = true;
 
-  // ========== 1. SYSTEM BOOT PRELOADER ==========
-  const preloader = document.createElement('div');
-  preloader.id = 'sys-preloader';
-  preloader.innerHTML = `
-    <div class="preloader-door pd-top"></div>
-    <div class="preloader-door pd-bottom"></div>
-    <div class="pl-scanline"></div>
-    
-    <!-- System Diagnostics -->
-    <div class="sys-metrics top-left">SYS.MEM: <span id="metric-mem">0x00</span></div>
-    <div class="sys-metrics top-right">NET.UPLINK: <span id="metric-net">0kbps</span></div>
-    <div class="sys-metrics bottom-left">SEC.PROTO: ACTIVE</div>
-    <div class="sys-metrics bottom-right">NODE: 77.A9.B2</div>
+  const stalePreloader = document.getElementById('sys-preloader');
+  if (stalePreloader) stalePreloader.remove();
 
-    <div class="preloader-content crt-glow">
-      <div class="pl-glitch-box">
-        <div class="preloader-log" id="pl-log1"></div>
-        <div class="preloader-log" id="pl-log2"></div>
-        <div class="preloader-log" id="pl-log3"></div>
-        <div class="preloader-log" id="pl-log4" style="color: #f472b6 !important; font-weight: bold; margin-top: 8px;"></div><span class="pl-cursor" id="pl-cursor"></span>
+  const staleHud = document.getElementById('hud-scroll-container');
+  if (staleHud) staleHud.remove();
+
+  const staleStyle = document.getElementById('sys-preloader-style');
+  if (staleStyle) staleStyle.remove();
+
+  const PRELOADER_DAY_KEY = 'portfolio-preloader-day-v1';
+  const todayToken = new Date().toISOString().slice(0, 10);
+  const isHomePage = document.body.classList.contains('home-page');
+  let shouldRunPreloader = isHomePage;
+  if (shouldRunPreloader) {
+    try {
+      shouldRunPreloader = localStorage.getItem(PRELOADER_DAY_KEY) !== todayToken;
+      if (shouldRunPreloader) {
+        localStorage.setItem(PRELOADER_DAY_KEY, todayToken);
+      }
+    } catch (_) {
+      shouldRunPreloader = true;
+    }
+  }
+
+  let preloader = null;
+  let shouldDelayHudReveal = false;
+  if (shouldRunPreloader) {
+    shouldDelayHudReveal = true;
+    // ========== 1. SYSTEM BOOT PRELOADER ==========
+    preloader = document.createElement('div');
+    preloader.id = 'sys-preloader';
+    preloader.innerHTML = `
+      <div class="preloader-door pd-top"></div>
+      <div class="preloader-door pd-bottom"></div>
+      <div class="pl-scanline"></div>
+      
+      <!-- System Diagnostics -->
+      <div class="sys-metrics top-left">SYS.MEM: <span id="metric-mem">0x00</span></div>
+      <div class="sys-metrics top-right">NET.UPLINK: <span id="metric-net">0kbps</span></div>
+      <div class="sys-metrics bottom-left">SEC.PROTO: ACTIVE</div>
+      <div class="sys-metrics bottom-right">NODE: 77.A9.B2</div>
+
+      <div class="preloader-content crt-glow">
+        <div class="pl-glitch-box">
+          <div class="pl-head">
+            <span class="pl-title">BOOT.SEQ // HOME NODE</span>
+            <button type="button" class="pl-skip" id="pl-skip-btn" aria-label="Skip intro">SKIP</button>
+          </div>
+          <div class="preloader-log" id="pl-log1"></div>
+          <div class="preloader-log" id="pl-log2"></div>
+          <div class="preloader-log" id="pl-log3"></div>
+          <div class="preloader-log" id="pl-log4" style="color: #f472b6 !important; font-weight: bold; margin-top: 8px;"></div><span class="pl-cursor" id="pl-cursor"></span>
+        </div>
+        <div class="preloader-bar"><div class="preloader-fill"></div></div>
+        <div class="pl-progress"><span id="pl-pct">00%</span></div>
       </div>
-      <div class="preloader-bar"><div class="preloader-fill"></div></div>
-    </div>
-  `;
-  document.body.appendChild(preloader);
+    `;
+    document.body.appendChild(preloader);
+  }
 
   const style = document.createElement('style');
+  style.id = 'sys-preloader-style';
   style.innerHTML = `
     #sys-preloader {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       z-index: 10000; overflow: hidden;
-      transition: visibility 1.2s;
-      background: transparent;
+      transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+      background: #020510;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #sys-preloader.split {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
     
     /* Blast Doors with Grid Background */
@@ -98,12 +144,69 @@
     }
 
     .preloader-content {
-      position: absolute; top: 50%; left: 50%; width: 360px; z-index: 2; 
+      position: absolute; top: 41%; left: 50%; width: 390px; z-index: 2; 
       font-family: var(--font-mono, monospace);
       color: #38bdf8 !important; font-size: 0.75rem; 
       transition: opacity 0.4s;
     }
-    .pl-glitch-box { position: relative; padding: 12px; border-left: 2px solid rgba(56, 189, 248, 0.3); }
+    .pl-glitch-box {
+      position: relative;
+      padding: 12px 14px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-left-width: 2px;
+      background: linear-gradient(180deg, rgba(7, 18, 38, 0.88), rgba(3, 8, 18, 0.95));
+      box-shadow: 0 0 28px rgba(56, 189, 248, 0.18), inset 0 0 12px rgba(56, 189, 248, 0.08);
+    }
+    .pl-glitch-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(56, 189, 248, 0.04),
+        rgba(56, 189, 248, 0.04) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .pl-head {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .pl-title {
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      color: rgba(56, 189, 248, 0.85);
+    }
+    .pl-skip {
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      background: rgba(4, 12, 24, 0.7);
+      color: #9edcff;
+      font-family: inherit;
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(-2px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+    }
+    .pl-skip.show {
+      opacity: 0.92;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .pl-skip:hover {
+      border-color: rgba(56, 189, 248, 0.8);
+    }
     
     /* CRT Glow and flicker */
     .crt-glow {
@@ -122,8 +225,16 @@
     .preloader-content {
       transform: translate(-50%, -50%);
     }
+    @media (max-width: 640px) {
+      .preloader-content {
+        top: 39%;
+        width: min(89vw, 390px);
+      }
+    }
 
     .preloader-log {
+      position: relative;
+      z-index: 1;
       min-height: 1.2rem; margin-bottom: 8px; text-transform: uppercase;
       letter-spacing: 0.1em; display: inline-block; width: 100%;
     }
@@ -139,7 +250,7 @@
     /* Segmented Loader Bar */
     .preloader-bar {
       width: 100%; height: 4px; background: rgba(56, 189, 248, 0.1);
-      margin-top: 24px; overflow: hidden; position: relative; border-radius: 2px;
+      margin-top: 16px; overflow: hidden; position: relative; border-radius: 2px;
     }
     .preloader-fill {
       width: 0%; height: 100%; background: #38bdf8 !important;
@@ -152,6 +263,15 @@
         rgba(2, 5, 16, 0.7) 8px,
         rgba(2, 5, 16, 0.7) 12px
       ) !important;
+    }
+    .pl-progress {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      text-align: right;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      color: rgba(158, 220, 255, 0.9);
     }
     
     /* HUD Scroll */
@@ -180,75 +300,201 @@
   `;
   document.head.appendChild(style);
 
-  // Diagnostic Metrics Logic
-  const memEl = preloader.querySelector('#metric-mem');
-  const netEl = preloader.querySelector('#metric-net');
-  const metricsInt = setInterval(() => {
-    if(memEl) memEl.textContent = '0x' + Math.floor(Math.random()*16777215).toString(16).toUpperCase().padStart(6, '0');
-    if(netEl) netEl.textContent = Math.floor(Math.random()*900 + 100) + 'kbps';
-  }, 100);
+  if (preloader) {
+    const BOOT_MIN_MS = 1500;
+    const BOOT_MAX_MS = 2400;
+    const SKIP_SHOW_MS = 850;
 
-  // Boot Sequence Logic
-  const logs = [
-    { el: preloader.querySelector('#pl-log1'), text: "[SYS.INIT] ESTABLISHING SECURE CONNECTION...", delay: 150 },
-    { el: preloader.querySelector('#pl-log2'), text: "[DECRYPTING MODULES] ACCESS GRANTED", delay: 550 },
-    { el: preloader.querySelector('#pl-log3'), text: "[UI.DRAW] INITIATING RENDER LAYER", delay: 950 }
-  ];
-  
-  const fill = preloader.querySelector('.preloader-fill');
-  
-  let fillPct = 0;
-  const fillInterval = setInterval(() => {
-    fillPct += (Math.random() * 8 + 1);
-    if (fillPct > 98) fillPct = 98;
-    if (fill) fill.style.width = fillPct + '%';
-  }, 70);
+    const memEl = preloader.querySelector('#metric-mem');
+    const netEl = preloader.querySelector('#metric-net');
+    const fill = preloader.querySelector('.preloader-fill');
+    const pctEl = preloader.querySelector('#pl-pct');
+    const skipBtn = preloader.querySelector('#pl-skip-btn');
+    const typeTarget = preloader.querySelector('#pl-log4');
+    const cursorObj = preloader.querySelector('#pl-cursor');
 
-  logs.forEach(log => {
+    let preloaderSettled = false;
+    let progressValue = 6;
+    let progressTarget = 6;
+    let progressRaf = 0;
+    let typeInterval = null;
+    let settleTimeout = null;
+    let skipRevealTimeout = null;
+    let minTimer = null;
+    let maxTimer = null;
+    let navObserver = null;
+    let assetsReady = false;
+    let typingDone = false;
+    let minElapsed = false;
+
+    const setProgressTarget = (value) => {
+      if (value > progressTarget) progressTarget = value;
+    };
+
+    const metricsInt = setInterval(() => {
+      if(memEl) memEl.textContent = '0x' + Math.floor(Math.random() * 16777215).toString(16).toUpperCase().padStart(6, '0');
+      if(netEl) netEl.textContent = Math.floor(Math.random() * 900 + 100) + 'kbps';
+    }, 120);
+
+    const renderProgress = () => {
+      progressValue += (progressTarget - progressValue) * 0.16;
+      if (Math.abs(progressTarget - progressValue) < 0.2) {
+        progressValue = progressTarget;
+      }
+      const clamped = Math.max(0, Math.min(100, progressValue));
+      if (fill) fill.style.width = clamped.toFixed(1) + '%';
+      if (pctEl) pctEl.textContent = Math.round(clamped).toString().padStart(2, '0') + '%';
+      if (!preloaderSettled) {
+        progressRaf = requestAnimationFrame(renderProgress);
+      }
+    };
+    progressRaf = requestAnimationFrame(renderProgress);
+
+    const revealHud = () => {
+      const hud = document.getElementById('hud-scroll-container');
+      if (hud) hud.style.opacity = '1';
+    };
+
+    const cleanupBoot = () => {
+      clearInterval(metricsInt);
+      if (typeInterval) clearInterval(typeInterval);
+      if (settleTimeout) clearTimeout(settleTimeout);
+      if (skipRevealTimeout) clearTimeout(skipRevealTimeout);
+      if (minTimer) clearTimeout(minTimer);
+      if (maxTimer) clearTimeout(maxTimer);
+      if (progressRaf) cancelAnimationFrame(progressRaf);
+      if (navObserver) navObserver.disconnect();
+    };
+
+    const settlePreloader = (instant) => {
+      if (preloaderSettled) return;
+      preloaderSettled = true;
+      cleanupBoot();
+      progressTarget = 100;
+      progressValue = 100;
+      if (fill) fill.style.width = '100%';
+      if (pctEl) pctEl.textContent = '100%';
+      preloader.classList.add('split');
+      setTimeout(() => {
+        preloader.remove();
+        revealHud();
+      }, instant ? 320 : 760);
+    };
+
+    const maybeFinish = () => {
+      if (preloaderSettled) return;
+      if (assetsReady && typingDone && minElapsed) {
+        setProgressTarget(100);
+        settleTimeout = setTimeout(() => settlePreloader(false), 220);
+      }
+    };
+
+    if (skipBtn) {
+      skipRevealTimeout = setTimeout(() => {
+        skipBtn.classList.add('show');
+      }, SKIP_SHOW_MS);
+      skipBtn.addEventListener('click', () => settlePreloader(true));
+    }
+
+    const logs = [
+      { el: preloader.querySelector('#pl-log1'), text: "[SYS.INIT] ESTABLISHING SECURE CONNECTION...", delay: 120, progress: 22 },
+      { el: preloader.querySelector('#pl-log2'), text: "[DECRYPTING MODULES] ACCESS GRANTED", delay: 300, progress: 38 },
+      { el: preloader.querySelector('#pl-log3'), text: "[UI.DRAW] INITIATING RENDER LAYER", delay: 520, progress: 52 }
+    ];
+
+    logs.forEach((log) => {
+      setTimeout(() => {
+        if (log.el) decodeEffect(log.el, log.text, 11);
+        setProgressTarget(log.progress);
+      }, log.delay);
+    });
+
+    const navReadyPromise = new Promise((resolve) => {
+      if (document.querySelector('.nav-container')) {
+        resolve();
+        return;
+      }
+      navObserver = new MutationObserver(() => {
+        if (document.querySelector('.nav-container')) {
+          if (navObserver) navObserver.disconnect();
+          navObserver = null;
+          resolve();
+        }
+      });
+      navObserver.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => {
+        if (navObserver) navObserver.disconnect();
+        navObserver = null;
+        resolve();
+      }, 900);
+    });
+    navReadyPromise.then(() => setProgressTarget(60));
+
+    const fontsReadyPromise = (document.fonts && document.fonts.ready)
+      ? document.fonts.ready.catch(() => {})
+      : Promise.resolve();
+    fontsReadyPromise.then(() => setProgressTarget(72));
+
+    const heroImagePromise = new Promise((resolve) => {
+      const heroImg = document.querySelector('.profile-img');
+      if (!heroImg) {
+        resolve();
+        return;
+      }
+      const finalize = () => {
+        if (heroImg.decode) {
+          heroImg.decode().catch(() => {}).then(resolve);
+        } else {
+          resolve();
+        }
+      };
+      if (heroImg.complete) {
+        finalize();
+        return;
+      }
+      heroImg.addEventListener('load', finalize, { once: true });
+      heroImg.addEventListener('error', resolve, { once: true });
+      setTimeout(resolve, 1200);
+    });
+    heroImagePromise.then(() => setProgressTarget(84));
+
+    Promise.all([navReadyPromise, fontsReadyPromise, heroImagePromise]).then(() => {
+      assetsReady = true;
+      setProgressTarget(92);
+      maybeFinish();
+    });
+
+    const typePhrase = "> LOAD // PORTFOLIO: SATYAM PANDEY";
     setTimeout(() => {
-      if (log.el) decodeEffect(log.el, log.text, 12);
-    }, log.delay);
-  });
+      if (cursorObj) cursorObj.classList.add('typing');
+      let idx = 0;
+      typeInterval = setInterval(() => {
+        if (typeTarget) {
+          typeTarget.textContent += typePhrase.charAt(idx);
+        }
+        idx++;
+        if (idx >= typePhrase.length) {
+          if (typeInterval) clearInterval(typeInterval);
+          if (cursorObj) cursorObj.classList.remove('typing');
+          typingDone = true;
+          setProgressTarget(89);
+          maybeFinish();
+        }
+      }, 32);
+    }, 760);
 
-  // Typing effect logic
-  const typeTarget = preloader.querySelector('#pl-log4');
-  const cursorObj = preloader.querySelector('#pl-cursor');
-  const typePhrase = "> LOAD // PORTFOLIO: SATYAM PANDEY";
-  
-  setTimeout(() => {
-    if (cursorObj) cursorObj.classList.add('typing');
-    let idx = 0;
-    const typeInt = setInterval(() => {
-      if (typeTarget) {
-        typeTarget.textContent += typePhrase.charAt(idx);
-      }
-      idx++;
-      
-      if (idx >= typePhrase.length) {
-        clearInterval(typeInt);
-        if (cursorObj) cursorObj.classList.remove('typing');
-        
-        // Trigger completion smoothly
-        setTimeout(() => {
-          clearInterval(fillInterval);
-          clearInterval(metricsInt);
-          if (fill) fill.style.width = '100%';
-          setTimeout(() => {
-            preloader.classList.add('split');
-            setTimeout(() => {
-              preloader.style.visibility = 'hidden';
-              const hud = document.getElementById('hud-scroll-container');
-              if (hud) hud.style.opacity = '1';
-            }, 1000);
-          }, 450);
-        }, 600);
-        
-      }
-    }, 45); // Typing speed
-  }, 1450); // Start typing shortly after logs finish
+    minTimer = setTimeout(() => {
+      minElapsed = true;
+      maybeFinish();
+    }, BOOT_MIN_MS);
+
+    maxTimer = setTimeout(() => {
+      settlePreloader(true);
+    }, BOOT_MAX_MS);
+  }
 
   // ========== 2. DECODER EFFECT ==========
-  const chars = '!<>-_\\\\/[]{}—=+*^?#________';
+  const chars = '!<>-_\\\\/[]{}-=+*^?#________';
   function decodeEffect(element, finalString, duration) {
     if(!element) return;
     let iterations = 0;
@@ -290,6 +536,11 @@
     <div class="hud-value" id="hud-val-text">00%</div>
   `;
   document.body.appendChild(hudContainer);
+  if (!shouldDelayHudReveal) {
+    requestAnimationFrame(() => {
+      hudContainer.style.opacity = '1';
+    });
+  }
 
   const hudFill = document.getElementById('hud-bar-fill');
   const hudText = document.getElementById('hud-val-text');
