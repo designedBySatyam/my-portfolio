@@ -614,6 +614,52 @@ body::-webkit-scrollbar {
 [data-theme="light"] .theme-icon.moon { opacity: 0; transform: rotate(-180deg) scale(0.8); }
 [data-theme="light"] .theme-icon.sun  { opacity: 1; transform: rotate(0deg) scale(1); }
 
+/* Smooth visual interpolation while theme is switching */
+html.theme-switching body,
+html.theme-switching .nav-container,
+html.theme-switching .bg-wrap,
+html.theme-switching .dot-grid,
+html.theme-switching .bloom,
+html.theme-switching .vignette,
+html.theme-switching #particle-canvas,
+html.theme-switching .theme-toggle,
+html.theme-switching .nav-link,
+html.theme-switching .drawer-link,
+html.theme-switching .admin-nav-btn,
+html.theme-switching [class*="card"],
+html.theme-switching [class*="panel"],
+html.theme-switching [class*="chip"],
+html.theme-switching [class*="tag"] {
+  transition:
+    background-color 0.32s var(--ease-out-expo),
+    color 0.32s var(--ease-out-expo),
+    border-color 0.32s var(--ease-out-expo),
+    box-shadow 0.32s var(--ease-out-expo),
+    opacity 0.32s var(--ease-out-expo),
+    fill 0.32s var(--ease-out-expo),
+    stroke 0.32s var(--ease-out-expo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switching body,
+  html.theme-switching .nav-container,
+  html.theme-switching .bg-wrap,
+  html.theme-switching .dot-grid,
+  html.theme-switching .bloom,
+  html.theme-switching .vignette,
+  html.theme-switching #particle-canvas,
+  html.theme-switching .theme-toggle,
+  html.theme-switching .nav-link,
+  html.theme-switching .drawer-link,
+  html.theme-switching .admin-nav-btn,
+  html.theme-switching [class*="card"],
+  html.theme-switching [class*="panel"],
+  html.theme-switching [class*="chip"],
+  html.theme-switching [class*="tag"] {
+    transition: none;
+  }
+}
+
 /* ── Nav right controls ── */
 .nav-right-controls {
   display: flex;

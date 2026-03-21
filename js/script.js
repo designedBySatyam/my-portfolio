@@ -32,7 +32,9 @@
   ══════════════════════════════════════════════════ */
   function initThemeToggle() {
     const root    = document.documentElement;
-    const toggles = Array.from(document.querySelectorAll('#themeToggle, .theme-toggle'));
+    const toggles = Array.from(new Set(document.querySelectorAll('#themeToggle, .theme-toggle')));
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let themeSwitchTimer = null;
 
     const getStored = () => {
       try {
@@ -41,21 +43,62 @@
       } catch { return null; }
     };
     const store = (t) => { try { localStorage.setItem('portfolio-theme', t); } catch {} };
-    const apply = (theme) => {
-      root.setAttribute('data-theme', theme);
-      toggles.forEach(t => t.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false'));
-      const themeMeta = document.querySelector('meta[name="theme-color"]');
-      if (themeMeta) {
-        themeMeta.setAttribute('content', theme === 'light' ? '#f3f5f9' : '#0c1324');
-      }
-      window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme } }));
+
+    const updateToggleState = (theme) => {
+      const isLight = theme === 'light';
+      toggles.forEach((t) => {
+        t.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+        t.setAttribute('aria-label', `Switch to ${isLight ? 'dark' : 'light'} theme`);
+      });
     };
 
-    apply(getStored() || 'light');
+    const apply = (theme, options = {}) => {
+      const { persist = false, animate = true } = options;
+      const normalized = theme === 'dark' ? 'dark' : 'light';
+      const prev = root.getAttribute('data-theme');
+
+      if (!reduceMotion && animate && prev && prev !== normalized) {
+        root.classList.add('theme-switching');
+        if (themeSwitchTimer) clearTimeout(themeSwitchTimer);
+        themeSwitchTimer = setTimeout(() => root.classList.remove('theme-switching'), 380);
+      }
+
+      root.setAttribute('data-theme', normalized);
+      updateToggleState(normalized);
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) {
+        themeMeta.setAttribute('content', normalized === 'light' ? '#f3f5f9' : '#0c1324');
+      }
+      if (persist) store(normalized);
+      window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme: normalized } }));
+      return normalized;
+    };
+
+    window.PortfolioTheme = window.PortfolioTheme || {};
+    window.PortfolioTheme.get = () => root.getAttribute('data-theme') || 'light';
+    window.PortfolioTheme.set = (theme, options = {}) => apply(theme, {
+      persist: options.persist !== false,
+      animate: options.animate !== false
+    });
+    window.PortfolioTheme.toggle = (options = {}) => {
+      const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      return apply(next, {
+        persist: options.persist !== false,
+        animate: options.animate !== false
+      });
+    };
+
+    apply(getStored() || root.getAttribute('data-theme') || 'light', { persist: false, animate: false });
     toggles.forEach(t => t.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      apply(next); store(next);
+      window.PortfolioTheme.toggle({ persist: true, animate: true });
     }));
+
+    window.addEventListener('storage', (event) => {
+      if (event.key !== 'portfolio-theme') return;
+      if (event.newValue !== 'light' && event.newValue !== 'dark') return;
+      apply(event.newValue, { persist: false, animate: false });
+    });
   }
 
   /* ══════════════════════════════════════════════════
