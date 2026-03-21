@@ -1,9 +1,8 @@
 
 /**
  * Extra Cyberpunk Features:
- * 1. Preloader Boot Sequence
- * 2. Decoder Text Effect
- * 3. HUD Scroll Progress
+ * 1. Decoder Text Effect
+ * 2. HUD Scroll Progress
  */
 
 (function() {
@@ -20,20 +19,7 @@
   const staleStyle = document.getElementById('sys-preloader-style');
   if (staleStyle) staleStyle.remove();
 
-  const PRELOADER_DAY_KEY = 'portfolio-preloader-day-v1';
-  const todayToken = new Date().toISOString().slice(0, 10);
-  const isHomePage = document.body.classList.contains('home-page');
-  let shouldRunPreloader = isHomePage;
-  if (shouldRunPreloader) {
-    try {
-      shouldRunPreloader = localStorage.getItem(PRELOADER_DAY_KEY) !== todayToken;
-      if (shouldRunPreloader) {
-        localStorage.setItem(PRELOADER_DAY_KEY, todayToken);
-      }
-    } catch (_) {
-      shouldRunPreloader = true;
-    }
-  }
+  const shouldRunPreloader = false;
 
   let preloader = null;
   let shouldDelayHudReveal = false;
