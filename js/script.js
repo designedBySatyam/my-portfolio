@@ -44,10 +44,14 @@
     const apply = (theme) => {
       root.setAttribute('data-theme', theme);
       toggles.forEach(t => t.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false'));
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) {
+        themeMeta.setAttribute('content', theme === 'light' ? '#f3f5f9' : '#0c1324');
+      }
       window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme } }));
     };
 
-    apply(getStored() || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+    apply(getStored() || 'light');
     toggles.forEach(t => t.addEventListener('click', () => {
       const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       apply(next); store(next);
@@ -121,6 +125,7 @@
     let W = 0;
     let H = 0;
     let particles = [];
+    let particleColor = '#6d5efc';
 
     const getDpr = () => Math.min(window.devicePixelRatio || 1, 2);
 
@@ -147,6 +152,11 @@
       };
     }
 
+    function updateParticleColor() {
+      const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim();
+      if (accent) particleColor = accent;
+    }
+
     function vignetteAlpha(x, y) {
       const dx = (x / W - 0.5) * 2;
       const dy = (y / H - 0.5) * 2;
@@ -156,6 +166,7 @@
 
     function init() {
       resize();
+      updateParticleColor();
       const count = Math.min(Math.floor((W * H) / 18000), 80);
       particles = Array.from({ length: count }, makeParticle);
     }
@@ -191,9 +202,12 @@
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(167, 139, 250, ${a})`;
+        ctx.fillStyle = particleColor;
+        ctx.globalAlpha = a;
         ctx.fill();
       });
+
+      ctx.globalAlpha = 1;
 
       requestAnimationFrame(draw);
     }
@@ -205,6 +219,7 @@
         p.y = Math.random() * H;
       });
     });
+    window.addEventListener('portfolio-theme-change', updateParticleColor);
 
     init();
     draw();
@@ -571,8 +586,8 @@
       starData.forEach(d => { d.starMat.opacity = light ? 1.0 : 0.9; });
       lineData.forEach(l => { l.base = light ? 0.22 : 0.14; });
     }
-    applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
-    window.addEventListener('portfolio-theme-change', e => applyTheme(e?.detail?.theme || 'dark'));
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+    window.addEventListener('portfolio-theme-change', e => applyTheme(e?.detail?.theme || 'light'));
 
     /* ── Animation loop ── */
     const clock = new THREE.Clock();

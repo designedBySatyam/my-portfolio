@@ -104,6 +104,69 @@ const AdminUI = {
         return map[value] || 'Completed';
     },
 
+    normalizeProjectCategory(raw) {
+        const value = String(raw || 'general').trim().toLowerCase();
+        const map = {
+            web: 'web',
+            'web development': 'web',
+            frontend: 'web',
+            app: 'app',
+            mobile: 'app',
+            'mobile app': 'app',
+            ai: 'ai',
+            'artificial intelligence': 'ai',
+            ml: 'ml',
+            'machine learning': 'ml',
+            database: 'database',
+            data: 'database',
+            hardware: 'hardware',
+            optimization: 'optimization',
+            devops: 'devops',
+            cloud: 'devops',
+            general: 'general',
+            default: 'general'
+        };
+        return map[value] || 'general';
+    },
+
+    normalizeProjectIcon(raw) {
+        const value = String(raw || '').trim().toLowerCase();
+        const map = {
+            web: 'web',
+            code: 'web',
+            app: 'app',
+            mobile: 'app',
+            phone: 'app',
+            ai: 'ai',
+            ml: 'ml',
+            database: 'database',
+            hardware: 'hardware',
+            optimization: 'optimization',
+            devops: 'devops',
+            server: 'devops',
+            general: 'general',
+            default: 'general',
+            box: 'general'
+        };
+        return map[value] || '';
+    },
+
+    getDefaultIconForCategory(category) {
+        const normalized = this.normalizeProjectCategory(category);
+        const map = {
+            web: 'web',
+            app: 'app',
+            ai: 'ai',
+            ml: 'ml',
+            database: 'database',
+            hardware: 'hardware',
+            optimization: 'optimization',
+            devops: 'devops',
+            general: 'general'
+        };
+        return map[normalized] || 'general';
+    },
+
     toTechArray(raw) {
         return String(raw || '')
             .split(',')
@@ -377,6 +440,7 @@ class ProjectsAdmin {
         if (!this.projectsList || !this.addBtn || !this.modal || !this.form) return;
 
         this.loadProjects();
+        this.bindCategoryIconSync();
         this.addBtn.addEventListener('click', () => this.openAddModal());
         this.closeBtn?.addEventListener('click', () => this.closeModal());
         this.cancelBtn?.addEventListener('click', () => this.closeModal());
@@ -399,6 +463,16 @@ class ProjectsAdmin {
                 const title = button.dataset.title || 'this project';
                 this.deleteProject(projectId, title);
             }
+        });
+    }
+
+    bindCategoryIconSync() {
+        const categoryField = this.getField('projectCategory');
+        const iconField = this.getField('projectIcon');
+        if (!categoryField || !iconField) return;
+
+        categoryField.addEventListener('change', () => {
+            iconField.value = AdminUI.getDefaultIconForCategory(categoryField.value);
         });
     }
 
@@ -512,6 +586,8 @@ class ProjectsAdmin {
         this.currentProjectId = null;
         if (this.modalTitle) this.modalTitle.textContent = 'Add New Project';
         this.form.reset();
+        this.setField('general', 'projectCategory');
+        this.setField('general', 'projectIcon');
         this.clearFormMessage();
         this.openModal();
     }
@@ -546,9 +622,14 @@ class ProjectsAdmin {
                 'projectTechnologies',
                 'projectTech'
             );
+            const normalizedCategory = AdminUI.normalizeProjectCategory(project.category || 'general');
+            const normalizedIcon =
+                AdminUI.normalizeProjectIcon(project.icon) ||
+                AdminUI.getDefaultIconForCategory(normalizedCategory);
+
             this.setField(project.link || '', 'projectLink');
-            this.setField(project.icon || 'default', 'projectIcon');
-            this.setField(project.category || 'general', 'projectCategory');
+            this.setField(normalizedIcon, 'projectIcon');
+            this.setField(normalizedCategory, 'projectCategory');
             if (typeof project.order === 'number') this.setField(project.order, 'projectOrder');
 
             this.clearFormMessage();
@@ -568,8 +649,10 @@ class ProjectsAdmin {
         const statusRaw = (this.getField('projectStatus')?.value || '').trim();
         const technologiesRaw = (this.getField('projectTechnologies', 'projectTech')?.value || '').trim();
         const link = (this.getField('projectLink')?.value || '').trim();
-        const icon = (this.getField('projectIcon')?.value || 'default').trim();
-        const category = (this.getField('projectCategory')?.value || 'general').trim();
+        const category = AdminUI.normalizeProjectCategory(this.getField('projectCategory')?.value || 'general');
+        const icon =
+            AdminUI.normalizeProjectIcon(this.getField('projectIcon')?.value || '') ||
+            AdminUI.getDefaultIconForCategory(category);
         const explicitOrder = Number(this.getField('projectOrder')?.value || '');
 
         if (!title || !description) {
@@ -596,7 +679,7 @@ class ProjectsAdmin {
             status: AdminUI.normalizeProjectStatus(statusRaw),
             technologies,
             link: link || null,
-            icon: icon || 'default',
+            icon: icon || 'general',
             category: category || 'general',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -1441,15 +1524,11 @@ class AnalyticsManager {
             this.grid.innerHTML = '<div class="analytics-loading"><div class="loading-spinner"></div><p>Loading...</p></div>';
         }
 
-        Promise.all([
-            db.collection(COLLECTIONS.CONFIG).doc('pageAnalytics').get(),
-            db.collection(COLLECTIONS.CONFIG).doc('siteStats').get()
-        ])
-            .then(([pageDoc, statsDoc]) => {
-                const pageData = pageDoc.exists ? pageDoc.data() : {};
+        db.collection(COLLECTIONS.CONFIG).doc('siteStats').get()
+            .then((statsDoc) => {
                 const statsData = statsDoc.exists ? statsDoc.data() : {};
                 const siteViews = statsData.pageViews || {};
-                const merged = this.mergeAnalytics(pageData, siteViews);
+                const merged = this.mergeAnalytics(siteViews);
                 this.render(merged);
             })
             .catch(() => {
@@ -1457,7 +1536,7 @@ class AnalyticsManager {
             });
     }
 
-    mergeAnalytics(pageData = {}, siteViews = {}) {
+    mergeAnalytics(siteViews = {}) {
         const merged = {
             index: 0,
             resume: 0,
@@ -1475,7 +1554,6 @@ class AnalyticsManager {
             });
         };
 
-        addSource(pageData);
         addSource(siteViews);
 
         Object.keys(merged).forEach((key) => {

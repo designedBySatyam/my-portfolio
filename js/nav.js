@@ -165,10 +165,9 @@
   (function applyStoredTheme() {
     try {
       const stored = localStorage.getItem('portfolio-theme');
-      const system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', stored === 'light' || stored === 'dark' ? stored : system);
+      document.documentElement.setAttribute('data-theme', stored === 'light' || stored === 'dark' ? stored : 'light');
     } catch (_) {
-      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   })();
 })();

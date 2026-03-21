@@ -57,12 +57,13 @@
   display: inline-flex;
   align-items: center;
   position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
   padding: 4px;
   gap: 2px;
   margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
 }
 
 .toggle-btn {
@@ -73,11 +74,11 @@
   background: transparent;
   border: none;
   border-radius: 7px;
-  font-family: var(--font-display);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.3s;
@@ -88,9 +89,9 @@
 .toggle-btn svg { stroke: currentColor; }
 
 .toggle-btn.active {
-  color: var(--bg);
+  color: #ffffff;
   background: var(--grad-primary);
-  box-shadow: 0 0 20px rgba(0,245,255,0.2);
+  box-shadow: 0 8px 16px rgba(109, 94, 252, 0.3);
 }
 
 /* Keep pointer visible for interactive controls if legacy rules set cursor:none */
@@ -230,8 +231,8 @@
 .project-chip {
   padding: 5px 10px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg-soft);
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -244,7 +245,7 @@
 .project-chip:hover,
 .project-chip.active {
   border-color: var(--border-glow);
-  color: var(--cyan);
+  color: var(--text);
   background: var(--surface2);
 }
 
@@ -258,8 +259,12 @@
 
 /* â”€â”€ Project Card â”€â”€ */
 .project-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  --cat-a: #6d5efc;
+  --cat-b: #21b5f6;
+  --cat-glow: rgba(109, 94, 252, 0.16);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-top-width: 2px;
   border-radius: 16px;
   padding: 32px;
   backdrop-filter: blur(12px);
@@ -273,27 +278,27 @@
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--grad-primary);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s var(--ease-out-expo);
+  height: 3px;
+  background: linear-gradient(90deg, var(--cat-a), var(--cat-b));
+  opacity: 0.8;
+  transform: none;
+  transition: opacity 0.3s var(--ease-out-expo);
 }
 
 .project-card:hover::before {
-  transform: scaleX(1);
+  opacity: 1;
 }
 
 .project-card:hover {
   border-color: var(--border-glow);
   transform: translateY(-6px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,245,255,0.06);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .project-card-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 80% 20%, rgba(0,245,255,0.04), transparent 60%);
+  background: radial-gradient(circle at 80% 20%, var(--cat-glow), transparent 60%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s;
@@ -312,18 +317,81 @@
 .card-icon-box {
   width: 52px; height: 52px;
   border-radius: 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--cat-a), var(--cat-b));
+  border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex; align-items: center; justify-content: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 16px rgba(6, 10, 26, 0.18);
   transition: all 0.3s;
 }
 
 .project-card:hover .card-icon-box {
-  border-color: var(--border-glow);
-  box-shadow: 0 0 20px rgba(0,245,255,0.15);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 12px 20px rgba(6, 10, 26, 0.3);
 }
 
-.card-icon-box svg { stroke: var(--cyan); }
+.card-icon-box svg {
+  width: 24px;
+  height: 24px;
+  stroke: #ffffff;
+}
+
+.project-card[data-category-key="web"] {
+  --cat-a: #3b82f6;
+  --cat-b: #06b6d4;
+  --cat-glow: rgba(59, 130, 246, 0.16);
+}
+
+.project-card[data-category-key="app"] {
+  --cat-a: #6366f1;
+  --cat-b: #a855f7;
+  --cat-glow: rgba(99, 102, 241, 0.16);
+}
+
+.project-card[data-category-key="ai"] {
+  --cat-a: #8b5cf6;
+  --cat-b: #ec4899;
+  --cat-glow: rgba(168, 85, 247, 0.16);
+}
+
+.project-card[data-category-key="ml"] {
+  --cat-a: #14b8a6;
+  --cat-b: #22c55e;
+  --cat-glow: rgba(20, 184, 166, 0.16);
+}
+
+.project-card[data-category-key="database"] {
+  --cat-a: #0ea5e9;
+  --cat-b: #0891b2;
+  --cat-glow: rgba(14, 165, 233, 0.16);
+}
+
+.project-card[data-category-key="hardware"] {
+  --cat-a: #f59e0b;
+  --cat-b: #f97316;
+  --cat-glow: rgba(245, 158, 11, 0.16);
+}
+
+.project-card[data-category-key="optimization"] {
+  --cat-a: #22c55e;
+  --cat-b: #84cc16;
+  --cat-glow: rgba(34, 197, 94, 0.16);
+}
+
+.project-card[data-category-key="devops"] {
+  --cat-a: #0ea5e9;
+  --cat-b: #64748b;
+  --cat-glow: rgba(100, 116, 139, 0.18);
+}
+
+.project-card[data-category-key="general"] {
+  --cat-a: #6d5efc;
+  --cat-b: #21b5f6;
+  --cat-glow: rgba(109, 94, 252, 0.16);
+}
 
 /* â”€â”€ Status Badge â”€â”€ */
 .status-tag {
@@ -339,27 +407,27 @@
 }
 
 .status-tag.completed {
-  background: rgba(0,245,255,0.08);
-  border: 1px solid rgba(0,245,255,0.2);
-  color: var(--cyan);
+  background: rgba(59, 130, 246, 0.14);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  color: #3b82f6;
 }
 
 .status-tag.active {
-  background: rgba(0,255,128,0.08);
-  border: 1px solid rgba(0,255,128,0.2);
-  color: #00ff80;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: #22c55e;
 }
 
 .status-tag.research {
-  background: rgba(255,170,0,0.08);
-  border: 1px solid rgba(255,170,0,0.2);
-  color: #ffaa00;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  color: #f59e0b;
 }
 
 .status-tag.planning {
-  background: rgba(180,100,255,0.08);
-  border: 1px solid rgba(180,100,255,0.2);
-  color: #b464ff;
+  background: rgba(168, 85, 247, 0.14);
+  border: 1px solid rgba(168, 85, 247, 0.28);
+  color: #a855f7;
 }
 
 .status-dot {
@@ -395,20 +463,20 @@
 
 .tech-tag {
   padding: 3px 10px;
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  border: 1px solid var(--card-border);
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--text-muted);
   letter-spacing: 0.06em;
-  background: rgba(56, 189, 248, 0.06);
+  background: var(--card-bg-soft);
   transition: all 0.2s;
 }
 
 .project-card:hover .tech-tag {
-  border-color: rgba(56, 189, 248, 0.30);
-  color: var(--cyan);
-  background: rgba(56, 189, 248, 0.10);
+  border-color: var(--border-glow);
+  color: var(--text);
+  background: var(--surface2);
 }
 
 [data-theme="light"] .tech-tag {
@@ -538,8 +606,9 @@
 
 /* â”€â”€ List Panel â”€â”€ */
 .certificates-list-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-top: 2px solid #3b82f6;
   border-radius: 16px;
   overflow: hidden;
   display: flex;
@@ -712,8 +781,9 @@
 
 /* â”€â”€ Viewer Panel â”€â”€ */
 .certificate-viewer-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-top: 2px solid #a855f7;
   border-radius: 16px;
   overflow: hidden;
   display: flex;
@@ -2356,17 +2426,36 @@
 }
 
 .pmodal-icon {
+  --modal-a: #6d5efc;
+  --modal-b: #21b5f6;
   width: 48px;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(79, 142, 247, 0.1);
-  border: 1px solid rgba(79, 142, 247, 0.2);
+  background: linear-gradient(135deg, var(--modal-a), var(--modal-b));
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 12px;
-  color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 10px 18px rgba(8, 18, 42, 0.28);
   flex-shrink: 0;
 }
+
+.pmodal-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+}
+
+.pmodal-icon[data-category-key="web"]          { --modal-a: #3b82f6; --modal-b: #06b6d4; }
+.pmodal-icon[data-category-key="app"]          { --modal-a: #6366f1; --modal-b: #a855f7; }
+.pmodal-icon[data-category-key="ai"]           { --modal-a: #8b5cf6; --modal-b: #ec4899; }
+.pmodal-icon[data-category-key="ml"]           { --modal-a: #14b8a6; --modal-b: #22c55e; }
+.pmodal-icon[data-category-key="database"]     { --modal-a: #0ea5e9; --modal-b: #0891b2; }
+.pmodal-icon[data-category-key="hardware"]     { --modal-a: #f59e0b; --modal-b: #f97316; }
+.pmodal-icon[data-category-key="optimization"] { --modal-a: #22c55e; --modal-b: #84cc16; }
+.pmodal-icon[data-category-key="devops"]       { --modal-a: #0ea5e9; --modal-b: #64748b; }
+.pmodal-icon[data-category-key="general"]      { --modal-a: #6d5efc; --modal-b: #21b5f6; }
 
 .pmodal-title-group {
   display: flex;
