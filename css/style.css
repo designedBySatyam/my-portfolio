@@ -439,11 +439,14 @@ select:focus-visible,
 }
 
 /* ── Scrollbar ─────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(var(--accent), var(--accent2));
-  border-radius: 999px;
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 /* ── Navigation ────────────────────────────────────────────── */
@@ -1638,17 +1641,7 @@ select:focus-visible,
 .cmd-no-results strong { color: var(--text-muted); }
 
 /* ── Scroll progress bar ── */
-.scroll-progress {
-  position: fixed;
-  top: 0; left: 0;
-  width: 0%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--cyan-soft), var(--pink));
-  z-index: 9998;
-  transition: width 0.06s linear;
-  border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
-}
+
 
 /* ── Nav backdrop (mobile) ── */
 .nav-backdrop {

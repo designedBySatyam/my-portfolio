@@ -19,7 +19,28 @@
   const staleStyle = document.getElementById('sys-preloader-style');
   if (staleStyle) staleStyle.remove();
 
+  const isHomePage = document.body.classList.contains('home-page');
+  const PRELOADER_SESSION_KEY = 'portfolio-preloader-seen-v2';
+  const PRELOADER_VARIANT_KEY = 'portfolio-preloader-variant-v1';
+  const hasSeenPreloader = (() => {
+    try {
+      return sessionStorage.getItem(PRELOADER_SESSION_KEY) === '1';
+    } catch (_) {
+      return false;
+    }
+  })();
   const shouldRunPreloader = false;
+  const pickPreloaderVariant = () => {
+    try {
+      const previous = localStorage.getItem(PRELOADER_VARIANT_KEY);
+      const next = previous === 'reticle' ? 'terminal' : 'reticle';
+      localStorage.setItem(PRELOADER_VARIANT_KEY, next);
+      return next;
+    } catch (_) {
+      return Math.random() < 0.5 ? 'reticle' : 'terminal';
+    }
+  };
+  const preloaderVariant = shouldRunPreloader ? pickPreloaderVariant() : 'terminal';
 
   let preloader = null;
   let shouldDelayHudReveal = false;
@@ -28,7 +49,9 @@
     // ========== 1. SYSTEM BOOT PRELOADER ==========
     preloader = document.createElement('div');
     preloader.id = 'sys-preloader';
-    preloader.innerHTML = `
+    preloader.dataset.variant = preloaderVariant;
+
+    const terminalPanel = `
       <div class="preloader-door pd-top"></div>
       <div class="preloader-door pd-bottom"></div>
       <div class="pl-scanline"></div>
@@ -54,6 +77,39 @@
         <div class="pl-progress"><span id="pl-pct">00%</span></div>
       </div>
     `;
+
+    const reticlePanel = `
+      <div class="preloader-door pd-top"></div>
+      <div class="preloader-door pd-bottom"></div>
+      <div class="pl-scanline"></div>
+
+      <!-- System Diagnostics -->
+      <div class="sys-metrics top-left">SYS.MEM: <span id="metric-mem">0x00</span></div>
+      <div class="sys-metrics top-right">NET.UPLINK: <span id="metric-net">0kbps</span></div>
+      <div class="sys-metrics bottom-left">SEC.PROTO: ACTIVE</div>
+      <div class="sys-metrics bottom-right">NODE: 77.A9.B2</div>
+
+      <div class="preloader-content preloader-content-reticle crt-glow">
+        <button type="button" class="pl-skip pl-skip-reticle" id="pl-skip-btn" aria-label="Skip intro">SKIP</button>
+        <div class="pl-reticle-wrap">
+          <canvas id="pl-reticle" width="200" height="200"></canvas>
+          <div class="pl-ident">
+            <div class="pl-ident-init">SP</div>
+            <div class="pl-ident-sub">PROFILE LOAD</div>
+          </div>
+        </div>
+        <div class="pl-logs-wrap">
+          <div class="preloader-log" id="pl-log1"></div>
+          <div class="preloader-log" id="pl-log2"></div>
+          <div class="preloader-log" id="pl-log3"></div>
+          <div class="preloader-log preloader-log-pink" id="pl-log4"></div><span class="pl-cursor" id="pl-cursor"></span>
+        </div>
+        <div class="preloader-bar"><div class="preloader-fill"></div></div>
+        <div class="pl-progress"><span id="pl-pct">00%</span></div>
+      </div>
+    `;
+
+    preloader.innerHTML = preloaderVariant === 'reticle' ? reticlePanel : terminalPanel;
     document.body.appendChild(preloader);
   }
 
@@ -135,6 +191,65 @@
       color: #38bdf8 !important; font-size: 0.75rem; 
       transition: opacity 0.4s;
     }
+    .preloader-content-reticle {
+      top: 50%;
+      width: min(92vw, 420px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .pl-skip-reticle {
+      align-self: flex-end;
+      margin-bottom: -4px;
+    }
+    .pl-reticle-wrap {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      flex-shrink: 0;
+    }
+    #pl-reticle {
+      position: absolute;
+      inset: 0;
+      width: 200px;
+      height: 200px;
+    }
+    .pl-ident {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .pl-ident-init {
+      font-family: var(--font-mono, monospace);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: #38bdf8;
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.8), 0 0 40px rgba(56, 189, 248, 0.4);
+    }
+    .pl-ident-sub {
+      margin-top: 4px;
+      font-family: var(--font-mono, monospace);
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(56, 189, 248, 0.5);
+    }
+    .pl-logs-wrap {
+      width: min(92vw, 360px);
+      border-left: 1.5px solid rgba(56, 189, 248, 0.25);
+      padding-left: 14px;
+    }
+    .preloader-log-pink {
+      color: #f472b6 !important;
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(244, 114, 182, 0.7);
+    }
     .pl-glitch-box {
       position: relative;
       padding: 12px 14px;
@@ -215,6 +330,24 @@
       .preloader-content {
         top: 39%;
         width: min(89vw, 390px);
+      }
+      .preloader-content-reticle {
+        top: 50%;
+        width: min(88vw, 390px);
+      }
+      .pl-reticle-wrap {
+        width: 170px;
+        height: 170px;
+      }
+      #pl-reticle {
+        width: 170px;
+        height: 170px;
+      }
+      .pl-ident-init {
+        font-size: 1.7rem;
+      }
+      .pl-logs-wrap {
+        width: 100%;
       }
     }
 
@@ -298,11 +431,13 @@
     const skipBtn = preloader.querySelector('#pl-skip-btn');
     const typeTarget = preloader.querySelector('#pl-log4');
     const cursorObj = preloader.querySelector('#pl-cursor');
+    const reticleCanvas = preloader.querySelector('#pl-reticle');
 
     let preloaderSettled = false;
     let progressValue = 6;
     let progressTarget = 6;
     let progressRaf = 0;
+    let reticleRaf = 0;
     let typeInterval = null;
     let settleTimeout = null;
     let skipRevealTimeout = null;
@@ -322,6 +457,119 @@
       if(netEl) netEl.textContent = Math.floor(Math.random() * 900 + 100) + 'kbps';
     }, 120);
 
+    if (reticleCanvas) {
+      const reticleCtx = reticleCanvas.getContext('2d');
+      if (reticleCtx) {
+        const C = 200;
+        const CX = C / 2;
+        const CY = C / 2;
+        let angle = 0;
+        let scanAngle = 0;
+
+        const drawReticle = () => {
+          reticleCtx.clearRect(0, 0, C, C);
+
+          reticleCtx.beginPath();
+          reticleCtx.arc(CX, CY, 92, 0, Math.PI * 2);
+          reticleCtx.strokeStyle = 'rgba(56,189,248,.16)';
+          reticleCtx.lineWidth = 1;
+          reticleCtx.setLineDash([]);
+          reticleCtx.stroke();
+
+          reticleCtx.save();
+          reticleCtx.translate(CX, CY);
+          reticleCtx.rotate(angle);
+          reticleCtx.setLineDash([10, 10]);
+          reticleCtx.beginPath();
+          reticleCtx.arc(0, 0, 82, 0, Math.PI * 2);
+          reticleCtx.strokeStyle = 'rgba(56,189,248,.6)';
+          reticleCtx.lineWidth = 1.4;
+          reticleCtx.stroke();
+          reticleCtx.restore();
+
+          reticleCtx.save();
+          reticleCtx.translate(CX, CY);
+          reticleCtx.rotate(-angle * 0.65);
+          reticleCtx.setLineDash([5, 18]);
+          reticleCtx.beginPath();
+          reticleCtx.arc(0, 0, 68, 0, Math.PI * 2);
+          reticleCtx.strokeStyle = 'rgba(244,114,182,.35)';
+          reticleCtx.lineWidth = 1;
+          reticleCtx.stroke();
+          reticleCtx.restore();
+
+          reticleCtx.setLineDash([]);
+          reticleCtx.save();
+          reticleCtx.translate(CX, CY);
+          for (let i = 0; i < 28; i++) {
+            const a0 = scanAngle - (i + 1) * 0.05;
+            const a1 = scanAngle - i * 0.05;
+            reticleCtx.beginPath();
+            reticleCtx.moveTo(0, 0);
+            reticleCtx.arc(0, 0, 81, a0, a1, false);
+            reticleCtx.closePath();
+            reticleCtx.fillStyle = `rgba(56,189,248,${(1 - i / 28) * 0.1})`;
+            reticleCtx.fill();
+          }
+          reticleCtx.beginPath();
+          reticleCtx.moveTo(0, 0);
+          reticleCtx.lineTo(Math.cos(scanAngle) * 81, Math.sin(scanAngle) * 81);
+          reticleCtx.strokeStyle = 'rgba(56,189,248,.85)';
+          reticleCtx.lineWidth = 1.5;
+          reticleCtx.shadowColor = 'rgba(56,189,248,.7)';
+          reticleCtx.shadowBlur = 8;
+          reticleCtx.stroke();
+          reticleCtx.shadowBlur = 0;
+          reticleCtx.restore();
+
+          reticleCtx.strokeStyle = 'rgba(56,189,248,.3)';
+          reticleCtx.lineWidth = 0.75;
+          [
+            [CX - 92, CY, CX - 52, CY],
+            [CX + 52, CY, CX + 92, CY],
+            [CX, CY - 92, CX, CY - 52],
+            [CX, CY + 52, CX, CY + 92]
+          ].forEach(([x1, y1, x2, y2]) => {
+            reticleCtx.beginPath();
+            reticleCtx.moveTo(x1, y1);
+            reticleCtx.lineTo(x2, y2);
+            reticleCtx.stroke();
+          });
+
+          reticleCtx.strokeStyle = '#38bdf8';
+          reticleCtx.lineWidth = 1.5;
+          [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([sx, sy]) => {
+            const bx = CX + sx * 62;
+            const by = CY + sy * 62;
+            reticleCtx.beginPath();
+            reticleCtx.moveTo(bx + sx * 12, by);
+            reticleCtx.lineTo(bx, by);
+            reticleCtx.lineTo(bx, by + sy * 12);
+            reticleCtx.stroke();
+          });
+
+          reticleCtx.beginPath();
+          reticleCtx.arc(CX, CY, 10, 0, Math.PI * 2);
+          reticleCtx.strokeStyle = 'rgba(56,189,248,.3)';
+          reticleCtx.lineWidth = 0.6;
+          reticleCtx.stroke();
+          reticleCtx.beginPath();
+          reticleCtx.arc(CX, CY, 3, 0, Math.PI * 2);
+          reticleCtx.fillStyle = '#38bdf8';
+          reticleCtx.shadowColor = 'rgba(56,189,248,.9)';
+          reticleCtx.shadowBlur = 10;
+          reticleCtx.fill();
+          reticleCtx.shadowBlur = 0;
+
+          angle += 0.009;
+          scanAngle += 0.022;
+          reticleRaf = requestAnimationFrame(drawReticle);
+        };
+
+        reticleRaf = requestAnimationFrame(drawReticle);
+      }
+    }
+
     const renderProgress = () => {
       progressValue += (progressTarget - progressValue) * 0.16;
       if (Math.abs(progressTarget - progressValue) < 0.2) {
@@ -340,6 +588,11 @@
       const hud = document.getElementById('hud-scroll-container');
       if (hud) hud.style.opacity = '1';
     };
+    const markPreloaderSeen = () => {
+      try {
+        sessionStorage.setItem(PRELOADER_SESSION_KEY, '1');
+      } catch (_) {}
+    };
 
     const cleanupBoot = () => {
       clearInterval(metricsInt);
@@ -349,6 +602,7 @@
       if (minTimer) clearTimeout(minTimer);
       if (maxTimer) clearTimeout(maxTimer);
       if (progressRaf) cancelAnimationFrame(progressRaf);
+      if (reticleRaf) cancelAnimationFrame(reticleRaf);
       if (navObserver) navObserver.disconnect();
     };
 
@@ -356,6 +610,7 @@
       if (preloaderSettled) return;
       preloaderSettled = true;
       cleanupBoot();
+      markPreloaderSeen();
       progressTarget = 100;
       progressValue = 100;
       if (fill) fill.style.width = '100%';
@@ -531,16 +786,20 @@
   const hudFill = document.getElementById('hud-bar-fill');
   const hudText = document.getElementById('hud-val-text');
 
-  // We should read scroll on the scrolling container, which is usually home-page body or window
-  window.addEventListener('scroll', () => {
-    let scrollEl = document.documentElement;
-    if (document.body.classList.contains('home-page') && window.innerWidth >= 961) {
-      // The hero-text `.hero-text` is the main scroller on desktop! 
-      scrollEl = document.querySelector('.hero-text') || document.documentElement;
+  const getScrollElement = () => {
+    if (isHomePage && window.innerWidth >= 961) {
+      return document.querySelector('.hero-text') || document.documentElement;
     }
-    
-    // In this template, .hero-text or standard body is scrolled
-    let scrollTop, scrollHeight, clientHeight;
+    return document.documentElement;
+  };
+
+  const updateHud = () => {
+    const scrollEl = getScrollElement();
+
+    let scrollTop;
+    let scrollHeight;
+    let clientHeight;
+
     if (scrollEl.tagName === 'HTML' || scrollEl.tagName === 'BODY') {
       scrollTop = window.scrollY || document.documentElement.scrollTop;
       scrollHeight = document.documentElement.scrollHeight;
@@ -550,13 +809,32 @@
       scrollHeight = scrollEl.scrollHeight;
       clientHeight = scrollEl.clientHeight;
     }
-    
-    let scrolled = (scrollTop / (scrollHeight - clientHeight)) * 100;
-    if (isNaN(scrolled)) scrolled = 0;
+
+    const denominator = Math.max(1, scrollHeight - clientHeight);
+    let scrolled = (scrollTop / denominator) * 100;
+    if (!Number.isFinite(scrolled) || scrolled < 0) scrolled = 0;
     if (scrolled > 100) scrolled = 100;
-    
+
     hudFill.style.height = scrolled + '%';
     hudText.innerText = Math.round(scrolled).toString().padStart(2, '0') + '%';
+  };
+
+  let hudScroller = null;
+  const bindHudScrollSource = () => {
+    if (hudScroller) hudScroller.removeEventListener('scroll', updateHud);
+    hudScroller = getScrollElement();
+    if (hudScroller && hudScroller !== document.documentElement && hudScroller !== document.body) {
+      hudScroller.addEventListener('scroll', updateHud, { passive: true });
+    }
+  };
+
+  window.addEventListener('scroll', updateHud, { passive: true });
+  window.addEventListener('resize', () => {
+    bindHudScrollSource();
+    updateHud();
   }, { passive: true });
+
+  bindHudScrollSource();
+  requestAnimationFrame(updateHud);
 
 })();

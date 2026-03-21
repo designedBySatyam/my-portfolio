@@ -2,7 +2,7 @@
 
 /**
  * features.js
- * Handles: page transitions, scroll progress, open-to-work banner,
+ * Handles: page transitions, open-to-work banner,
  * now-playing widget, visitor counter, page analytics, currently-building card.
  *
  * Requires firebase-config.js to be loaded first for Firebase features.
@@ -46,29 +46,7 @@
   });
 })();
 
-(function initScrollProgress() {
-  const bar = document.createElement('div');
-  bar.id = 'scrollProgress';
-  bar.className = 'scroll-progress';
-  document.body.appendChild(bar);
-
-  let ticking = false;
-  window.addEventListener(
-    'scroll',
-    () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        bar.style.width = `${pct}%`;
-        ticking = false;
-      });
-    },
-    { passive: true }
-  );
-})();
+// Top scroll progress bar removed.
 
 const CONFIG_CACHE_KEYS = {
   siteConfig: 'sp-config-siteConfig',
