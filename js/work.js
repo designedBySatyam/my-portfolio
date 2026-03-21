@@ -817,7 +817,7 @@ class FirebaseCertificates {
         this.certificatesById = new Map(certificates.map((cert) => [cert.id, cert]));
 
         this.certList.innerHTML = certificates.map((cert) => {
-            const thumb = this.getIssuerLogoMarkup(cert.issuer);
+            const thumb = this.getIssuerLogoMarkup(cert);
 
             return `
                 <div class="cert-list-item" data-cert-id="${cert.id}" role="option" tabindex="0" aria-selected="false">
@@ -943,53 +943,178 @@ class FirebaseCertificates {
         return String(imagePath || '').trim();
     }
 
-    normalizeIssuerKey(issuer = '') {
-        const text = String(issuer || '').toLowerCase();
-        if (text.includes('aws')) return 'aws';
-        if (text.includes('ibm')) return 'ibm';
-        if (text.includes('microsoft')) return 'microsoft';
-        if (text.includes('google')) return 'google';
-        if (text.includes('simplilearn')) return 'simplilearn';
-        if (text.includes('silver oak')) return 'silveroak';
-        if (text.includes('coursera')) return 'coursera';
-        if (text.includes('udemy')) return 'udemy';
+    normalizeIssuerKey(issuer = '', title = '') {
+        const text = `${String(issuer || '')} ${String(title || '')}`.toLowerCase();
+
+        const companyMatchers = [
+            { key: 'aws', terms: ['aws', 'amazon web services', 'aws academy'] },
+            { key: 'ibm', terms: ['ibm'] },
+            { key: 'google', terms: ['google', 'gcp', 'google cloud'] },
+            { key: 'microsoft', terms: ['microsoft', 'azure', 'az-'] },
+            { key: 'oracle', terms: ['oracle', 'oci'] },
+            { key: 'cisco', terms: ['cisco', 'ccna', 'ccnp'] },
+            { key: 'meta', terms: ['meta'] },
+            { key: 'adobe', terms: ['adobe'] },
+            { key: 'intel', terms: ['intel'] },
+            { key: 'coursera', terms: ['coursera'] },
+            { key: 'udemy', terms: ['udemy'] },
+            { key: 'simplilearn', terms: ['simplilearn'] },
+            { key: 'silveroak', terms: ['silver oak'] },
+            { key: 'nptel', terms: ['nptel', 'iit', 'swayam'] }
+        ];
+
+        for (const matcher of companyMatchers) {
+            if (matcher.terms.some((term) => text.includes(term))) {
+                return matcher.key;
+            }
+        }
+
+        if (/(cloud|devops|kubernetes|docker|terraform|serverless)/.test(text)) return 'cloud';
+        if (/(ai|artificial intelligence|machine learning|deep learning|neural|llm|nlp)/.test(text)) return 'ai';
+        if (/(security|cyber|ethical hacking|penetration|soc|forensics)/.test(text)) return 'security';
+        if (/(data|analytics|sql|database|power bi|tableau|excel)/.test(text)) return 'data';
+        if (/(web|frontend|backend|javascript|react|node|api|html|css)/.test(text)) return 'code';
+        if (/(academy|university|institute|college|school|education)/.test(text)) return 'academic';
+
         return 'default';
     }
 
-    getIssuerLogoMarkup(issuer = '') {
-        const key = this.normalizeIssuerKey(issuer);
-        const labelMap = {
-            aws: 'AWS',
-            ibm: 'IBM',
-            microsoft: 'MS',
-            google: 'G',
-            simplilearn: 'SL',
-            silveroak: 'SOU',
-            coursera: 'C',
-            udemy: 'U',
-            default: 'CERT'
-        };
-
-        return `<span class="issuer-logo issuer-${key}">${this.escapeHtml(labelMap[key] || labelMap.default)}</span>`;
+    getIssuerMonogram(issuer = '', title = '') {
+        const source = String(issuer || title || 'CERT')
+            .replace(/[^a-zA-Z0-9 ]+/g, ' ')
+            .trim();
+        if (!source) return 'CRT';
+        const parts = source.split(/\s+/).filter(Boolean);
+        if (!parts.length) return 'CRT';
+        if (parts.length === 1) return parts[0].slice(0, 3).toUpperCase();
+        return parts.slice(0, 3).map((part) => part.charAt(0)).join('').toUpperCase();
     }
 
-    getIconSVG(provider = 'default') {
+    getIssuerLogoMarkup(cert = {}) {
+        const issuer = cert?.issuer || '';
+        const title = cert?.title || '';
+        const key = this.normalizeIssuerKey(issuer, title);
+        const monogram = this.getIssuerMonogram(issuer, title);
+        const useMonogram = key === 'default';
+        const content = useMonogram
+            ? `<span class="issuer-logo-text">${this.escapeHtml(monogram)}</span>`
+            : `<span class="issuer-logo-icon" aria-hidden="true">${this.getCertificateIconSVG(key)}</span>`;
+
+        return `<span class="issuer-logo issuer-${key}" title="${this.escapeHtml(issuer || title || 'Certificate')}">${content}</span>`;
+    }
+
+    getCertificateIconSVG(provider = 'default') {
         const icons = {
-            aws: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            aws: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 17.5c1.8 1.3 4.4 2 7.4 2 3.1 0 5.9-.8 7.8-2.3"/>
+                <path d="M7 15.5c-1.8 0-3.2-1.4-3.2-3.1 0-1.6 1.2-2.9 2.7-3.1.4-2.8 2.8-4.9 5.7-4.9 3.1 0 5.7 2.5 5.7 5.6v.3c1.2.5 2 1.7 2 3.1 0 1.9-1.6 3.5-3.5 3.5H7Z"/>
             </svg>`,
-            ibm: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M0 6h24v2H0zM0 10h24v2H0zM0 14h24v2H0z"/>
+            ibm: `<svg viewBox="0 0 24 24" fill="none">
+                <line x1="4" y1="7" x2="20" y2="7"/>
+                <line x1="4" y1="10" x2="20" y2="10"/>
+                <line x1="4" y1="13" x2="20" y2="13"/>
+                <line x1="4" y1="16" x2="20" y2="16"/>
+                <line x1="8" y1="6" x2="8" y2="17"/>
+                <line x1="16" y1="6" x2="16" y2="17"/>
             </svg>`,
-            microsoft: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M0 0h11.377v11.372H0zM12.623 0H24v11.372H12.623zM0 12.623h11.377V24H0zM12.623 12.623H24V24H12.623"/>
+            google: `<svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="7"/>
+                <path d="M12 8v4h4"/>
             </svg>`,
-            default: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            microsoft: `<svg viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="4" width="7" height="7" rx="1"/>
+                <rect x="13" y="4" width="7" height="7" rx="1"/>
+                <rect x="4" y="13" width="7" height="7" rx="1"/>
+                <rect x="13" y="13" width="7" height="7" rx="1"/>
+            </svg>`,
+            oracle: `<svg viewBox="0 0 24 24" fill="none">
+                <ellipse cx="12" cy="7" rx="6.5" ry="2.6"/>
+                <path d="M5.5 7v7c0 1.4 2.9 2.6 6.5 2.6s6.5-1.2 6.5-2.6V7"/>
+                <path d="M5.5 10.4c0 1.4 2.9 2.6 6.5 2.6s6.5-1.2 6.5-2.6"/>
+            </svg>`,
+            cisco: `<svg viewBox="0 0 24 24" fill="none">
+                <line x1="5" y1="14" x2="5" y2="10"/>
+                <line x1="8" y1="16" x2="8" y2="8"/>
+                <line x1="11" y1="18" x2="11" y2="6"/>
+                <line x1="14" y1="18" x2="14" y2="6"/>
+                <line x1="17" y1="16" x2="17" y2="8"/>
+                <line x1="20" y1="14" x2="20" y2="10"/>
+            </svg>`,
+            meta: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 14c1.8-5.6 3.9-8 6.3-8 2.2 0 3 2.2 2.7 5.4C11.7 8.2 12.5 6 14.7 6c2.4 0 4.5 2.4 6.3 8"/>
+                <path d="M3 14c1.8 5.6 3.9 8 6.3 8 2.2 0 3-2.2 2.7-5.4-.3 3.2.5 5.4 2.7 5.4 2.4 0 4.5-2.4 6.3-8"/>
+            </svg>`,
+            adobe: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 20L11.2 4h1.6L20 20"/>
+                <path d="M8.2 14h7.6"/>
+            </svg>`,
+            intel: `<svg viewBox="0 0 24 24" fill="none">
+                <rect x="7" y="7" width="10" height="10" rx="2"/>
+                <line x1="12" y1="3" x2="12" y2="5"/>
+                <line x1="12" y1="19" x2="12" y2="21"/>
+                <line x1="3" y1="12" x2="5" y2="12"/>
+                <line x1="19" y1="12" x2="21" y2="12"/>
+                <line x1="5.6" y1="5.6" x2="7" y2="7"/>
+                <line x1="17" y1="17" x2="18.4" y2="18.4"/>
+            </svg>`,
+            coursera: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 9.5L12 5l9 4.5-9 4.5-9-4.5Z"/>
+                <path d="M6 12v3.5c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/>
+            </svg>`,
+            udemy: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v11"/>
+                <path d="M8 12l4 4 4-4"/>
+                <path d="M5 19h14"/>
+            </svg>`,
+            simplilearn: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 9.5L12 5l9 4.5-9 4.5-9-4.5Z"/>
+                <path d="M6 12v3.5c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/>
+            </svg>`,
+            silveroak: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 9.5L12 5l9 4.5-9 4.5-9-4.5Z"/>
+                <path d="M6 12v3.5c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/>
+            </svg>`,
+            nptel: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 9.5L12 5l9 4.5-9 4.5-9-4.5Z"/>
+                <path d="M6 12v3.5c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/>
+            </svg>`,
+            cloud: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 17.5h10.2c2.1 0 3.8-1.7 3.8-3.8 0-2-1.5-3.6-3.5-3.8A5.6 5.6 0 0 0 7 8.9a4.2 4.2 0 0 0 0 8.6Z"/>
+            </svg>`,
+            ai: `<svg viewBox="0 0 24 24" fill="none">
+                <rect x="7" y="7" width="10" height="10" rx="2"/>
+                <path d="M12 4v3M12 17v3M4 12h3M17 12h3M7 7 5.5 5.5M17 7l1.5-1.5M7 17l-1.5 1.5M17 17l1.5 1.5"/>
+                <circle cx="12" cy="12" r="2.3"/>
+            </svg>`,
+            security: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3 5 6.2v5.1c0 4.3 2.9 7.9 7 9.4 4.1-1.5 7-5.1 7-9.4V6.2L12 3Z"/>
+                <path d="m9 12.4 2 2 4-4"/>
+            </svg>`,
+            data: `<svg viewBox="0 0 24 24" fill="none">
+                <ellipse cx="12" cy="7" rx="6.5" ry="2.6"/>
+                <path d="M5.5 7v9c0 1.4 2.9 2.6 6.5 2.6s6.5-1.2 6.5-2.6V7"/>
+                <path d="M5.5 11c0 1.4 2.9 2.6 6.5 2.6s6.5-1.2 6.5-2.6"/>
+            </svg>`,
+            code: `<svg viewBox="0 0 24 24" fill="none">
+                <polyline points="8 7 3 12 8 17"/>
+                <polyline points="16 7 21 12 16 17"/>
+                <line x1="13" y1="5" x2="11" y2="19"/>
+            </svg>`,
+            academic: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 9.5L12 5l9 4.5-9 4.5-9-4.5Z"/>
+                <path d="M6 12v3.5c0 1.5 2.7 2.7 6 2.7s6-1.2 6-2.7V12"/>
+            </svg>`,
+            default: `<svg viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="8" r="7"/>
                 <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
             </svg>`
         };
         return icons[(provider || 'default').toLowerCase()] || icons.default;
+    }
+
+    // Backward-compatible alias
+    getIconSVG(provider = 'default') {
+        return this.getCertificateIconSVG(provider);
     }
 
     escapeHtml(text) {

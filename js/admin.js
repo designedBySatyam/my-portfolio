@@ -746,6 +746,10 @@ class CertificatesAdmin {
         this.previewBox = document.getElementById('certPreviewBox');
         this.previewImage = document.getElementById('certImagePreview');
         this.previewHint = document.getElementById('certPreviewHint');
+        this.previewTitle = document.getElementById('certPreviewTitle');
+        this.previewIssuer = document.getElementById('certPreviewIssuer');
+        this.previewOrder = document.getElementById('certPreviewOrder');
+        this.previewDate = document.getElementById('certPreviewDate');
     }
 
     init() {
@@ -759,6 +763,10 @@ class CertificatesAdmin {
         this.getField('certificateImageUrl', 'certImage')?.addEventListener('input', (event) => {
             this.updateImagePreview(event.target.value);
         });
+        this.getField('certificateTitle', 'certTitle')?.addEventListener('input', () => this.updatePreviewMeta());
+        this.getField('certificateIssuer', 'certIssuer')?.addEventListener('input', () => this.updatePreviewMeta());
+        this.getField('certOrder')?.addEventListener('input', () => this.updatePreviewMeta());
+        this.getField('certificateDate', 'certDate')?.addEventListener('input', () => this.updatePreviewMeta());
         this.modal.addEventListener('click', (event) => {
             if (event.target === this.modal) this.closeModal();
         });
@@ -827,6 +835,7 @@ class CertificatesAdmin {
         this.currentCertId = null;
         this.clearFormMessage();
         this.resetImagePreview();
+        this.updatePreviewMeta();
     }
 
     normalizeCertificateImagePath(imagePath) {
@@ -866,6 +875,18 @@ class CertificatesAdmin {
         };
 
         this.previewImage.src = normalizedPath;
+    }
+
+    updatePreviewMeta() {
+        const title = (this.getField('certificateTitle', 'certTitle')?.value || '').trim();
+        const issuer = (this.getField('certificateIssuer', 'certIssuer')?.value || '').trim();
+        const orderRaw = (this.getField('certOrder')?.value || '').trim();
+        const dateRaw = (this.getField('certificateDate', 'certDate')?.value || '').trim();
+
+        if (this.previewTitle) this.previewTitle.textContent = title || '-';
+        if (this.previewIssuer) this.previewIssuer.textContent = issuer || '-';
+        if (this.previewOrder) this.previewOrder.textContent = orderRaw ? `#${orderRaw}` : '#-';
+        if (this.previewDate) this.previewDate.textContent = dateRaw || '-';
     }
 
     loadCertificates() {
@@ -921,10 +942,11 @@ class CertificatesAdmin {
 
     openAddModal() {
         this.currentCertId = null;
-        if (this.modalTitle) this.modalTitle.textContent = 'Add New Certificate';
+        if (this.modalTitle) this.modalTitle.textContent = 'Add certificate';
         this.form.reset();
         this.clearFormMessage();
         this.resetImagePreview();
+        this.updatePreviewMeta();
         this.openModal();
     }
 
@@ -938,7 +960,7 @@ class CertificatesAdmin {
 
             const cert = doc.data();
             this.currentCertId = certId;
-            if (this.modalTitle) this.modalTitle.textContent = 'Edit Certificate';
+            if (this.modalTitle) this.modalTitle.textContent = 'Edit certificate';
 
             this.setField(cert.title, 'certificateTitle', 'certTitle');
             this.setField(cert.issuer, 'certificateIssuer', 'certIssuer');
@@ -946,6 +968,7 @@ class CertificatesAdmin {
             this.setField(cert.imageUrl, 'certificateImageUrl', 'certImage');
             if (typeof cert.order === 'number') this.setField(cert.order, 'certOrder');
             this.updateImagePreview(cert.imageUrl || '');
+            this.updatePreviewMeta();
 
             this.clearFormMessage();
             this.openModal();
@@ -1076,9 +1099,6 @@ function bootstrapAdmin() {
 
     const siteConfig = new SiteConfigManager();
     siteConfig.init();
-
-    const analytics = new AnalyticsManager();
-    analytics.init();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1495,131 +1515,3 @@ class SiteConfigManager {
     }
 }
 
-/* ══════════════════════════════════════════════════
-   PAGE ANALYTICS MANAGER
-══════════════════════════════════════════════════ */
-class AnalyticsManager {
-    constructor() {
-        this.grid        = document.getElementById('analyticsGrid');
-        this.totalEl     = document.getElementById('analyticsTotalViews');
-        this.refreshBtn  = document.getElementById('refreshAnalyticsBtn');
-        this.pageIcons   = {
-            index:    '🏠', resume:  '📄',
-            work:     '💼', contact: '✉️'
-        };
-        this.pageColors  = {
-            index:    '#4f8ef7', resume:  '#a78bfa',
-            work:     '#00f5ff', contact: '#f74f8e'
-        };
-    }
-
-    init() {
-        if (!this.grid) return;
-        this.load();
-        this.refreshBtn?.addEventListener('click', () => this.load());
-    }
-
-    load() {
-        if (this.grid) {
-            this.grid.innerHTML = '<div class="analytics-loading"><div class="loading-spinner"></div><p>Loading...</p></div>';
-        }
-
-        db.collection(COLLECTIONS.CONFIG).doc('siteStats').get()
-            .then((statsDoc) => {
-                const statsData = statsDoc.exists ? statsDoc.data() : {};
-                const siteViews = statsData.pageViews || {};
-                const merged = this.mergeAnalytics(siteViews);
-                this.render(merged);
-            })
-            .catch(() => {
-                if (this.grid) this.grid.innerHTML = '<p class="analytics-error">Failed to load analytics.</p>';
-            });
-    }
-
-    mergeAnalytics(siteViews = {}) {
-        const merged = {
-            index: 0,
-            resume: 0,
-            work: 0,
-            contact: 0
-        };
-
-        const addSource = (source = {}) => {
-            Object.entries(source || {}).forEach(([rawKey, rawCount]) => {
-                const key = this.normalizePageKey(rawKey);
-                if (!key) return;
-                const count = Number(rawCount);
-                if (!Number.isFinite(count)) return;
-                merged[key] += count;
-            });
-        };
-
-        addSource(siteViews);
-
-        Object.keys(merged).forEach((key) => {
-            if (!merged[key]) delete merged[key];
-        });
-
-        return merged;
-    }
-
-    normalizePageKey(rawKey) {
-        let key = String(rawKey || '').trim().toLowerCase();
-        if (!key) return '';
-
-        key = key.split('?')[0].split('#')[0];
-        key = key.replace(/^\/+|\/+$/g, '');
-        if (key.includes('/')) key = key.split('/').pop() || key;
-        if (key.endsWith('.html')) key = key.slice(0, -5);
-
-        if (!key || key === 'home') return 'index';
-        if (key === 'projects' || key === 'projects-certificates') return 'work';
-        if (key === 'index' || key === 'resume' || key === 'work' || key === 'contact') return key;
-        return '';
-    }
-
-    render(data) {
-        const workViews = Number(data.work || 0);
-        const counts  = [
-            { key: 'index', name: 'Home', count: Number(data.index || 0) },
-            { key: 'resume', name: 'Resume', count: Number(data.resume || 0) },
-            { key: 'work', name: 'Work', count: workViews },
-            { key: 'contact', name: 'Contact', count: Number(data.contact || 0) }
-        ];
-        const maxView = Math.max(...counts.map(p => p.count), 1);
-        const total   = counts.reduce((a, c) => a + c.count, 0);
-
-        if (this.totalEl) {
-            this.totalEl.textContent = total.toLocaleString();
-        }
-
-        this.grid.innerHTML = counts.map(({ key, name, count }) => {
-            const pct   = Math.round((count / maxView) * 100);
-            const color = this.pageColors[key] || '#4f8ef7';
-            const icon  = this.pageIcons[key]  || '📄';
-            const share = total > 0 ? Math.round((count / total) * 100) : 0;
-
-            return `
-                <div class="analytics-card">
-                    <div class="analytics-card-header">
-                        <span class="analytics-page-icon">${icon}</span>
-                        <span class="analytics-page-name">${name}</span>
-                        <span class="analytics-share">${share}%</span>
-                    </div>
-                    <div class="analytics-count">${count.toLocaleString()}</div>
-                    <div class="analytics-bar-wrap">
-                        <div class="analytics-bar" style="--bar-w:${pct}%;--bar-color:${color}"></div>
-                    </div>
-                    <span class="analytics-views-label">views</span>
-                </div>
-            `;
-        }).join('');
-
-        // Animate bars
-        requestAnimationFrame(() => {
-            this.grid.querySelectorAll('.analytics-bar').forEach((el, i) => {
-                setTimeout(() => el.classList.add('analytics-bar-animate'), i * 100);
-            });
-        });
-    }
-}

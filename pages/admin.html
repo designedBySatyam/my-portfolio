@@ -21,7 +21,7 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"></noscript>
 
   <link rel="stylesheet" href="../css/style.css?v=20260321e">
-  <link rel="stylesheet" href="../css/admin.css?v=20260318b">
+  <link rel="stylesheet" href="../css/admin.css?v=20260321d">
 
   <!-- Auth guard: hide body until Firebase resolves -->
   <style>
@@ -228,7 +228,7 @@
           <div class="hero-badges">
             <span class="hero-badge">Projects + Certificates</span>
             <span class="hero-badge">Firebase Sync</span>
-            <span class="hero-badge">Session Analytics</span>
+            <span class="hero-badge">Live Admin Controls</span>
           </div>
         </div>
         <div class="hero-visual" aria-hidden="true">
@@ -285,14 +285,6 @@
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
           Site Config
-        </button>
-        <button class="tab-btn" data-tab="analytics">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="20" x2="18" y2="10"/>
-            <line x1="12" y1="20" x2="12" y2="4"/>
-            <line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-          Analytics
         </button>
       </div>
 
@@ -440,9 +432,19 @@
 
       <!-- ──────── CERTIFICATE MODAL ──────── -->
       <div id="certModal" class="modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 id="certModalTitle">Add New Certificate</h2>
+        <div class="modal-content cert-modal-content">
+          <div class="modal-header cert-modal-header">
+            <div class="cert-modal-title-wrap">
+              <span class="cert-modal-title-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </span>
+              <h2 id="certModalTitle">Add certificate</h2>
+            </div>
             <button class="modal-close" id="closeCertModal" aria-label="Close">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -450,43 +452,73 @@
               </svg>
             </button>
           </div>
-          <form id="certForm" class="project-form">
+          <form id="certForm" class="project-form cert-form">
             <input type="hidden" id="certId">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="certTitle">Certificate Title *</label>
-                <input type="text" id="certTitle" placeholder="e.g., Cloud Foundations" required>
-              </div>
-              <div class="form-group">
-                <label for="certOrder">Display Order *</label>
-                <input type="number" id="certOrder" min="1" value="1" required>
-              </div>
+            <div class="cert-modal-grid">
+              <section class="cert-form-column">
+                <div class="form-row cert-form-row">
+                  <div class="form-group">
+                    <label for="certTitle">Certificate Title *</label>
+                    <input type="text" id="certTitle" placeholder="e.g., Cloud Foundations" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="certOrder">Order *</label>
+                    <input type="number" id="certOrder" min="1" value="1" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="certIssuer">Issuing Organization *</label>
+                  <input type="text" id="certIssuer" placeholder="e.g., AWS Academy, IBM" required>
+                </div>
+                <div class="form-group">
+                  <label for="certImage">Certificate Image URL *</label>
+                  <input type="text" id="certImage" placeholder="https://raw.githubusercontent.com/designedBySatyam/assets/main/certificates/aws-certificate.jpg" required>
+                  <small>Use a full URL or relative asset path.</small>
+                </div>
+                <div class="form-group">
+                  <label for="certDate">Date Issued</label>
+                  <input type="text" id="certDate" placeholder="DD/MM/YYYY">
+                  <small>Optional - format DD/MM/YYYY</small>
+                </div>
+                <div class="form-actions cert-form-actions">
+                  <button type="button" class="btn-secondary" id="cancelCertBtn">Cancel</button>
+                  <button type="submit" class="btn-primary" id="saveCertBtn">
+                    <span>Save certificate</span>
+                  </button>
+                </div>
+                <div id="certFormMessage" class="form-message"></div>
+              </section>
+
+              <aside class="cert-preview-column">
+                <div class="cert-preview-head">
+                  <span class="cert-preview-head-label">Preview</span>
+                  <span class="cert-preview-status">Live</span>
+                </div>
+                <div class="cert-preview cert-preview-large" id="certPreviewBox">
+                  <div class="cert-preview-label">Certificate preview</div>
+                  <img id="certImagePreview" alt="Certificate preview">
+                  <p id="certPreviewHint">Enter a valid image path or URL above to preview.</p>
+                </div>
+                <div class="cert-preview-meta" id="certPreviewMeta">
+                  <div class="cert-meta-row">
+                    <span>Title</span>
+                    <strong id="certPreviewTitle">-</strong>
+                  </div>
+                  <div class="cert-meta-row">
+                    <span>Org</span>
+                    <strong id="certPreviewIssuer">-</strong>
+                  </div>
+                  <div class="cert-meta-row">
+                    <span>Display order</span>
+                    <strong id="certPreviewOrder">#-</strong>
+                  </div>
+                  <div class="cert-meta-row">
+                    <span>Issued</span>
+                    <strong id="certPreviewDate">-</strong>
+                  </div>
+                </div>
+              </aside>
             </div>
-            <div class="form-group">
-              <label for="certIssuer">Issuing Organization *</label>
-              <input type="text" id="certIssuer" placeholder="e.g., AWS Academy, IBM" required>
-            </div>
-            <div class="form-group">
-              <label for="certImage">Certificate Image Path / URL *</label>
-              <input type="text" id="certImage" placeholder="https://raw.githubusercontent.com/designedBySatyam/assets/main/certificates/aws-certificate.jpg" required>
-              <small>Use full URL or relative asset path. e.g., https://raw.githubusercontent.com/…/aws-certificate.jpg</small>
-            </div>
-            <div class="cert-preview" id="certPreviewBox">
-              <div class="cert-preview-label">Preview</div>
-              <img id="certImagePreview" alt="Certificate preview">
-              <p id="certPreviewHint">Enter a valid image path or URL above to preview.</p>
-            </div>
-            <div class="form-group">
-              <label for="certDate">Date Issued (optional)</label>
-              <input type="text" id="certDate" placeholder="e.g., January 2024">
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" id="cancelCertBtn">Cancel</button>
-              <button type="submit" class="btn-primary" id="saveCertBtn">
-                <span>Save Certificate</span>
-              </button>
-            </div>
-            <div id="certFormMessage" class="form-message"></div>
           </form>
         </div>
       </div>
@@ -719,45 +751,6 @@
         </section>
       </div>
 
-
-      <!-- ──────── ANALYTICS TAB ──────── -->
-      <div id="analyticsTab" class="tab-content">
-        <header class="admin-header">
-          <div>
-            <h1>Page Analytics</h1>
-            <p>Session-based page view counts</p>
-          </div>
-          <button id="refreshAnalyticsBtn" class="btn-secondary btn-small">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 4 23 10 17 10"/>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-            </svg>
-            Refresh
-          </button>
-        </header>
-
-        <div class="analytics-grid" id="analyticsGrid">
-          <div class="analytics-loading">
-            <div class="loading-spinner"></div>
-            <p>Loading analytics…</p>
-          </div>
-        </div>
-
-        <div class="analytics-total-row">
-          <span class="analytics-total-label">Total Page Views</span>
-          <span class="analytics-total-value" id="analyticsTotalViews">—</span>
-        </div>
-
-        <div class="analytics-note">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          Counts one view per browser session per page. Resets automatically when a visitor starts a new session.
-        </div>
-      </div>
-
     </main>
   </div>
 
@@ -789,7 +782,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="../js/firebase-config.js?v=20260305d"></script>
   <script src="../js/shared-utils.js?v=20260305d"></script>
-  <script src="../js/admin.js?v=20260321c"></script>
+  <script src="../js/admin.js?v=20260321e"></script>
   <script src="../js/extra-features.js?v=20260321e"></script>
   <script src="../js/command-palette.js?v=20260305d"></script>
 </body>
