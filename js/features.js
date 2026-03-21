@@ -134,6 +134,14 @@ function getCurrentPageKey() {
   return seg.replace('.html', '') || 'index';
 }
 
+function normalizeAnalyticsPageKey(rawKey) {
+  const key = String(rawKey || '').trim().toLowerCase();
+  if (!key || key === 'home') return 'index';
+  if (key === 'projects' || key === 'projects-certificates') return 'work';
+  if (key === 'index' || key === 'resume' || key === 'work' || key === 'contact') return key;
+  return '';
+}
+
 const currentPageKey = getCurrentPageKey();
 
 function isPage(...keys) {
@@ -649,15 +657,12 @@ function initPageAnalytics() {
     index: 'Home',
     resume: 'Resume',
     work: 'Work',
-    projects: 'Work',
-    'projects-certificates': 'Work',
     contact: 'Contact'
   };
 
-  const seg = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
-  const rawKey = seg.replace('.html', '') || 'index';
-  const pageKey = (rawKey === 'projects' || rawKey === 'projects-certificates') ? 'work' : rawKey;
-  const pageName = pageMap[rawKey] || pageMap[pageKey] || pageKey;
+  const pageKey = normalizeAnalyticsPageKey(getCurrentPageKey());
+  if (!pageKey) return;
+  const pageName = pageMap[pageKey];
 
   const key = `sp-view-${pageKey}`;
   try {

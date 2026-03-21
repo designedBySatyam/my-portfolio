@@ -23,7 +23,8 @@ class UrlState {
                 value === '' ||
                 (key === 'view' && value === 'projects') ||
                 (key === 'status' && value === 'all') ||
-                (key === 'sort' && value === 'order-asc');
+                (key === 'sort' && value === 'order-asc') ||
+                (key === 'certSort' && value === 'order-asc');
 
             if (remove) {
                 params.delete(key);
@@ -103,6 +104,37 @@ class ViewToggle {
         this.currentView = view;
         this.applyView(true);
     }
+}
+
+function toEpochMs(value) {
+    if (!value) return null;
+    if (typeof value?.toDate === 'function') {
+        const date = value.toDate();
+        return Number.isFinite(date?.getTime?.()) ? date.getTime() : null;
+    }
+    if (value instanceof Date) {
+        const ms = value.getTime();
+        return Number.isFinite(ms) ? ms : null;
+    }
+    if (typeof value === 'number') {
+        return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === 'string') {
+        const ms = Date.parse(value.trim());
+        return Number.isFinite(ms) ? ms : null;
+    }
+    if (typeof value === 'object' && Number.isFinite(value.seconds)) {
+        return Number(value.seconds) * 1000;
+    }
+    return null;
+}
+
+function getRecordTime(record, fields = []) {
+    for (const field of fields) {
+        const ms = toEpochMs(record?.[field]);
+        if (Number.isFinite(ms)) return ms;
+    }
+    return null;
 }
 
 class FirebaseProjects {
@@ -241,6 +273,23 @@ class FirebaseProjects {
         }
         if (sortValue === 'title-desc') {
             list.sort((a, b) => String(b.title || '').localeCompare(String(a.title || '')));
+            return list;
+        }
+        if (sortValue === 'time-desc' || sortValue === 'time-asc') {
+            const dir = sortValue === 'time-desc' ? -1 : 1;
+            list.sort((a, b) => {
+                const aTime = getRecordTime(a, ['createdAt', 'updatedAt']);
+                const bTime = getRecordTime(b, ['createdAt', 'updatedAt']);
+                if (aTime !== null || bTime !== null) {
+                    if (aTime === null) return 1;
+                    if (bTime === null) return -1;
+                    if (aTime !== bTime) return dir * (aTime - bTime);
+                }
+                const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : 0;
+                const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : 0;
+                if (aOrder !== bOrder) return dir * (aOrder - bOrder);
+                return String(a.title || '').localeCompare(String(b.title || ''));
+            });
             return list;
         }
         return list;
@@ -507,6 +556,7 @@ class FirebaseProjects {
 class FirebaseCertificates {
     constructor() {
         this.certList = document.getElementById('certificatesList');
+        this.sortOrder = document.getElementById('certificateSortOrder');
         this.certViewer = document.getElementById('certViewer');
         this.certPlaceholder = document.getElementById('certPlaceholder');
         this.certDetails = document.getElementById('certDetails');
@@ -520,6 +570,7 @@ class FirebaseCertificates {
         this.currentCertId = null;
         this.initialCertId = UrlState.get('cert', '');
         this.certificatesById = new Map();
+        this.allCertificates = [];
         this.init();
     }
 
@@ -532,9 +583,19 @@ class FirebaseCertificates {
             return;
         }
 
+        const initialSort = UrlState.get('certSort', 'order-asc').toLowerCase();
+        if (this.sortOrder && [...this.sortOrder.options].some((opt) => opt.value === initialSort)) {
+            this.sortOrder.value = initialSort;
+        }
+
         this.showLoading();
+        this.bindCertificateControls();
         this.loadCertificates();
         this.setupEventListeners();
+    }
+
+    bindCertificateControls() {
+        this.sortOrder?.addEventListener('change', () => this.applyCertificateSort());
     }
 
     setupEventListeners() {
@@ -591,17 +652,56 @@ class FirebaseCertificates {
             .onSnapshot((snapshot) => {
                 const certificates = [];
                 snapshot.forEach((doc) => certificates.push({ id: doc.id, ...doc.data() }));
+                this.allCertificates = certificates;
 
                 if (certificates.length === 0) {
                     this.showEmptyState();
                     this.closeCurrentCertificate();
                 } else {
-                    this.renderCertificates(certificates);
+                    this.applyCertificateSort();
                 }
             }, (error) => {
                 console.error('Error loading certificates:', error);
                 this.showError();
             });
+    }
+
+    sortCertificates(certificates, sortValue) {
+        const list = [...certificates];
+        if (sortValue === 'title-asc') {
+            list.sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+            return list;
+        }
+        if (sortValue === 'title-desc') {
+            list.sort((a, b) => String(b.title || '').localeCompare(String(a.title || '')));
+            return list;
+        }
+        if (sortValue === 'time-desc' || sortValue === 'time-asc') {
+            const dir = sortValue === 'time-desc' ? -1 : 1;
+            list.sort((a, b) => {
+                const aTime = getRecordTime(a, ['createdAt', 'updatedAt', 'issueDate', 'date']);
+                const bTime = getRecordTime(b, ['createdAt', 'updatedAt', 'issueDate', 'date']);
+                if (aTime !== null || bTime !== null) {
+                    if (aTime === null) return 1;
+                    if (bTime === null) return -1;
+                    if (aTime !== bTime) return dir * (aTime - bTime);
+                }
+                const aOrder = Number.isFinite(Number(a.order)) ? Number(a.order) : 0;
+                const bOrder = Number.isFinite(Number(b.order)) ? Number(b.order) : 0;
+                if (aOrder !== bOrder) return dir * (aOrder - bOrder);
+                return String(a.title || '').localeCompare(String(b.title || ''));
+            });
+            return list;
+        }
+        return list;
+    }
+
+    applyCertificateSort() {
+        if (!this.certList || !this.allCertificates.length) return;
+        const sortValue = (this.sortOrder?.value || 'order-asc').toLowerCase();
+        const sorted = this.sortCertificates(this.allCertificates, sortValue);
+        this.renderCertificates(sorted);
+        UrlState.set({ certSort: sortValue });
     }
 
     renderCertificates(certificates) {

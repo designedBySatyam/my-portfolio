@@ -1253,6 +1253,23 @@ body.admin-command-theme {
   box-sizing: border-box;
 }
 
+.project-form select,
+select.field-input {
+  color-scheme: dark;
+}
+
+.project-form select option,
+select.field-input option {
+  color: #f0ebe0;
+  background: #1b1712;
+}
+
+.project-form select option:checked,
+select.field-input option:checked {
+  color: #0e0d0b;
+  background: #d4975b;
+}
+
 .project-form textarea {
   resize: vertical;
   min-height: 110px;
@@ -1784,6 +1801,23 @@ body.admin-command-theme {
 [data-theme="light"] .auth-form input {
   background: var(--surface-2);
   color: var(--text);
+}
+
+[data-theme="light"] .project-form select,
+[data-theme="light"] select.field-input {
+  color-scheme: light;
+}
+
+[data-theme="light"] .project-form select option,
+[data-theme="light"] select.field-input option {
+  color: #1a1612;
+  background: #f4efe6;
+}
+
+[data-theme="light"] .project-form select option:checked,
+[data-theme="light"] select.field-input option:checked {
+  color: #ffffff;
+  background: #9e5d3a;
 }
 
 [data-theme="light"] .config-row,

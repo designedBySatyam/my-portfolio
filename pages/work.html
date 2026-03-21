@@ -133,8 +133,10 @@
           <label for="projectSortOrder" class="toolbar-label">Sort</label>
           <select id="projectSortOrder" class="toolbar-select">
             <option value="order-asc">Default</option>
-            <option value="title-asc">Title A–Z</option>
-            <option value="title-desc">Title Z–A</option>
+            <option value="title-asc">Title A-Z</option>
+            <option value="title-desc">Title Z-A</option>
+            <option value="time-desc">New to Old</option>
+            <option value="time-asc">Old to New</option>
           </select>
         </div>
       </div>
@@ -155,11 +157,23 @@
       <div class="certificates-container">
         <aside class="certificates-list-panel">
           <div class="panel-header">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="8" r="7"/>
-              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
-            </svg>
-            <h2>My Certificates</h2>
+            <div class="panel-header-main">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="7"/>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+              </svg>
+              <h2>My Certificates</h2>
+            </div>
+            <div class="panel-header-sort">
+              <label for="certificateSortOrder" class="toolbar-label">Sort</label>
+              <select id="certificateSortOrder" class="toolbar-select toolbar-select-compact">
+                <option value="order-asc">Default</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+                <option value="time-desc">New to Old</option>
+                <option value="time-asc">Old to New</option>
+              </select>
+            </div>
           </div>
           <div class="certificates-list" id="certificatesList" role="listbox" aria-label="Certificates">
             <!-- Loaded from Firebase -->
@@ -546,8 +560,8 @@
   <script src="../js/script.js?v=20260317c"></script>
   <script src="../js/shared-utils.js?v=20260305d"></script>
   <script src="../js/work.js?v=20260305d"></script>
-  <script src="../js/admin.js?v=20260317a"></script>
-  <script src="../js/features.js?v=20260316a"></script>
+  <script src="../js/admin.js?v=20260321b"></script>
+  <script src="../js/features.js?v=20260321b"></script>
   <script src="../js/command-palette.js?v=20260305d"></script>
   <script type="module" src="../js/pages/work-bootstrap.js?v=20260319a"></script>
 </body>

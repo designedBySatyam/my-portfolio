@@ -1458,26 +1458,50 @@ class AnalyticsManager {
     }
 
     mergeAnalytics(pageData = {}, siteViews = {}) {
-        const merged = {};
-        const keys = new Set([
-            ...Object.keys(pageData || {}),
-            ...Object.keys(siteViews || {})
-        ]);
+        const merged = {
+            index: 0,
+            resume: 0,
+            work: 0,
+            contact: 0
+        };
 
-        keys.forEach((key) => {
-            const a = Number(pageData?.[key] ?? 0);
-            const b = Number(siteViews?.[key] ?? 0);
-            const hasA = Number.isFinite(a) && a !== 0;
-            const hasB = Number.isFinite(b) && b !== 0;
-            if (!hasA && !hasB) return;
-            merged[key] = (Number.isFinite(a) ? a : 0) + (Number.isFinite(b) ? b : 0);
+        const addSource = (source = {}) => {
+            Object.entries(source || {}).forEach(([rawKey, rawCount]) => {
+                const key = this.normalizePageKey(rawKey);
+                if (!key) return;
+                const count = Number(rawCount);
+                if (!Number.isFinite(count)) return;
+                merged[key] += count;
+            });
+        };
+
+        addSource(pageData);
+        addSource(siteViews);
+
+        Object.keys(merged).forEach((key) => {
+            if (!merged[key]) delete merged[key];
         });
 
         return merged;
     }
 
+    normalizePageKey(rawKey) {
+        let key = String(rawKey || '').trim().toLowerCase();
+        if (!key) return '';
+
+        key = key.split('?')[0].split('#')[0];
+        key = key.replace(/^\/+|\/+$/g, '');
+        if (key.includes('/')) key = key.split('/').pop() || key;
+        if (key.endsWith('.html')) key = key.slice(0, -5);
+
+        if (!key || key === 'home') return 'index';
+        if (key === 'projects' || key === 'projects-certificates') return 'work';
+        if (key === 'index' || key === 'resume' || key === 'work' || key === 'contact') return key;
+        return '';
+    }
+
     render(data) {
-        const workViews = Number(data.work || 0) + Number(data.projects || 0);
+        const workViews = Number(data.work || 0);
         const counts  = [
             { key: 'index', name: 'Home', count: Number(data.index || 0) },
             { key: 'resume', name: 'Resume', count: Number(data.resume || 0) },
