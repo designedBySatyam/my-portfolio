@@ -1,5 +1,5 @@
 /* ============================================================
-   projects-certificates.css â€” Projects & Certificates Page
+   projects-certificates.css — Projects & Certificates Page
    ============================================================ */
 
 .main-content {
@@ -8,7 +8,7 @@
   padding: calc(var(--nav-h) + 60px) 80px 80px;
 }
 
-/* â”€â”€ Page Header â”€â”€ */
+/* ── Page Header ── */
 .page-header {
   text-align: center;
   margin-bottom: 56px;
@@ -52,7 +52,7 @@
   border-radius: 1px;
 }
 
-/* â”€â”€ Toggle Container â”€â”€ */
+/* ── Toggle Container ── */
 .toggle-container {
   display: inline-flex;
   align-items: center;
@@ -249,7 +249,7 @@
   background: var(--surface2);
 }
 
-/* â”€â”€ Projects Grid â”€â”€ */
+/* ── Projects Grid ── */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -257,7 +257,7 @@
   margin-bottom: 48px;
 }
 
-/* â”€â”€ Project Card â”€â”€ */
+/* ── Project Card ── */
 .project-card {
   --cat-a: #6d5efc;
   --cat-b: #21b5f6;
@@ -306,7 +306,7 @@
 
 .project-card:hover .project-card-glow { opacity: 1; }
 
-/* â”€â”€ Card Header â”€â”€ */
+/* ── Card Header ── */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -393,7 +393,7 @@
   --cat-glow: rgba(109, 94, 252, 0.16);
 }
 
-/* â”€â”€ Status Badge â”€â”€ */
+/* ── Status Badge ── */
 .status-tag {
   display: inline-flex;
   align-items: center;
@@ -436,7 +436,7 @@
   background: currentColor;
 }
 
-/* â”€â”€ Card Content â”€â”€ */
+/* ── Card Content ── */
 .card-title {
   font-family: var(--font-display);
   font-size: 1rem;
@@ -453,7 +453,7 @@
   margin-bottom: 20px;
 }
 
-/* â”€â”€ Tech Tags â”€â”€ */
+/* ── Tech Tags ── */
 .card-tech {
   display: flex;
   flex-wrap: wrap;
@@ -525,7 +525,7 @@
   color: var(--cyan);
 }
 
-/* â”€â”€ Card Footer â”€â”€ */
+/* ── Card Footer ── */
 .card-footer {
   display: flex;
   gap: 12px;
@@ -552,7 +552,7 @@
 
 .card-link svg { stroke: currentColor; }
 
-/* â”€â”€ Empty State â”€â”€ */
+/* ── Empty State ── */
 .empty-state {
   text-align: center;
   padding: 80px 40px;
@@ -604,7 +604,7 @@
   min-height: 500px;
 }
 
-/* â”€â”€ List Panel â”€â”€ */
+/* ── List Panel ── */
 .certificates-list-panel {
   position: relative;
   background: var(--card-bg);
@@ -702,7 +702,7 @@
   gap: 8px;
 }
 
-/* â”€â”€ Certificate List Item â”€â”€ */
+/* ── Certificate List Item ── */
 .cert-list-item {
   position: relative;
   display: flex;
@@ -1033,7 +1033,7 @@
   opacity: 0.86;
 }
 
-/* â”€â”€ Viewer Panel â”€â”€ */
+/* ── Viewer Panel ── */
 .certificate-viewer-panel {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -1334,7 +1334,7 @@
   box-shadow: 0 0 16px rgba(247, 79, 142, 0.28);
 }
 
-/* ── Bottom-right corner bracket on modal ── */
+/* -- Bottom-right corner bracket on modal -- */
 .admin-login-form,
 .admin-panel {
   position: relative;
@@ -1363,7 +1363,7 @@
   padding: 0;
 }
 
-/* ── Left: Visual Panel ── */
+/* -- Left: Visual Panel -- */
 .admin-login-deco {
   position: relative;
   display: flex;
@@ -1549,7 +1549,7 @@
   color: var(--text-dim);
 }
 
-/* ── Right: Form ── */
+/* -- Right: Form -- */
 .admin-auth-shell {
   padding: 52px 48px 44px;
   display: flex;
@@ -1848,7 +1848,7 @@
   box-shadow: 0 0 16px rgba(247, 79, 142, 0.22);
 }
 
-/* ── Tab Bar ── */
+/* -- Tab Bar -- */
 .admin-tabs {
   display: flex;
   gap: 0;
@@ -2095,7 +2095,7 @@
   margin: 16px;
 }
 
-/* ── Edit Modal ── */
+/* -- Edit Modal -- */
 .edit-modal {
   display: none;
   position: fixed;
@@ -2299,7 +2299,7 @@
 
 
 
-/* â”€â”€ Responsive â”€â”€ */
+/* ── Responsive ── */
 @media (max-width: 900px) {
   .main-content {
     padding: calc(var(--nav-h) + 32px) 24px 60px;
@@ -2412,7 +2412,7 @@
   }
 }
 
-/* ── Skeleton loaders ── */
+/* -- Skeleton loaders -- */
 .project-card.skeleton {
   pointer-events: none;
   background: var(--surface);
@@ -2442,7 +2442,7 @@
   to { transform: translateX(100%); }
 }
 
-/* ── Login decorative left panel ── */
+/* -- Login decorative left panel -- */
 .admin-login-deco {
   order: 1;
   position: relative;
@@ -2604,9 +2604,9 @@
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* --------------------------------------------------------------
    PROJECT DETAIL MODAL
-══════════════════════════════════════════════════════════════ */
+-------------------------------------------------------------- */
 
 .project-card {
   cursor: pointer;
@@ -2788,9 +2788,9 @@
   transform: translateY(-1px);
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* --------------------------------------------------------------
    CERTIFICATE LIGHTBOX
-══════════════════════════════════════════════════════════════ */
+-------------------------------------------------------------- */
 
 /* Make cert viewer image clickable */
 .cert-image.visible {

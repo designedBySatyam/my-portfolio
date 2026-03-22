@@ -95,7 +95,6 @@ class DownloadTracking {
         if (!this.downloadBtn) return;
 
         this.downloadBtn.addEventListener('click', () => {
-            console.log('Resume downloaded');
             this.showDownloadFeedback();
         });
     }
