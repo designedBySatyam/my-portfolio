@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * script.js — Advanced Constellation Background
@@ -896,4 +896,4 @@
     initEnhancements();
   });
 
-})();.
+})();
