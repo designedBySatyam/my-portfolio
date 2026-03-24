@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Admin dashboard for Satyam Pandey portfolio management.">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0e0d0b">
+  <meta name="theme-color" content="#030308">
   <title>Admin | Satyam Pandey Portfolio</title>
 
   <!-- Manifest & Icons -->
@@ -13,297 +12,250 @@
   <link rel="icon" href="../favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/designedBySatyam/assets/main/icons/icon-192.png">
 
-  <!-- Fonts: Fraunces (display), Outfit (UI), JetBrains Mono -->
+  <!-- Fonts: Outfit (display), Plus Jakarta Sans (body), JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,300&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
 
   <link rel="stylesheet" href="../css/style.css?v=20260321f">
   <link rel="stylesheet" href="../css/admin.css?v=20260321d">
 
-  <!-- Auth guard: hide body until Firebase resolves -->
   <style>
     body { visibility: hidden; }
     #authLoader {
       position: fixed; inset: 0; z-index: 9000;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 14px;
-      background: #0e0d0b;
-      visibility: visible;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      background: #030308; visibility: visible;
     }
     .auth-spinner {
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      border: 2px solid rgba(212, 151, 91, 0.15);
-      border-top-color: #d4975b;
-      animation: authSpin 0.85s linear infinite;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid rgba(99,102,241,0.15);
+      border-top-color: #6366f1;
+      animation: _authSpin .8s linear infinite;
     }
-    @keyframes authSpin { to { transform: rotate(360deg); } }
+    @keyframes _authSpin { to { transform: rotate(360deg); } }
     .auth-loader-text {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: rgba(212, 151, 91, 0.5);
+      font-size: 0.58rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: rgba(99,102,241,.5);
     }
     #authLoader.resolved { display: none; }
   </style>
 </head>
-<body class="theme-dotgrid admin-command-theme">
+<body class="theme-dotgrid admin-nebula">
 
-  <!-- Auth loader -->
-  <div id="authLoader" role="status" aria-label="Verifying authentication">
+  <div id="authLoader" role="status">
     <div class="auth-spinner"></div>
-    <span class="auth-loader-text">Verifying access...</span>
+    <span class="auth-loader-text">Verifying access…</span>
   </div>
 
-  <div class="bg-wrap" aria-hidden="true">
-    <div class="dot-grid"></div>
-    <div class="bloom"></div>
-    <div class="vignette"></div>
+  <!-- Ambient background -->
+  <div class="nb-ambient" aria-hidden="true">
+    <div class="nb-orb nb-orb--a"></div>
+    <div class="nb-orb nb-orb--b"></div>
+    <div class="nb-orb nb-orb--c"></div>
     <canvas id="particle-canvas"></canvas>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
+
+  <!-- ══════════════════════════════════════
        LOGIN SCREEN
-  ═══════════════════════════════════════════════ -->
-  <div id="loginScreen" class="auth-screen" style="display:none;">
-    <div class="auth-container">
+  ══════════════════════════════════════ -->
+  <div id="loginScreen" class="nb-auth-screen" style="display:none;">
+    <div class="nb-login-card">
 
-      <!-- Left: Branding panel -->
-      <div class="auth-side">
-        <div class="auth-side-badge">
-          <span class="auth-badge-dot"></span>
-          Authorized Personnel
-        </div>
-
-        <h1>Portfolio<br><em>Mission</em><br>Control</h1>
-
-        <p>One focused workspace for managing your portfolio content, deployment signals, and site configuration.</p>
-
-        <ul class="auth-points">
-          <li>Fast publishing for portfolio updates</li>
-          <li>Unified content and system controls</li>
-          <li>Firebase-protected secure workflow</li>
-        </ul>
-
-        <div class="auth-graphic" aria-hidden="true">
-          <div class="auth-rings">
-            <div class="auth-ring auth-ring--outer"></div>
-            <div class="auth-ring auth-ring--mid"></div>
-            <div class="auth-ring auth-ring--inner"></div>
-            <div class="auth-ring-dot"></div>
-          </div>
-          <div class="auth-graphic-label">Admin&nbsp;Deck&nbsp;v2</div>
-        </div>
-      </div>
-
-      <!-- Right: Login form -->
-      <div class="auth-panel">
-        <div class="auth-header">
-          <div class="auth-logo-wrap">
-            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-              <polygon points="22,4 40,13 40,31 22,40 4,31 4,13" stroke="url(#authLogoGrad)" stroke-width="1.5"/>
-              <polygon points="22,11 34,17 34,27 22,33 10,27 10,17" fill="url(#authLogoGrad)" opacity="0.18"/>
-              <circle cx="22" cy="22" r="4" fill="url(#authLogoGrad)" opacity="0.7"/>
-              <defs>
-                <linearGradient id="authLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#d4975b"/>
-                  <stop offset="100%" stop-color="#9e5d3a"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <h2>Admin Access</h2>
-          <p>Sign in to continue to the dashboard.</p>
-        </div>
-
-        <form id="loginForm" class="auth-form">
-          <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" required autocomplete="email" placeholder="you@example.com">
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" required autocomplete="current-password" placeholder="Enter your password">
-          </div>
-          <button type="submit" class="auth-btn">
-            <span>Sign In</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-              <polyline points="10 17 15 12 10 7"/>
-              <line x1="15" y1="12" x2="3" y2="12"/>
-            </svg>
-          </button>
-          <div id="authError" class="auth-error"></div>
-        </form>
-
-        <button type="button" id="backToSiteBtn" class="auth-back-btn" aria-label="Go back to previous page">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"/>
-            <polyline points="12 19 5 12 12 5"/>
+      <div class="nb-login-brand">
+        <div class="nb-brand-icon">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs>
+              <linearGradient id="lgBrand" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#ec4899"/>
+              </linearGradient>
+            </defs>
+            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="url(#lgBrand)"/>
+            <path d="M2 17l10 5 10-5" stroke="url(#lgBrand)"/>
+            <path d="M2 12l10 5 10-5" stroke="url(#lgBrand)"/>
           </svg>
-          Back to Site
-        </button>
+        </div>
+        <div>
+          <h2>Welcome back</h2>
+          <p>Sign in to access your portfolio controls.</p>
+        </div>
       </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" required autocomplete="email" placeholder="admin@satyam.dev">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <button type="submit" class="nb-btn-primary">
+          <span>Sign In</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+        </button>
+        <div id="authError" class="nb-auth-error"></div>
+      </form>
+
+      <button type="button" id="backToSiteBtn" class="nb-back-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Back to site
+      </button>
     </div>
   </div>
 
 
-  <!-- ═══════════════════════════════════════════════
+  <!-- ══════════════════════════════════════
        ADMIN DASHBOARD
-  ═══════════════════════════════════════════════ -->
-  <div id="adminDashboard" class="admin-dashboard" style="display: none;">
+  ══════════════════════════════════════ -->
+  <div id="adminDashboard" class="nb-dashboard" style="display:none;">
 
-    <!-- Top Navigation -->
-    <nav class="admin-nav">
-      <div class="nav-logo">
-        <svg width="26" height="26" viewBox="0 0 44 44" fill="none">
-          <polygon points="22,4 40,13 40,31 22,40 4,31 4,13" stroke="url(#navLogoGrad)" stroke-width="1.5"/>
-          <polygon points="22,11 34,17 34,27 22,33 10,27 10,17" fill="url(#navLogoGrad)" opacity="0.2"/>
-          <circle cx="22" cy="22" r="3.5" fill="url(#navLogoGrad)" opacity="0.8"/>
-          <defs>
-            <linearGradient id="navLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#d4975b"/>
-              <stop offset="100%" stop-color="#9e5d3a"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <span>Admin Deck</span>
-      </div>
-
-      <div class="nav-status-pill" aria-hidden="true">
-        <span class="nav-status-dot"></span>
-        <span class="nav-status-text">Firebase Connected</span>
-      </div>
-
-      <div class="nav-actions">
-        <a href="../index.html" class="nav-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
+    <!-- ── SIDEBAR ───── -->
+    <aside class="nb-sidebar">
+      <div class="nb-sidebar-brand">
+        <div class="nb-sidebar-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs>
+              <linearGradient id="lgSidebar" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#ec4899"/>
+              </linearGradient>
+            </defs>
+            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="url(#lgSidebar)"/>
+            <path d="M2 17l10 5 10-5" stroke="url(#lgSidebar)"/>
+            <path d="M2 12l10 5 10-5" stroke="url(#lgSidebar)"/>
           </svg>
-          Home
-        </a>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg class="theme-icon sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-          <svg class="theme-icon moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
-        <button id="logoutBtn" class="logout-btn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-          Logout
-        </button>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="admin-main">
-
-      <!-- Hero Banner -->
-      <section class="admin-hero">
-        <div class="hero-copy">
-          <p class="hero-eyebrow">
-            <span class="hero-eyebrow-dot"></span>
-            Control Room
-          </p>
-          <div class="hero-title-row">
-            <h1 class="hero-title">Portfolio Command Center</h1>
-            <span class="hero-live-dot">Live</span>
-          </div>
-          <p class="hero-subtitle">Manage content, deployment signals, and engagement metrics from one streamlined workspace.</p>
-          <div class="hero-badges">
-            <span class="hero-badge">Projects + Certificates</span>
-            <span class="hero-badge">Firebase Sync</span>
-            <span class="hero-badge">Live Admin Controls</span>
-          </div>
         </div>
-        <div class="hero-visual" aria-hidden="true">
-          <div class="hero-geo">
-            <div class="hero-geo-ring hero-geo-ring--a"></div>
-            <div class="hero-geo-ring hero-geo-ring--b"></div>
-            <div class="hero-geo-ring hero-geo-ring--c"></div>
-            <div class="hero-geo-center">
-              <div class="hero-geo-pulse"></div>
-            </div>
-          </div>
+        <div>
+          <span class="nb-brand-name">Admin Panel</span>
+          <span class="nb-brand-ver">satyam.dev</span>
         </div>
-      </section>
+      </div>
 
-      <!-- Overview Stats -->
-      <section class="admin-overview">
-        <article class="overview-card">
-          <span class="overview-label">Projects</span>
-          <span class="overview-value" id="projectsCount">0</span>
-          <span class="overview-note">Total entries</span>
-        </article>
-        <article class="overview-card">
-          <span class="overview-label">Certificates</span>
-          <span class="overview-value" id="certificatesCount">0</span>
-          <span class="overview-note">Total entries</span>
-        </article>
-        <article class="overview-card">
-          <span class="overview-label">Status</span>
-          <span class="overview-value">Online</span>
-          <span class="overview-note">Firebase connected</span>
-        </article>
-      </section>
+      <div class="nb-sidebar-sep"></div>
 
-      <!-- Tab Navigation -->
-      <div class="admin-tabs">
-        <button class="tab-btn active" data-tab="projects">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <p class="nb-nav-label">Navigation</p>
+
+      <nav class="nb-sidebar-nav">
+        <button class="tab-btn nb-nav-item active" data-tab="projects">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <line x1="3" y1="9" x2="21" y2="9"/>
             <line x1="9" y1="21" x2="9" y2="9"/>
           </svg>
-          Projects
+          <span>Projects</span>
+          <span class="nb-badge" id="projectsCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="certificates">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <button class="tab-btn nb-nav-item" data-tab="certificates">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="8" r="7"/>
             <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
           </svg>
-          Certificates
+          <span>Certificates</span>
+          <span class="nb-badge" id="certificatesCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="siteconfig">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <button class="tab-btn nb-nav-item" data-tab="siteconfig">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
-          Site Config
+          <span>Site Config</span>
         </button>
+      </nav>
+
+      <div style="flex:1"></div>
+
+      <!-- Firebase status -->
+      <div class="nb-status-pill">
+        <span class="nb-status-dot"></span>
+        <span>Firebase Connected</span>
       </div>
 
+      <div class="nb-sidebar-sep"></div>
 
-      <!-- ──────── PROJECTS TAB ──────── -->
+      <div class="nb-sidebar-foot">
+        <a href="../index.html" class="nb-foot-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          View Site
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="theme-icon sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          </svg>
+          <svg class="theme-icon moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button id="logoutBtn" class="nb-logout-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign out
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── MAIN PANEL ─── -->
+    <main class="nb-main">
+
+      <!-- Topbar -->
+      <header class="nb-topbar">
+        <div class="nb-topbar-crumb">
+          <span class="crumb-root">satyam.dev</span>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-page" id="topbarSection">Projects</span>
+        </div>
+        <div class="nb-topbar-time" id="topbarTime"></div>
+      </header>
+
+      <!-- ── PROJECTS TAB ──── -->
       <div id="projectsTab" class="tab-content active">
-        <header class="admin-header">
+        <div class="nb-page-head">
           <div>
-            <h1>Project Management</h1>
-            <p>Add, edit, or remove projects from your portfolio</p>
+            <p class="nb-page-eyebrow">Portfolio</p>
+            <h1 class="nb-page-title">Projects</h1>
+            <p class="nb-page-sub">Add, edit, or remove projects from your portfolio.</p>
           </div>
-          <button id="addProjectBtn" class="add-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
+          <button id="addProjectBtn" class="nb-btn-primary nb-btn-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Add Project
+            New Project
           </button>
-        </header>
+        </div>
+
+        <div class="nb-stats-row">
+          <div class="nb-stat-card">
+            <span class="nb-stat-label">Total Projects</span>
+            <span class="nb-stat-val" id="projectsStatCount">0</span>
+          </div>
+          <div class="nb-stat-card">
+            <span class="nb-stat-label">Database</span>
+            <span class="nb-stat-val nb-stat-val--live">Online</span>
+          </div>
+        </div>
+
         <section class="projects-list admin-list" id="projectsList">
           <div class="loading-state">
             <div class="loading-spinner"></div>
@@ -313,21 +265,29 @@
       </div>
 
 
-      <!-- ──────── CERTIFICATES TAB ──────── -->
+      <!-- ── CERTIFICATES TAB ──── -->
       <div id="certificatesTab" class="tab-content">
-        <header class="admin-header">
+        <div class="nb-page-head">
           <div>
-            <h1>Certificate Management</h1>
-            <p>Add, edit, or remove certificates from your resume</p>
+            <p class="nb-page-eyebrow">Resume</p>
+            <h1 class="nb-page-title">Certificates</h1>
+            <p class="nb-page-sub">Add, edit, or remove certificates from your resume.</p>
           </div>
-          <button id="addCertBtn" class="add-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
+          <button id="addCertBtn" class="nb-btn-primary nb-btn-sm">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Add Certificate
+            New Certificate
           </button>
-        </header>
+        </div>
+
+        <div class="nb-stats-row">
+          <div class="nb-stat-card">
+            <span class="nb-stat-label">Total Certificates</span>
+            <span class="nb-stat-val" id="certsStatCount">0</span>
+          </div>
+        </div>
+
         <section class="projects-list admin-list" id="certificatesList">
           <div class="loading-state">
             <div class="loading-spinner"></div>
@@ -337,15 +297,17 @@
       </div>
 
 
-      <!-- ──────── PROJECT MODAL ──────── -->
+      <!-- ── PROJECT MODAL ──── -->
       <div id="projectModal" class="modal">
         <div class="modal-content">
           <div class="modal-header">
-            <h2 id="projectModalTitle">Add New Project</h2>
+            <div class="nb-modal-head-left">
+              <span class="nb-modal-chip">Project</span>
+              <h2 id="projectModalTitle">Add New Project</h2>
+            </div>
             <button class="modal-close" id="closeProjectModal" aria-label="Close">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
             </button>
           </div>
@@ -400,9 +362,7 @@
               <input type="text" id="projectTech" placeholder="React, Node.js, MongoDB" required>
               <small>Separate each technology with a comma</small>
             </div>
-            <div class="form-inline-note">
-              Tip: keep description outcome-focused and order value unique for stable sorting.
-            </div>
+            <div class="form-inline-note">Tip: keep description outcome-focused and order value unique for stable sorting.</div>
             <div class="form-row">
               <div class="form-group">
                 <label for="projectStatus">Status *</label>
@@ -420,9 +380,7 @@
             </div>
             <div class="form-actions">
               <button type="button" class="btn-secondary" id="cancelProjectBtn">Cancel</button>
-              <button type="submit" class="btn-primary" id="saveProjectBtn">
-                <span>Save Project</span>
-              </button>
+              <button type="submit" class="btn-primary" id="saveProjectBtn"><span>Save Project</span></button>
             </div>
             <div id="projectFormMessage" class="form-message"></div>
           </form>
@@ -430,25 +388,25 @@
       </div>
 
 
-      <!-- ──────── CERTIFICATE MODAL ──────── -->
+      <!-- ── CERTIFICATE MODAL ──── -->
       <div id="certModal" class="modal">
         <div class="modal-content cert-modal-content">
           <div class="modal-header cert-modal-header">
-            <div class="cert-modal-title-wrap">
+            <div class="nb-modal-head-left cert-modal-title-wrap">
               <span class="cert-modal-title-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="4" width="18" height="18" rx="2"/>
                   <line x1="8" y1="2" x2="8" y2="6"/>
                   <line x1="16" y1="2" x2="16" y2="6"/>
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </span>
-              <h2 id="certModalTitle">Add certificate</h2>
+              <span class="nb-modal-chip">Certificate</span>
+              <h2 id="certModalTitle">Add Certificate</h2>
             </div>
             <button class="modal-close" id="closeCertModal" aria-label="Close">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
             </button>
           </div>
@@ -472,19 +430,17 @@
                 </div>
                 <div class="form-group">
                   <label for="certImage">Certificate Image URL *</label>
-                  <input type="text" id="certImage" placeholder="https://raw.githubusercontent.com/designedBySatyam/assets/main/certificates/aws-certificate.jpg" required>
+                  <input type="text" id="certImage" placeholder="https://raw.githubusercontent.com/…" required>
                   <small>Use a full URL or relative asset path.</small>
                 </div>
                 <div class="form-group">
                   <label for="certDate">Date Issued</label>
                   <input type="text" id="certDate" placeholder="DD/MM/YYYY">
-                  <small>Optional - format DD/MM/YYYY</small>
+                  <small>Optional — format DD/MM/YYYY</small>
                 </div>
                 <div class="form-actions cert-form-actions">
                   <button type="button" class="btn-secondary" id="cancelCertBtn">Cancel</button>
-                  <button type="submit" class="btn-primary" id="saveCertBtn">
-                    <span>Save certificate</span>
-                  </button>
+                  <button type="submit" class="btn-primary" id="saveCertBtn"><span>Save Certificate</span></button>
                 </div>
                 <div id="certFormMessage" class="form-message"></div>
               </section>
@@ -497,25 +453,13 @@
                 <div class="cert-preview cert-preview-large" id="certPreviewBox">
                   <div class="cert-preview-label">Certificate preview</div>
                   <img id="certImagePreview" alt="Certificate preview">
-                  <p id="certPreviewHint">Enter a valid image path or URL above to preview.</p>
+                  <p id="certPreviewHint">Enter a valid image URL above to preview.</p>
                 </div>
                 <div class="cert-preview-meta" id="certPreviewMeta">
-                  <div class="cert-meta-row">
-                    <span>Title</span>
-                    <strong id="certPreviewTitle">-</strong>
-                  </div>
-                  <div class="cert-meta-row">
-                    <span>Org</span>
-                    <strong id="certPreviewIssuer">-</strong>
-                  </div>
-                  <div class="cert-meta-row">
-                    <span>Display order</span>
-                    <strong id="certPreviewOrder">#-</strong>
-                  </div>
-                  <div class="cert-meta-row">
-                    <span>Issued</span>
-                    <strong id="certPreviewDate">-</strong>
-                  </div>
+                  <div class="cert-meta-row"><span>Title</span><strong id="certPreviewTitle">-</strong></div>
+                  <div class="cert-meta-row"><span>Org</span><strong id="certPreviewIssuer">-</strong></div>
+                  <div class="cert-meta-row"><span>Order</span><strong id="certPreviewOrder">#-</strong></div>
+                  <div class="cert-meta-row"><span>Issued</span><strong id="certPreviewDate">-</strong></div>
                 </div>
               </aside>
             </div>
@@ -524,249 +468,174 @@
       </div>
 
 
-      <!-- ──────── SITE CONFIG TAB ──────── -->
+      <!-- ── SITE CONFIG TAB ──── -->
       <div id="siteconfigTab" class="tab-content">
-        <header class="admin-header">
+        <div class="nb-page-head">
           <div>
-            <h1>Site Configuration</h1>
-            <p>Control availability status, hero metrics, system log, and visitor stats</p>
+            <p class="nb-page-eyebrow">Settings</p>
+            <h1 class="nb-page-title">Site Configuration</h1>
+            <p class="nb-page-sub">Control availability, metrics, system log, and visitor stats.</p>
           </div>
-        </header>
+        </div>
 
         <!-- Availability -->
         <section class="config-section">
-          <h2 class="config-section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
+          <div class="nb-config-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Availability
-          </h2>
-          <div class="config-card">
+          </div>
+          <div class="config-body">
             <div class="config-row">
-              <div>
-                <label class="config-label">Show Availability Banner</label>
-                <p class="config-desc">Display status banner on home and contact pages</p>
+              <div><label class="config-label">Show Availability Banner</label><p class="config-desc">Display on home and contact pages</p></div>
+              <label class="toggle-switch"><input type="checkbox" id="otwToggle"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="config-fields">
+              <div class="form-group">
+                <label class="field-label">Availability Status</label>
+                <select id="otwStatusSelect" class="field-input">
+                  <option value="available">Available (Green)</option>
+                  <option value="working">Working (Yellow)</option>
+                  <option value="closed">Closed (Red)</option>
+                </select>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="otwToggle">
-                <span class="toggle-slider"></span>
-              </label>
+              <div class="form-group">
+                <label class="field-label">Custom Message (optional)</label>
+                <input type="text" id="otwMessage" class="field-input" placeholder="Open to work — available for internships and freelance projects." maxlength="120">
+              </div>
+              <button id="saveOtwBtn" class="btn-primary btn-config">Save Availability</button>
+              <p id="otwStatus" class="config-status"></p>
             </div>
-            <div class="form-group" style="margin-top:16px">
-              <label class="field-label">Availability Status</label>
-              <select id="otwStatusSelect" class="field-input">
-                <option value="available">Available (Green)</option>
-                <option value="working">Working (Yellow)</option>
-                <option value="closed">Closed (Red)</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-top:14px">
-              <label class="field-label">Custom Message (optional)</label>
-              <input type="text" id="otwMessage" class="field-input"
-                placeholder="Open to work — available for internships and freelance projects."
-                maxlength="120">
-            </div>
-            <button id="saveOtwBtn" class="btn-primary" style="margin-top:16px">Save Availability</button>
-            <p id="otwStatus" class="config-status"></p>
           </div>
         </section>
 
         <!-- Currently Building -->
         <section class="config-section">
-          <h2 class="config-section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="16 18 22 12 16 6"/>
-              <polyline points="8 6 2 12 8 18"/>
-            </svg>
+          <div class="nb-config-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Currently Building
-          </h2>
-          <div class="config-card">
-            <div class="config-row" style="margin-bottom:16px">
-              <div>
-                <label class="config-label">Show on Home Page</label>
-                <p class="config-desc">Displays a live status card on the home page</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="wibActive">
-                <span class="toggle-slider"></span>
-              </label>
+          </div>
+          <div class="config-body">
+            <div class="config-row" style="margin-bottom:18px">
+              <div><label class="config-label">Show on Home Page</label><p class="config-desc">Displays a live status card on the home page</p></div>
+              <label class="toggle-switch"><input type="checkbox" id="wibActive"><span class="toggle-slider"></span></label>
             </div>
-            <div class="form-group" style="margin-bottom:12px">
-              <label class="field-label">Project Name *</label>
-              <input type="text" id="wibTitle" class="field-input"
-                placeholder="e.g. Portfolio v3 with React" maxlength="80">
-            </div>
-            <div class="form-row-2">
+            <div class="config-fields">
               <div class="form-group">
-                <label class="field-label">Short Description</label>
-                <input type="text" id="wibDesc" class="field-input"
-                  placeholder="Adding dark mode…" maxlength="60">
+                <label class="field-label">Project Name *</label>
+                <input type="text" id="wibTitle" class="field-input" placeholder="e.g. Portfolio v3 with React" maxlength="80">
               </div>
-              <div class="form-group">
-                <label class="field-label">Link (optional)</label>
-                <input type="url" id="wibLink" class="field-input"
-                  placeholder="https://github.com/…">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="field-label">Short Description</label>
+                  <input type="text" id="wibDesc" class="field-input" placeholder="Adding dark mode…" maxlength="60">
+                </div>
+                <div class="form-group">
+                  <label class="field-label">Link (optional)</label>
+                  <input type="url" id="wibLink" class="field-input" placeholder="https://github.com/…">
+                </div>
               </div>
+              <button id="saveWibBtn" class="btn-primary btn-config">Save Status</button>
+              <p id="wibStatus" class="config-status"></p>
             </div>
-            <button id="saveWibBtn" class="btn-primary" style="margin-top:16px">Save Status</button>
-            <p id="wibStatus" class="config-status"></p>
           </div>
         </section>
 
         <!-- System Log -->
         <section class="config-section">
-          <h2 class="config-section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="4 7 7 10 4 13"/>
-              <line x1="9" y1="13" x2="20" y2="13"/>
-            </svg>
+          <div class="nb-config-head">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 7 10 4 13"/><line x1="9" y1="13" x2="20" y2="13"/></svg>
             System Log
-          </h2>
-          <div class="config-card">
-            <div class="config-row" style="margin-bottom:16px">
-              <div>
-                <label class="config-label">Show on Home Page</label>
-                <p class="config-desc">Displays the system log panel on the home page</p>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="syslogActive">
-                <span class="toggle-slider"></span>
-              </label>
+          </div>
+          <div class="config-body">
+            <div class="config-row" style="margin-bottom:18px">
+              <div><label class="config-label">Show on Home Page</label><p class="config-desc">Displays the system log panel on the home page</p></div>
+              <label class="toggle-switch"><input type="checkbox" id="syslogActive"><span class="toggle-slider"></span></label>
             </div>
-
-            <div class="form-group" style="margin-bottom:12px">
-              <label class="field-label">Entry 1 Status</label>
-              <select id="syslog1Status" class="field-input">
-                <option value="complete">Complete [✓]</option>
-                <option value="progress">In Progress [~]</option>
-                <option value="active">Active [+]</option>
-              </select>
-            </div>
-            <div class="form-row-2">
-              <div class="form-group">
-                <label class="field-label">Entry 1 Title</label>
-                <input type="text" id="syslog1Title" class="field-input"
-                  placeholder="Face Recognition v2 - 12.4k frames | 94.1% accuracy" maxlength="80">
+            <div class="config-fields">
+              <div class="nb-log-entry">
+                <div class="nb-log-label">Entry 01</div>
+                <div class="form-group"><label class="field-label">Status</label><select id="syslog1Status" class="field-input"><option value="complete">Complete [✓]</option><option value="progress">In Progress [~]</option><option value="active">Active [+]</option></select></div>
+                <div class="form-row-2">
+                  <div class="form-group"><label class="field-label">Title</label><input type="text" id="syslog1Title" class="field-input" maxlength="80"></div>
+                  <div class="form-group"><label class="field-label">Description</label><input type="text" id="syslog1Desc" class="field-input" maxlength="90"></div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="field-label">Entry 1 Description</label>
-                <input type="text" id="syslog1Desc" class="field-input"
-                  placeholder="Inference 22 FPS on CPU after threshold tuning." maxlength="90">
+              <div class="nb-log-entry">
+                <div class="nb-log-label">Entry 02</div>
+                <div class="form-group"><label class="field-label">Status</label><select id="syslog2Status" class="field-input"><option value="complete">Complete [✓]</option><option value="progress">In Progress [~]</option><option value="active">Active [+]</option></select></div>
+                <div class="form-row-2">
+                  <div class="form-group"><label class="field-label">Title</label><input type="text" id="syslog2Title" class="field-input" maxlength="80"></div>
+                  <div class="form-group"><label class="field-label">Description</label><input type="text" id="syslog2Desc" class="field-input" maxlength="90"></div>
+                </div>
               </div>
-            </div>
-
-            <div class="form-group" style="margin:16px 0 12px">
-              <label class="field-label">Entry 2 Status</label>
-              <select id="syslog2Status" class="field-input">
-                <option value="complete">Complete [✓]</option>
-                <option value="progress">In Progress [~]</option>
-                <option value="active">Active [+]</option>
-              </select>
-            </div>
-            <div class="form-row-2">
-              <div class="form-group">
-                <label class="field-label">Entry 2 Title</label>
-                <input type="text" id="syslog2Title" class="field-input"
-                  placeholder="Portfolio Platform - Lighthouse 96/100" maxlength="80">
+              <div class="nb-log-entry">
+                <div class="nb-log-label">Entry 03</div>
+                <div class="form-group"><label class="field-label">Status</label><select id="syslog3Status" class="field-input"><option value="progress">In Progress [~]</option><option value="complete">Complete [✓]</option><option value="active">Active [+]</option></select></div>
+                <div class="form-row-2">
+                  <div class="form-group"><label class="field-label">Title</label><input type="text" id="syslog3Title" class="field-input" maxlength="80"></div>
+                  <div class="form-group"><label class="field-label">Description</label><input type="text" id="syslog3Desc" class="field-input" maxlength="90"></div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="field-label">Entry 2 Description</label>
-                <input type="text" id="syslog2Desc" class="field-input"
-                  placeholder="Homepage LCP 1.8s and CLS 0.02 after asset optimization." maxlength="90">
-              </div>
+              <button id="saveSyslogBtn" class="btn-primary btn-config">Save System Log</button>
+              <p id="syslogStatus" class="config-status"></p>
             </div>
-
-            <div class="form-group" style="margin:16px 0 12px">
-              <label class="field-label">Entry 3 Status</label>
-              <select id="syslog3Status" class="field-input">
-                <option value="progress">In Progress [~]</option>
-                <option value="complete">Complete [✓]</option>
-                <option value="active">Active [+]</option>
-              </select>
-            </div>
-            <div class="form-row-2">
-              <div class="form-group">
-                <label class="field-label">Entry 3 Title</label>
-                <input type="text" id="syslog3Title" class="field-input"
-                  placeholder="Three.js Scene - draw calls reduced 35%" maxlength="80">
-              </div>
-              <div class="form-group">
-                <label class="field-label">Entry 3 Description</label>
-                <input type="text" id="syslog3Desc" class="field-input"
-                  placeholder="Frame time cut from 24ms to 14ms on integrated graphics." maxlength="90">
-              </div>
-            </div>
-
-            <button id="saveSyslogBtn" class="btn-primary" style="margin-top:16px">Save System Log</button>
-            <p id="syslogStatus" class="config-status"></p>
           </div>
         </section>
 
-        <!-- Hero Metric -->
-        <section class="config-section">
-          <h2 class="config-section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 3v18h18"/>
-              <rect x="6" y="12" width="3" height="6"/>
-              <rect x="11" y="9" width="3" height="9"/>
-              <rect x="16" y="6" width="3" height="12"/>
-            </svg>
-            Hero Metric
-          </h2>
-          <div class="config-card">
-            <div class="form-row-2">
-              <div class="form-group">
-                <label class="field-label">Value</label>
-                <input type="text" id="metric1Value" class="field-input" placeholder="4th">
-              </div>
-              <div class="form-group">
-                <label class="field-label">Label</label>
-                <input type="text" id="metric1Label" class="field-input" placeholder="Semester">
+        <!-- Hero Metric + Visitor Stats side by side -->
+        <div class="nb-config-duo">
+          <section class="config-section">
+            <div class="nb-config-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="6" y="12" width="3" height="6"/><rect x="11" y="9" width="3" height="9"/><rect x="16" y="6" width="3" height="12"/></svg>
+              Hero Metric
+            </div>
+            <div class="config-body">
+              <div class="config-fields">
+                <div class="form-row-2">
+                  <div class="form-group"><label class="field-label">Value</label><input type="text" id="metric1Value" class="field-input" placeholder="4th"></div>
+                  <div class="form-group"><label class="field-label">Label</label><input type="text" id="metric1Label" class="field-input" placeholder="Semester"></div>
+                </div>
+                <button id="saveMetricsBtn" class="btn-primary btn-config">Save Metric</button>
+                <p id="metricsStatus" class="config-status"></p>
               </div>
             </div>
-            <button id="saveMetricsBtn" class="btn-primary">Save Metric</button>
-            <p id="metricsStatus" class="config-status"></p>
-          </div>
-        </section>
+          </section>
 
-        <!-- Visitor Stats -->
-        <section class="config-section">
-          <h2 class="config-section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            Visitor Stats
-          </h2>
-          <div class="config-card">
-            <div class="config-stat-row">
-              <span class="config-label">Total Visitors</span>
-              <span class="config-stat-value" id="totalVisitors">—</span>
+          <section class="config-section">
+            <div class="nb-config-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Visitor Stats
             </div>
-            <button id="resetVisitorsBtn" class="btn-secondary btn-small" style="margin-top:14px">Reset Counter</button>
-          </div>
-        </section>
+            <div class="config-body">
+              <div class="nb-visitor-row">
+                <span class="config-label">Total Visitors</span>
+                <span class="nb-visitor-val" id="totalVisitors">—</span>
+              </div>
+              <button id="resetVisitorsBtn" class="btn-secondary btn-sm" style="margin-top:16px">Reset Counter</button>
+            </div>
+          </section>
+        </div>
       </div>
 
     </main>
   </div>
 
 
-  <!-- ═══════════════════════════════════════════════
-       DELETE CONFIRMATION MODAL
-  ═══════════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       DELETE MODAL
+  ══════════════════════════════════════ -->
   <div id="deleteModal" class="modal">
     <div class="modal-content modal-small">
       <div class="modal-header">
-        <h2>Confirm Delete</h2>
+        <div class="nb-modal-head-left">
+          <span class="nb-modal-chip nb-modal-chip--danger">Destructive</span>
+          <h2>Confirm Delete</h2>
+        </div>
       </div>
       <div class="modal-body">
         <p id="deleteMessage">Are you sure you want to delete this item? This action cannot be undone.</p>
       </div>
-      <div class="form-actions" style="padding: 0 18px 18px;">
+      <div class="form-actions" style="padding:0 22px 22px">
         <button class="btn-secondary" id="cancelDelete">Cancel</button>
         <button class="btn-danger" id="confirmDelete">Delete</button>
       </div>
@@ -785,5 +654,34 @@
   <script src="../js/admin.js?v=20260321e"></script>
   <script src="../js/extra-features.js?v=20260321e"></script>
   <script src="../js/command-palette.js?v=20260321a"></script>
+
+  <script>
+    function updateClock() {
+      const el = document.getElementById('topbarTime');
+      if (el) el.textContent = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+    }
+    updateClock(); setInterval(updateClock, 1000);
+
+    const mo = new MutationObserver(() => {
+      const pMain = document.getElementById('projectsCount');
+      const cMain = document.getElementById('certificatesCount');
+      const pStat = document.getElementById('projectsStatCount');
+      const cStat = document.getElementById('certsStatCount');
+      if (pMain && pStat) pStat.textContent = pMain.textContent;
+      if (cMain && cStat) cStat.textContent = cMain.textContent;
+    });
+    ['projectsCount','certificatesCount'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) mo.observe(el, { childList:true, subtree:true, characterData:true });
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const map = { projects:'Projects', certificates:'Certificates', siteconfig:'Site Config' };
+        const el = document.getElementById('topbarSection');
+        if (el) el.textContent = map[btn.dataset.tab] || btn.dataset.tab;
+      });
+    });
+  </script>
 </body>
 </html>
