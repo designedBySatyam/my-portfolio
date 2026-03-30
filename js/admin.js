@@ -434,6 +434,7 @@ class ProjectsAdmin {
         this.saveLabel = this.saveBtn?.querySelector('span');
         this.defaultSaveLabel = this.saveLabel?.textContent || this.saveBtn?.textContent || 'Save Project';
         this.currentProjectId = null;
+        this.nextProjectOrder = 1;
     }
 
     init() {
@@ -487,6 +488,24 @@ class ProjectsAdmin {
     setField(value, ...ids) {
         const field = this.getField(...ids);
         if (field) field.value = value ?? '';
+    }
+
+    calculateNextOrder(items = []) {
+        const totalItems = Array.isArray(items) ? items.length : 0;
+        return totalItems + 1;
+    }
+
+    async resolveNextOrder() {
+        if (Number.isFinite(this.nextProjectOrder) && this.nextProjectOrder > 0) {
+            return this.nextProjectOrder;
+        }
+
+        try {
+            const snapshot = await db.collection(COLLECTIONS.PROJECTS).get();
+            return snapshot.size + 1;
+        } catch (_) {
+            return 1;
+        }
     }
 
     setSaving(isSaving) {
@@ -546,6 +565,7 @@ class ProjectsAdmin {
     }
 
     renderProjects(projects) {
+        this.nextProjectOrder = this.calculateNextOrder(projects);
         if (this.projectsCount) this.projectsCount.textContent = String(projects.length);
 
         if (!projects.length) {
@@ -582,12 +602,18 @@ class ProjectsAdmin {
         }).join('');
     }
 
-    openAddModal() {
+    async openAddModal() {
         this.currentProjectId = null;
         if (this.modalTitle) this.modalTitle.textContent = 'Add New Project';
         this.form.reset();
         this.setField('general', 'projectCategory');
         this.setField('general', 'projectIcon');
+        const projectOrderField = this.getField('projectOrder');
+        if (projectOrderField) {
+            const nextOrder = await this.resolveNextOrder();
+            this.nextProjectOrder = nextOrder;
+            projectOrderField.value = String(nextOrder);
+        }
         this.clearFormMessage();
         this.openModal();
     }
@@ -696,8 +722,7 @@ class ProjectsAdmin {
                 if (Number.isFinite(explicitOrder) && explicitOrder > 0) {
                     projectData.order = explicitOrder;
                 } else {
-                    const snapshot = await db.collection(COLLECTIONS.PROJECTS).get();
-                    projectData.order = snapshot.size + 1;
+                    projectData.order = await this.resolveNextOrder();
                 }
                 projectData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                 await db.collection(COLLECTIONS.PROJECTS).add(projectData);
@@ -750,6 +775,7 @@ class CertificatesAdmin {
         this.previewIssuer = document.getElementById('certPreviewIssuer');
         this.previewOrder = document.getElementById('certPreviewOrder');
         this.previewDate = document.getElementById('certPreviewDate');
+        this.nextCertificateOrder = 1;
     }
 
     init() {
@@ -796,6 +822,24 @@ class CertificatesAdmin {
     setField(value, ...ids) {
         const field = this.getField(...ids);
         if (field) field.value = value ?? '';
+    }
+
+    calculateNextOrder(items = []) {
+        const totalItems = Array.isArray(items) ? items.length : 0;
+        return totalItems + 1;
+    }
+
+    async resolveNextOrder() {
+        if (Number.isFinite(this.nextCertificateOrder) && this.nextCertificateOrder > 0) {
+            return this.nextCertificateOrder;
+        }
+
+        try {
+            const snapshot = await db.collection(COLLECTIONS.CERTIFICATES).get();
+            return snapshot.size + 1;
+        } catch (_) {
+            return 1;
+        }
     }
 
     setSaving(isSaving) {
@@ -908,6 +952,7 @@ class CertificatesAdmin {
     }
 
     renderCertificates(certs) {
+        this.nextCertificateOrder = this.calculateNextOrder(certs);
         if (this.certsCount) this.certsCount.textContent = String(certs.length);
 
         if (!certs.length) {
@@ -940,10 +985,16 @@ class CertificatesAdmin {
         }).join('');
     }
 
-    openAddModal() {
+    async openAddModal() {
         this.currentCertId = null;
         if (this.modalTitle) this.modalTitle.textContent = 'Add certificate';
         this.form.reset();
+        const certOrderField = this.getField('certOrder');
+        if (certOrderField) {
+            const nextOrder = await this.resolveNextOrder();
+            this.nextCertificateOrder = nextOrder;
+            certOrderField.value = String(nextOrder);
+        }
         this.clearFormMessage();
         this.resetImagePreview();
         this.updatePreviewMeta();
@@ -1017,8 +1068,7 @@ class CertificatesAdmin {
                 if (Number.isFinite(orderValue) && orderValue > 0) {
                     certData.order = orderValue;
                 } else {
-                    const snapshot = await db.collection(COLLECTIONS.CERTIFICATES).get();
-                    certData.order = snapshot.size + 1;
+                    certData.order = await this.resolveNextOrder();
                 }
                 certData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                 await db.collection(COLLECTIONS.CERTIFICATES).add(certData);

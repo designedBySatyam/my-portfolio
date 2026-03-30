@@ -636,8 +636,8 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
-  align-items: end;
+  grid-template-columns: minmax(120px, 1fr) minmax(150px, 210px);
+  align-items: center;
   column-gap: 14px;
   row-gap: 8px;
   padding: 20px 24px;
@@ -649,6 +649,7 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
+  padding-right: 4px;
   font-family: var(--font-display);
   font-size: 0.65rem;
   font-weight: 700;
@@ -662,10 +663,17 @@
   width: 24px;
   height: 24px;
   flex: 0 0 24px;
+  filter: drop-shadow(0 0 6px rgba(0, 245, 255, 0.22));
 }
 
 .panel-header-main h2 {
   margin: 0;
+  flex: 1 1 auto;
+  min-width: 8ch;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: inherit;
   font-weight: inherit;
   letter-spacing: inherit;
@@ -677,6 +685,8 @@
   min-width: 0;
   width: 100%;
   justify-self: end;
+  position: relative;
+  z-index: 1;
 }
 
 .panel-header-sort .toolbar-label {
@@ -787,8 +797,8 @@
 }
 
 .issuer-logo-icon {
-  width: 22px;
-  height: 22px;
+  width: 23px;
+  height: 23px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -799,10 +809,11 @@
   width: 100%;
   height: 100%;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 
 .issuer-logo-text {
@@ -822,9 +833,9 @@
 }
 
 .issuer-logo.issuer-aws {
-  --issuer-fg: #ffd08b;
-  --issuer-bg-a: rgba(255, 190, 85, 0.42);
-  --issuer-bg-b: rgba(255, 190, 85, 0.12);
+  --issuer-fg: #ffe5b2;
+  --issuer-bg-a: rgba(255, 176, 68, 0.56);
+  --issuer-bg-b: rgba(255, 176, 68, 0.16);
 }
 
 [data-theme="light"] .issuer-logo.issuer-aws {
