@@ -123,11 +123,13 @@
   function initRoleTyper() {
     const el = document.getElementById('roleTyper');
     if (!el || PRM) return;
+
+    document.title = "Satyam Pandey - Web Developer & Frontend Developer";
     const roles = [
-      'ASPIRING SOFTWARE DEVELOPER',
-      'FRONTEND DEVELOPER | Student',
-      'WEB DEVELOPMENT STUDENT',
-      'TECH ENTHUSIAST',
+      'Frontend Developer',
+      'Creative Technologist',
+      'Interactive UI Designer',
+      'Digital Experience Builder',
     ];
     let ri = 0, ci = 0, del = false;
     function tick() {

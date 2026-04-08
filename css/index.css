@@ -32,6 +32,7 @@ body.home-page {
   display: flex;
   flex-direction: column;
   gap: 0;
+  isolation: isolate;
   opacity: 0;
   transform: translateX(-28px);
   animation: inLeft 0.9s var(--ease-out-expo) 0.1s forwards;
@@ -67,6 +68,7 @@ body.home-page {
     radial-gradient(circle at 32% 30%, rgba(54, 215, 255, 0.24), transparent 58%),
     radial-gradient(circle at 75% 38%, rgba(255, 111, 145, 0.2), transparent 60%),
     radial-gradient(circle at 52% 82%, rgba(251, 191, 36, 0.16), transparent 62%);
+  filter: blur(24px) saturate(1.14);
   pointer-events: none;
   animation: profileAura 6s ease-in-out infinite alternate;
 }
@@ -87,6 +89,14 @@ body.home-page {
   background: var(--card-bg-soft);
   border: 1px solid var(--border);
   border-bottom: none;
+}
+
+.card-header,
+.profile-info-strip,
+.social-links,
+.hero-metrics {
+  -webkit-backdrop-filter: blur(18px) saturate(1.24);
+  backdrop-filter: blur(18px) saturate(1.24);
 }
 
 .card-eyebrow {
@@ -127,23 +137,6 @@ body.home-page {
     radial-gradient(circle at 18% -10%, rgba(96, 165, 250, 0.16), transparent 56%),
     radial-gradient(circle at 88% 14%, rgba(168, 85, 247, 0.14), transparent 60%),
     linear-gradient(165deg, rgba(17, 29, 53, 0.92), rgba(24, 27, 60, 0.88));
-}
-
-/* Scan line animation */
-.profile-image-container::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(54, 215, 255, 0.62), rgba(255, 111, 145, 0.62), transparent);
-  animation: scanPass 4s ease-in-out infinite;
-  top: -2px;
-}
-
-@keyframes scanPass {
-  0%   { top: -2px; opacity: 1; }
-  80%  { opacity: 0.8; }
-  100% { top: 102%; opacity: 0; }
 }
 
 /* Corner crosshair markers */
@@ -191,6 +184,7 @@ body.home-page {
 .profile-info-strip {
   border: 1px solid var(--border);
   border-top: none;
+  background: rgba(16, 27, 49, 0.52);
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
@@ -229,6 +223,7 @@ body.home-page {
   display: flex;
   border: 1px solid var(--border);
   border-top: none;
+  background: rgba(16, 27, 49, 0.48);
 }
 
 .social-link {
@@ -589,6 +584,7 @@ body.home-page {
   display: flex;
   align-items: stretch;
   border: 1px solid var(--border);
+  background: rgba(16, 27, 49, 0.48);
   overflow: hidden;
 }
 
@@ -649,6 +645,7 @@ body.home-page {
 [data-theme="light"] .card-header    { background: linear-gradient(120deg, rgba(14, 165, 233, 0.12), rgba(239, 71, 111, 0.1)); }
 [data-theme="light"] .profile-info-strip { background: rgba(255, 255, 255, 0.55); }
 [data-theme="light"] .social-links   { background: rgba(255, 255, 255, 0.55); }
+[data-theme="light"] .hero-metrics   { background: rgba(255, 255, 255, 0.5); }
 [data-theme="light"] .role-text      { background: #ffffff; border-color: var(--card-border); }
 [data-theme="light"] .focus-card h3  { background: rgba(2, 132, 199, 0.05); }
 [data-theme="light"] .system-log {
