@@ -63,17 +63,37 @@ class SkillAnimations {
 // Timeline Animations
 class TimelineAnimations {
     constructor() {
-        this.timelineItems = document.querySelectorAll('.timeline-item');
+        this.timeline = document.getElementById('roadmapTimeline');
+        this.timelineItems = this.timeline
+            ? this.timeline.querySelectorAll('.timeline-item')
+            : document.querySelectorAll('.timeline-item');
         this.init();
     }
 
     init() {
+        if (this.timeline) {
+            const lineObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('line-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.2,
+                rootMargin: '0px 0px -20% 0px'
+            });
+
+            lineObserver.observe(this.timeline);
+        }
+
         if (this.timelineItems.length === 0) return;
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
                 }
             });
         }, {

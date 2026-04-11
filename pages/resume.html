@@ -51,8 +51,8 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
-  <link rel="stylesheet" href="../css/style.css?v=20260321f">
-  <link rel="stylesheet" href="../css/resume.css?v=20260317c">
+  <link rel="stylesheet" href="../css/style.css?v=20260411a">
+  <link rel="stylesheet" href="../css/resume.css?v=20260411a">
   <script src="../js/nav.js?v=20260306b"></script>
 </head>
 <body class="theme-dotgrid">
@@ -90,8 +90,12 @@
         <span class="ch-num">04</span>
         <span class="ch-label">Focus</span>
       </a>
-      <a class="ch-link" href="#activity" data-section="activity">
+      <a class="ch-link" href="#roadmap" data-section="roadmap">
         <span class="ch-num">05</span>
+        <span class="ch-label">Roadmap</span>
+      </a>
+      <a class="ch-link" href="#activity" data-section="activity">
+        <span class="ch-num">06</span>
         <span class="ch-label">Activity</span>
       </a>
     </div>
@@ -418,12 +422,102 @@
       </div>
     </section>
 
-    <!-- -- 05 - ACTIVITY ------------------------------------ -->
-    <section class="rs-section rs-activity-section" id="activity" data-animate>
+    <!-- -- 05 - ROADMAP ------------------------------------ -->
+    <section class="rs-section rs-roadmap-section" id="roadmap" data-animate>
       <div class="rs-section-bg-num" aria-hidden="true">05</div>
       <header class="rs-section-header">
         <div class="rs-section-label">
           <span class="rs-section-num">05</span>
+          <span class="rs-section-title">Roadmap</span>
+        </div>
+        <div class="rs-section-line"></div>
+      </header>
+
+      <div class="rs-roadmap-intro">
+        <p class="rs-roadmap-kicker">CAREER TIMELINE</p>
+        <p class="rs-roadmap-summary">
+          A focused progression from fundamentals to shipping quality frontend systems, with
+          clear internship and graduation goals across the next academic milestones.
+        </p>
+      </div>
+
+      <div class="timeline rs-roadmap-timeline" id="roadmapTimeline" aria-label="Career roadmap timeline">
+        <article class="timeline-item rs-roadmap-item">
+          <p class="rs-roadmap-year">2024</p>
+          <div class="rs-roadmap-card">
+            <p class="rs-roadmap-stage">Foundation</p>
+            <h3 class="rs-roadmap-title">Started BTech CSE Journey</h3>
+            <p class="rs-roadmap-desc">
+              Built strong programming basics, consistent study routines, and the core habit of
+              solving problems every week.
+            </p>
+            <div class="rs-roadmap-tags">
+              <span class="rs-roadmap-tag">Core CS</span>
+              <span class="rs-roadmap-tag">C++</span>
+              <span class="rs-roadmap-tag">Problem Solving</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="timeline-item rs-roadmap-item">
+          <p class="rs-roadmap-year">2025</p>
+          <div class="rs-roadmap-card">
+            <p class="rs-roadmap-stage">Execution</p>
+            <h3 class="rs-roadmap-title">Shipped Portfolio Systems</h3>
+            <p class="rs-roadmap-desc">
+              Built and iterated a multi-page portfolio with animated interactions, reusable
+              component patterns, and improved responsive behavior.
+            </p>
+            <div class="rs-roadmap-tags">
+              <span class="rs-roadmap-tag">Frontend UI</span>
+              <span class="rs-roadmap-tag">Three.js</span>
+              <span class="rs-roadmap-tag">Performance</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="timeline-item rs-roadmap-item">
+          <p class="rs-roadmap-year">2026</p>
+          <div class="rs-roadmap-card">
+            <p class="rs-roadmap-stage">Growth</p>
+            <h3 class="rs-roadmap-title">Scaling Product and DSA Depth</h3>
+            <p class="rs-roadmap-desc">
+              Balancing high-quality frontend builds with deeper algorithmic practice to improve
+              system thinking and implementation speed.
+            </p>
+            <div class="rs-roadmap-tags">
+              <span class="rs-roadmap-tag">System Design Basics</span>
+              <span class="rs-roadmap-tag">LeetCode</span>
+              <span class="rs-roadmap-tag">Code Quality</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="timeline-item rs-roadmap-item">
+          <p class="rs-roadmap-year">2027-2028</p>
+          <div class="rs-roadmap-card">
+            <p class="rs-roadmap-stage">Target</p>
+            <h3 class="rs-roadmap-title">Internship to Graduate-Ready Engineer</h3>
+            <p class="rs-roadmap-desc">
+              Convert academic growth into internship impact, contribute to production-grade
+              products, and graduate with a strong full-stack engineering profile.
+            </p>
+            <div class="rs-roadmap-tags">
+              <span class="rs-roadmap-tag">Internship</span>
+              <span class="rs-roadmap-tag">Production Work</span>
+              <span class="rs-roadmap-tag">2028 Graduation</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- -- 06 - ACTIVITY ------------------------------------ -->
+    <section class="rs-section rs-activity-section" id="activity" data-animate>
+      <div class="rs-section-bg-num" aria-hidden="true">06</div>
+      <header class="rs-section-header">
+        <div class="rs-section-label">
+          <span class="rs-section-num">06</span>
           <span class="rs-section-title">Activity</span>
         </div>
         <div class="rs-section-line"></div>
@@ -573,12 +667,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="../js/script.js?v=20260321e"></script>
   <script src="../js/shared-utils.js?v=20260305d"></script>
-  <script src="../js/resume.js?v=20260317c"></script>
+  <script src="../js/resume.js?v=20260411a"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="../js/firebase-config.js?v=20260305d"></script>
   <script src="../js/features.js?v=20260321c"></script>
   <script src="../js/extra-features.js?v=20260321e"></script>
-  <script src="../js/command-palette.js?v=20260321a"></script>
+  <script src="../js/command-palette.js?v=20260411a"></script>
 </body>
 </html>
