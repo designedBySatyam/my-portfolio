@@ -288,6 +288,7 @@ function initFirebaseFeaturesOnce() {
   try { initVisitorCounter(); } catch (error) { console.warn('[features] initVisitorCounter failed:', error); }
   try { initPageAnalytics(); } catch (error) { console.warn('[features] initPageAnalytics failed:', error); }
   try { initCurrentlyBuilding(); } catch (error) { console.warn('[features] initCurrentlyBuilding failed:', error); }
+  try { initProfileLocation(); } catch (error) { console.warn('[features] initProfileLocation failed:', error); }
   return true;
 }
 
@@ -726,6 +727,36 @@ function initCurrentlyBuilding() {
         const fallback = readConfigCache('currentlyBuilding');
         apply(fallback || {});
       }
+    );
+}
+
+function initProfileLocation() {
+  const locationEl = document.getElementById('profileLocationText');
+  const locationSubEl = document.getElementById('profileLocationSub');
+  if (!locationEl && !locationSubEl) return;
+
+  const apply = (data = {}) => {
+    if (data.profileLocation && locationEl) {
+      locationEl.textContent = data.profileLocation;
+    }
+    if (data.profileLocationSub && locationSubEl) {
+      locationSubEl.textContent = data.profileLocationSub;
+    }
+  };
+
+  const cached = readConfigCache('siteConfig');
+  if (cached) apply(cached);
+  watchConfigCache('siteConfig', apply);
+
+  const dbRef = getFirebaseDb();
+  const configCollection = getConfigCollectionName();
+  if (!dbRef || !configCollection) return;
+
+  dbRef.collection(configCollection)
+    .doc('siteConfig')
+    .onSnapshot(
+      (doc) => { if (doc.exists) apply(doc.data()); },
+      () => { const fallback = readConfigCache('siteConfig'); if (fallback) apply(fallback); }
     );
 }
 

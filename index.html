@@ -32,7 +32,7 @@
         "jobTitle": "Frontend Developer",
         "sameAs": [
           "https://github.com/designedBySatyam",
-          "https://www.linkedin.com/in/satyampandey27"
+          "https://www.linkedin.com/in/satyampandey27/"
         ]
       },
       {
@@ -61,19 +61,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap"></noscript>
   <link rel="stylesheet" href="css/style.css?v=20260411a">
-  <link rel="stylesheet" href="css/index.css?v=20260321b">
+  <link rel="stylesheet" href="css/index.css?v=20260716a">
   <!-- Nav component - must load before script.js -->
   <script src="js/nav.js?v=20260306b"></script>
 </head>
 <body class="home-page theme-dotgrid">
 
-  <!-- Background Theme -->
-  <div class="bg-wrap" aria-hidden="true">
-    <div class="dot-grid"></div>
-    <div class="bloom"></div>
-    <div class="vignette"></div>
-    <canvas id="particle-canvas"></canvas>
-  </div>
+  <!-- Background — particle canvas kept for script.js -->
+  <canvas id="particle-canvas" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;"></canvas>
 
   <!-- Navigation - injected by js/nav.js -->
   <div id="site-nav"></div>
@@ -82,58 +77,42 @@
   <main class="hero-section" id="home">
     <div class="hero-content">
       <aside class="profile-card">
-        <div class="profile-glow"></div>
 
-        <!-- Top bar -->
-        <div class="card-header">
-          <span class="card-eyebrow">// SUBJECT_FILE</span>
-          <div class="status-badge">
-            <span class="pulse"></span>
-            <span class="status-text">ONLINE</span>
-          </div>
-        </div>
-
-        <!-- Image viewport -->
+        <!-- Photo -->
         <div class="profile-image-container">
           <div class="hex-frame">
-            <svg viewBox="0 0 200 200" class="hex-svg" aria-hidden="true"></svg>
             <picture>
               <source srcset="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/profile.webp" type="image/webp">
-              <img src="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/profile.jpg" alt="Satyam Pandey Web Developer Portfolio" class="profile-img" width="380" height="420" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='https://avatars.githubusercontent.com/designedBySatyam?v=4';">
+              <img src="https://raw.githubusercontent.com/designedBySatyam/assets/main/images/profile.jpg" alt="Satyam Pandey" class="profile-img" width="320" height="352" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='https://avatars.githubusercontent.com/designedBySatyam?v=4';">
             </picture>
           </div>
         </div>
 
-        <!-- Info strip -->
-        <div class="profile-info-strip">
-          <span class="coord-chip">SYS.NODE :: ACTIVE</span>
-          <div class="profile-tags">
-            <span class="profile-tag">CSE 2028</span>
-            <span class="profile-tag">Open</span>
-          </div>
-        </div>
-
-        <!-- Social bar -->
+        <!-- Social links — Option A: Pill row with labels -->
         <div class="social-links">
           <a href="https://github.com/designedBySatyam" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
             </svg>
+            <span>GitHub</span>
           </a>
-          <a href="https://www.linkedin.com/in/satyampandey27" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <a href="https://www.linkedin.com/in/satyampandey27/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
             </svg>
+            <span>LinkedIn</span>
           </a>
-          <a href="https://www.instagram.com/satyam_2seven/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <a href="https://www.instagram.com/its.harshh27/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
               <path d="M16 11.37a4 4 0 1 1-2.74-3.65 4 4 0 0 1 2.74 3.65z"/>
               <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
             </svg>
+            <span>Instagram</span>
           </a>
         </div>
 
+        <!-- Metrics -->
         <div class="hero-metrics">
           <div class="metric" data-hero-metric="0">
             <span class="metric-value" data-hero-metric-value>4th</span>
@@ -145,61 +124,71 @@
           </div>
           <div class="metric" data-hero-metric="2">
             <span class="metric-value" data-hero-metric-value>2028</span>
-            <span class="metric-label" data-hero-metric-label>Graduation</span>
+            <span class="metric-label" data-hero-metric-label>Grad</span>
           </div>
           <div class="metric visitor-metric" data-hero-metric="3">
-            <span class="metric-value" id="visitorCount" data-hero-metric-value>-</span>
+            <span class="metric-value" id="visitorCount" data-hero-metric-value>–</span>
             <span class="metric-label" data-hero-metric-label>Visitors</span>
           </div>
+        </div>
+
+        <!-- Location strip -->
+        <div class="profile-location">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="profileLocationText">Ahmedabad, IN</span>
+          <span class="profile-location-sep">·</span>
+          <span id="profileLocationSub">Silver Oak University</span>
         </div>
 
       </aside>
 
       <section class="hero-text">
-        <div class="section-tag">Portfolio // Build 2026</div>
+
+        <!-- SEO hidden -->
+        <p style="position:absolute;left:-9999px;">
+          Satyam Pandey is a Web Developer, Frontend Developer, and Software Developer specializing in JavaScript, Three.js, and modern web technologies.
+        </p>
 
         <h1 class="glitch-text" data-text="SATYAM PANDEY">SATYAM PANDEY</h1>
 
-
-        <!-- SEO hidden boost -->
-        <p style="position:absolute; left:-9999px;">
-          Satyam Pandey is a Web Developer, Frontend Developer, and Software Developer specializing in JavaScript, Three.js, and modern web technologies.
-        </p>
         <h2 class="role-text">
           <span class="role-content" id="roleTyper">Frontend Developer</span>
         </h2>
 
         <p class="bio-text">
           Building <strong>interfaces that feel alive</strong> — full-stack developer &amp;
-          UI/UX designer crafting dark, expressive digital experiences.
+          UI/UX designer focused on clean, purposeful web experiences.
           BTech CSE @ Silver Oak University &mdash; batch of '28.
         </p>
 
-        <section class="system-log" aria-label="System log">
+        <section class="system-log" aria-label="Current work">
           <div class="system-log-header">
-            <span class="sl-label">// SYSTEM LOGS</span>
-            <span class="sl-chip">LIVE STATUS</span>
+            <span class="sl-label">Current work</span>
+            <span class="sl-chip">Live</span>
           </div>
           <ul class="system-log-list">
             <li class="system-log-item is-complete">
-              <span class="sl-status">[OK]</span>
+              <span class="sl-status">✓</span>
               <div class="sl-body">
-                <span class="sl-title">Face Recognition Pipeline - Benchmarking Complete</span>
-                <span class="sl-desc">Logging dataset coverage, validation accuracy, and FPS in each training cycle.</span>
+                <span class="sl-title">Face Recognition Pipeline — Benchmarking Complete</span>
+                <span class="sl-desc">Logged dataset coverage, validation accuracy, and FPS per training cycle.</span>
               </div>
             </li>
             <li class="system-log-item is-complete">
-              <span class="sl-status">[OK]</span>
+              <span class="sl-status">✓</span>
               <div class="sl-body">
-                <span class="sl-title">Portfolio Platform - Production Release</span>
-                <span class="sl-desc">Tracking Core Web Vitals, Lighthouse audits, and engagement events after each deploy.</span>
+                <span class="sl-title">Portfolio Platform — Production Release</span>
+                <span class="sl-desc">Tracking Core Web Vitals, Lighthouse audits, and engagement events.</span>
               </div>
             </li>
             <li class="system-log-item is-progress">
-              <span class="sl-status">[~]</span>
+              <span class="sl-status">~</span>
               <div class="sl-body">
-                <span class="sl-title">Three.js Scene Optimization - Active</span>
-                <span class="sl-desc">Profiling draw calls, frame time, and texture memory for smoother mid-range performance.</span>
+                <span class="sl-title">Three.js Scene Optimization — Active</span>
+                <span class="sl-desc">Profiling draw calls, frame time, and texture memory.</span>
               </div>
             </li>
           </ul>
@@ -217,31 +206,29 @@
 
         <div class="dynamic-feature-rail">
           <div id="nowPlayingSlot" hidden></div>
-          <!-- What I'm Building - loaded by features.js -->
           <div id="currentlyBuildingSlot"></div>
         </div>
 
         <div class="cta-group">
           <a href="pages/resume.html" class="cta-btn primary">
             <span class="btn-text">View Resume</span>
-            <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="5" y1="12" x2="19" y2="12"/>
               <polyline points="12 5 19 12 12 19"/>
             </svg>
           </a>
           <a href="pages/work.html" class="cta-btn secondary">
-            <span class="btn-text">Explore Projects</span>
-            <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="9" y1="9" x2="15" y2="9"/>
-              <line x1="9" y1="15" x2="15" y2="15"/>
+            <span class="btn-text">Projects</span>
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
             </svg>
           </a>
           <a href="pages/contact.html" class="cta-btn secondary">
-            <span class="btn-text">Get in Touch</span>
-            <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
+            <span class="btn-text">Contact</span>
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
             </svg>
           </a>
         </div>
@@ -251,7 +238,6 @@
   </main>
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/script.js?v=20260321e"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>

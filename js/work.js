@@ -87,11 +87,11 @@ class ViewToggle {
         this.certificatesSection.setAttribute('aria-hidden', String(isProjects));
 
         if (isProjects) {
-            if (this.pageTitle) this.pageTitle.textContent = 'PROJECTS';
-            if (this.pageSubtitle) this.pageSubtitle.textContent = 'Innovative solutions at the intersection of technology and creativity';
+            if (this.pageTitle) this.pageTitle.textContent = 'Projects';
+            if (this.pageSubtitle) this.pageSubtitle.textContent = 'Things I\'ve built and shipped';
         } else {
-            if (this.pageTitle) this.pageTitle.textContent = 'CERTIFICATES';
-            if (this.pageSubtitle) this.pageSubtitle.textContent = 'Professional achievements and continuous learning journey';
+            if (this.pageTitle) this.pageTitle.textContent = 'Certificates';
+            if (this.pageSubtitle) this.pageSubtitle.textContent = 'Courses and programmes I\'ve completed';
         }
 
         if (syncUrl) {

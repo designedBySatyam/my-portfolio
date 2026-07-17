@@ -1218,6 +1218,12 @@ class SiteConfigManager {
         // Visitor stats
         this.totalVisitors    = document.getElementById('totalVisitors');
         this.resetVisitorsBtn = document.getElementById('resetVisitorsBtn');
+
+        // Profile Location
+        this.profileLocationInput    = document.getElementById('profileLocationInput');
+        this.profileLocationSubInput = document.getElementById('profileLocationSubInput');
+        this.saveLocationBtn         = document.getElementById('saveLocationBtn');
+        this.locationStatus          = document.getElementById('locationStatus');
     }
 
     getCacheKey(docId) {
@@ -1371,6 +1377,7 @@ class SiteConfigManager {
         this.saveWibBtn?.addEventListener('click', () => this.saveCurrentlyBuilding());
         this.saveSyslogBtn?.addEventListener('click', () => this.saveSystemLog());
         this.resetVisitorsBtn?.addEventListener('click', () => this.resetVisitors());
+        this.saveLocationBtn?.addEventListener('click', () => this.saveProfileLocation());
     }
 
     async loadSiteConfig() {
@@ -1384,6 +1391,8 @@ class SiteConfigManager {
                 this.otwStatusSelect.value = this.normalizeAvailabilityStatus(cached.availabilityStatus, enabled);
             }
             if (this.otwMessage) this.otwMessage.value = cached.otwMessage || '';
+            if (this.profileLocationInput) this.profileLocationInput.value = cached.profileLocation || '';
+            if (this.profileLocationSubInput) this.profileLocationSubInput.value = cached.profileLocationSub || '';
         }
         try {
             const doc = await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').get();
@@ -1394,6 +1403,8 @@ class SiteConfigManager {
                 this.otwStatusSelect.value = this.normalizeAvailabilityStatus(data.availabilityStatus, enabled);
             }
             if (this.otwMessage) this.otwMessage.value = data.otwMessage || '';
+            if (this.profileLocationInput) this.profileLocationInput.value = data.profileLocation || '';
+            if (this.profileLocationSubInput) this.profileLocationSubInput.value = data.profileLocationSub || '';
             const heroMetrics = Array.isArray(data.heroMetrics)
                 ? data.heroMetrics
                 : (cached?.heroMetrics || []);
@@ -1405,7 +1416,9 @@ class SiteConfigManager {
                 availabilityStatus: this.normalizeAvailabilityStatus(data.availabilityStatus, enabled),
                 otwMessage: data.otwMessage || '',
                 heroMetrics: this.normalizeHeroMetrics(heroMetrics),
-                systemLog
+                systemLog,
+                profileLocation: data.profileLocation || '',
+                profileLocationSub: data.profileLocationSub || ''
             });
         } catch (e) { console.error('loadSiteConfig:', e); }
     }
@@ -1499,6 +1512,29 @@ class SiteConfigManager {
                 { visitors: 0 }, { merge: true }
             );
         } catch (e) { console.error('resetVisitors:', e); }
+    }
+
+    async saveProfileLocation() {
+        if (!this.saveLocationBtn) return;
+        this.saveLocationBtn.disabled = true;
+        this.saveLocationBtn.textContent = 'SAVING...';
+        const location = this.profileLocationInput?.value?.trim() || '';
+        const locationSub = this.profileLocationSubInput?.value?.trim() || '';
+        const clientData = { profileLocation: location, profileLocationSub: locationSub };
+        const existing = this.readCache('siteConfig') || {};
+        try {
+            await db.collection(COLLECTIONS.CONFIG).doc('siteConfig').set({
+                ...clientData,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            this.writeCache('siteConfig', { ...existing, ...clientData });
+            this.setStatus(this.locationStatus, 'success', 'Saved!');
+        } catch (e) {
+            this.setStatus(this.locationStatus, 'error', 'Save failed.');
+        } finally {
+            this.saveLocationBtn.disabled = false;
+            this.saveLocationBtn.textContent = 'SAVE LOCATION';
+        }
     }
 
     async loadCurrentlyBuilding() {

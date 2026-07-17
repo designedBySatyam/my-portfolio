@@ -57,13 +57,7 @@
 </head>
 <body class="theme-dotgrid">
 
-  <!-- Background Theme -->
-  <div class="bg-wrap" aria-hidden="true">
-    <div class="dot-grid"></div>
-    <div class="bloom"></div>
-    <div class="vignette"></div>
-    <canvas id="particle-canvas"></canvas>
-  </div>
+  <canvas id="particle-canvas" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;"></canvas>
 
   <div id="site-nav"></div>
 
@@ -108,7 +102,6 @@
       <div class="rs-section-bg-num" aria-hidden="true">00</div>
 
       <div class="rs-hero-top">
-        <span class="rs-eyebrow">// CAREER DOSSIER | 2026</span>
         <div class="rs-hero-actions">
           <a href="https://raw.githubusercontent.com/designedBySatyam/assets/main/pdfs/Satyam_Pandey_Resume.pdf"
              download class="rs-btn rs-btn-primary" id="downloadCvBtn">
@@ -159,7 +152,7 @@
             </div>
             <div class="rs-meta-item">
               <span class="rs-meta-key">LinkedIn</span>
-              <a href="https://www.linkedin.com/in/satyampandey27" target="_blank" rel="noopener noreferrer" class="rs-meta-val rs-meta-link">satyampandey27</a>
+              <a href="https://www.linkedin.com/in/satyampandey27/" target="_blank" rel="noopener noreferrer" class="rs-meta-val rs-meta-link">satyampandey27</a>
             </div>
             <div class="rs-meta-item">
               <span class="rs-meta-key">Status</span>
@@ -172,24 +165,24 @@
       </div>
 
       <div class="rs-hero-stats">
-        <div class="rs-stat">
-          <span class="rs-stat-val">4th</span>
-          <span class="rs-stat-key">Semester</span>
+        <div class="rs-stat" data-hero-metric="0">
+          <span class="rs-stat-val" data-hero-metric-value>4th</span>
+          <span class="rs-stat-key" data-hero-metric-label>Semester</span>
         </div>
         <div class="rs-stat-divider"></div>
-        <div class="rs-stat">
-          <span class="rs-stat-val">2028</span>
-          <span class="rs-stat-key">Graduation</span>
+        <div class="rs-stat" data-hero-metric="2">
+          <span class="rs-stat-val" data-hero-metric-value>2028</span>
+          <span class="rs-stat-key" data-hero-metric-label>Graduation</span>
         </div>
         <div class="rs-stat-divider"></div>
-        <div class="rs-stat">
-          <span class="rs-stat-val">CSE</span>
-          <span class="rs-stat-key">Major</span>
+        <div class="rs-stat" data-hero-metric="1">
+          <span class="rs-stat-val" data-hero-metric-value>CSE</span>
+          <span class="rs-stat-key" data-hero-metric-label>Major</span>
         </div>
         <div class="rs-stat-divider"></div>
-        <div class="rs-stat">
-          <span class="rs-stat-val" id="visitorCount">-</span>
-          <span class="rs-stat-key">Visitors</span>
+        <div class="rs-stat" data-hero-metric="3">
+          <span class="rs-stat-val" id="visitorCount" data-hero-metric-value>-</span>
+          <span class="rs-stat-key" data-hero-metric-label>Visitors</span>
         </div>
       </div>
     </section>
@@ -259,23 +252,11 @@
             <span class="rs-skill-cat-line"></span>
             Core Languages
           </h3>
-          <div class="rs-skill-bars">
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">C++ <span>85%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:85%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Java <span>80%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Python <span>75%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:75%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">DSA <span>70%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:70%"></div></div>
-            </div>
+          <div class="rs-skill-tags">
+            <span class="rs-skill-tag rs-skill-proficient">C++</span>
+            <span class="rs-skill-tag rs-skill-proficient">Java</span>
+            <span class="rs-skill-tag rs-skill-familiar">Python</span>
+            <span class="rs-skill-tag rs-skill-familiar">DSA</span>
           </div>
         </div>
 
@@ -284,19 +265,12 @@
             <span class="rs-skill-cat-line"></span>
             Web Development
           </h3>
-          <div class="rs-skill-bars">
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">HTML &amp; CSS <span>90%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:90%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">JavaScript <span>80%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Three.js <span>72%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:72%"></div></div>
-            </div>
+          <div class="rs-skill-tags">
+            <span class="rs-skill-tag rs-skill-strong">HTML &amp; CSS</span>
+            <span class="rs-skill-tag rs-skill-proficient">JavaScript</span>
+            <span class="rs-skill-tag rs-skill-familiar">Three.js</span>
+            <span class="rs-skill-tag rs-skill-familiar">Node.js</span>
+            <span class="rs-skill-tag rs-skill-familiar">React</span>
           </div>
         </div>
 
@@ -305,19 +279,11 @@
             <span class="rs-skill-cat-line"></span>
             Tools &amp; Databases
           </h3>
-          <div class="rs-skill-bars">
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">MySQL <span>80%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Git <span>75%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:75%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Firebase <span>70%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:70%"></div></div>
-            </div>
+          <div class="rs-skill-tags">
+            <span class="rs-skill-tag rs-skill-proficient">MySQL</span>
+            <span class="rs-skill-tag rs-skill-proficient">Git</span>
+            <span class="rs-skill-tag rs-skill-familiar">Firebase</span>
+            <span class="rs-skill-tag rs-skill-familiar">MongoDB</span>
           </div>
         </div>
 
@@ -326,23 +292,11 @@
             <span class="rs-skill-cat-line"></span>
             Soft Skills
           </h3>
-          <div class="rs-skill-bars">
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Problem Solving <span>90%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:90%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Teamwork <span>85%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:85%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Communication <span>80%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:80%"></div></div>
-            </div>
-            <div class="skill-item" data-animate>
-              <div class="skill-icon">Adaptability <span>88%</span></div>
-              <div class="skill-bar"><div class="skill-fill" style="--skill-width:88%"></div></div>
-            </div>
+          <div class="rs-skill-tags">
+            <span class="rs-skill-tag rs-skill-strong">Problem Solving</span>
+            <span class="rs-skill-tag rs-skill-strong">Teamwork</span>
+            <span class="rs-skill-tag rs-skill-proficient">Communication</span>
+            <span class="rs-skill-tag rs-skill-proficient">Adaptability</span>
           </div>
           <div class="rs-soft-tags">
             <span class="rs-soft-tag">Ownership</span>
@@ -434,7 +388,7 @@
       </header>
 
       <div class="rs-roadmap-intro">
-        <p class="rs-roadmap-kicker">CAREER TIMELINE</p>
+        <p class="rs-roadmap-kicker">Career Timeline</p>
         <p class="rs-roadmap-summary">
           A focused progression from fundamentals to shipping quality frontend systems, with
           clear internship and graduation goals across the next academic milestones.
@@ -524,7 +478,7 @@
       </header>
 
       <div class="rs-activity-intro">
-        <p class="rs-activity-kicker">LIVE DATA PANELS</p>
+        <p class="rs-activity-kicker">Activity</p>
         <p class="rs-activity-summary">Real-time coding footprint across LeetCode, WakaTime, and GitHub.</p>
       </div>
 
@@ -664,7 +618,6 @@
 
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="../js/script.js?v=20260321e"></script>
   <script src="../js/shared-utils.js?v=20260305d"></script>
   <script src="../js/resume.js?v=20260411a"></script>

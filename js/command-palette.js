@@ -162,11 +162,11 @@
     overlay.innerHTML = `
       <div class="cmd-palette" id="cmdPalette" role="dialog" aria-modal="true" aria-label="Command palette">
         <div class="cmd-head">
-          <span class="cmd-kicker">// COMMAND CENTER</span>
+          <span class="cmd-kicker">Search</span>
           <span class="cmd-head-shortcut"><kbd>${PRIMARY_KEY}</kbd><span>+</span><kbd>K</kbd></span>
         </div>
         <div class="cmd-search-wrap">
-          <svg class="cmd-search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="cmd-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input
@@ -177,7 +177,6 @@
             autocomplete="off"
             spellcheck="false"
           >
-          <kbd class="cmd-esc-hint">Esc</kbd>
         </div>
         <div class="cmd-results" id="cmdResults" role="listbox"></div>
         <div class="cmd-footer">
@@ -271,6 +270,18 @@
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </span>
+      </button>
+    `;
+  }
+
+  function gridItemMarkup(command, idx, isActive) {
+    return `
+      <button class="cmd-grid-item ${isActive ? 'cmd-item-active' : ''}"
+              data-idx="${idx}"
+              role="option"
+              aria-selected="${isActive}">
+        <span class="cmd-grid-icon">${command.icon}</span>
+        <span class="cmd-grid-label">${command.label.replace('Go to ', '')}</span>
       </button>
     `;
   }
@@ -463,8 +474,9 @@
     button.className = 'cmd-hint-btn';
     button.setAttribute('aria-label', 'Open command palette');
     button.innerHTML = `
-      <span class="cmd-hint-main"><kbd>${PRIMARY_KEY}</kbd><span class="cmd-hint-plus">+</span><kbd>K</kbd></span>
-      <span class="cmd-hint-alt">/</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
     `;
     button.addEventListener('click', open);
     nav.prepend(button);

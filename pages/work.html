@@ -69,12 +69,7 @@
 </head>
 <body class="theme-dotgrid">
 
-  <div class="bg-wrap" aria-hidden="true">
-    <div class="dot-grid"></div>
-    <div class="bloom"></div>
-    <div class="vignette"></div>
-    <canvas id="particle-canvas"></canvas>
-  </div>
+  <canvas id="particle-canvas" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;"></canvas>
 
   <!-- Navigation — injected by js/nav.js -->
   <div id="site-nav"></div>
@@ -83,11 +78,8 @@
   <main class="main-content">
 
     <header class="page-header">
-      <p class="header-decoration">Satyam Pandey</p>
       <h1 class="page-title" id="pageTitle">
-        <span class="title-bracket">&lt;</span>
-        <span id="titleText">PROJECTS</span>
-        <span class="title-bracket">/&gt;</span>
+        <span id="titleText">Projects</span>
       </h1>
 
       <div class="toggle-container" role="group" aria-label="View switcher">
@@ -574,7 +566,6 @@
     </div>
   </div>
   <script src="../js/firebase-config.js?v=20260305d"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="../js/script.js?v=20260321e"></script>
   <script src="../js/shared-utils.js?v=20260305d"></script>
   <script src="../js/work.js?v=20260321h"></script>
